@@ -70,7 +70,7 @@ Only for things used by two or more features that belong to none of them: reusab
 |---|---|---|
 | Screen Model | `{Screen}Model` | `EditRoomModel` |
 | Feature Module | `{Feature}Module` | `TrophyRoomModule` |
-| View | `{Name}View` | `TrophyCellView` |
+| View | `{Name}View` | `TrophySlotView` |
 | Controller | `{Action}Controller` | `ClaimTrophyController` |
 | Input GameObject | Same name as its Controller | `ClaimTrophyController` |
 | State root GameObject | `{State}Root` | `LoadingRoot` |
@@ -78,7 +78,7 @@ Only for things used by two or more features that belong to none of them: reusab
 | Data | `{Name}Data` | `TrophyData` |
 | Connector | `I{Feature}Connector`, `{Feature}Connector` | `ITrophyRoomConnector` |
 | Installer | `{Feature}Installer` | `TrophyRoomInstaller` |
-| Prefab | Same as its main element | `MainRoom.prefab`, `TrophyCell.prefab` |
+| Prefab | Same as its main element | `MainRoom.prefab`, `TrophySlot.prefab` |
 
 **Namespaces:** `Client.{Feature}`, flat for the whole feature. Folder names MUST NOT contain spaces.
 
@@ -89,7 +89,7 @@ TrophyRoomMain [MainRoomLoadController, MainRoomStateView]
 ├── Header
 │   ├── TitleText (TextMeshProUGUI)
 │   └── CloseController (Image: alpha 0) [CloseController]
-├── Content (static elements, tab content or a scroller)
+├── Content (static elements, tab content or a list)
 └── Footer
 ```
 
@@ -106,7 +106,7 @@ A MonoBehaviour Model sits on its scope root (`SCOPE-03`). Pure C# Models never 
 
 Rules:
 
-- Separate static elements from dynamic ones. Dynamic content is either tab content or a scroller.
+- Separate static elements from dynamic ones. Dynamic content is either tab content or a Slot List.
 - Each scope has its View at its root (`SCOPE-02`). Divide a large screen into scopes. Interactive elements carry their own Controller.
 - Screen prefabs have no Canvas of their own. They sit under an existing Canvas, which owns the `CanvasScaler`.
 

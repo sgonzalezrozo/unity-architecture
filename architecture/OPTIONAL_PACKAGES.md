@@ -11,7 +11,7 @@ Run this once per task. Read `Packages/manifest.json`, and set each capability f
 | Capability | `true` when `dependencies` contains |
 |---|---|
 | `fastIoC` | `com.sgonzalezrozo.fast-ioc` |
-| `recyclableScroller` | `com.sgonzalezrozo.recyclable-scroller` |
+| `slotList` | `com.sgonzalezrozo.slot-list` |
 | `screenSystem` | `com.sgonzalezrozo.screen-system` |
 | `uiFoundations` | `com.sgonzalezrozo.ui-foundations` |
 | `addressables` | `com.unity.addressables` |
@@ -36,16 +36,16 @@ Also set `otherContainer = true` if the project uses another dependency injectio
 | Raycast target | `uiFoundations`: `BaseClickController`, a transparent `Graphic` | Transparent `Image` on the input GameObject |
 | Disable clicks | `uiFoundations`: `Interactable = false` | Disable the input GameObject, or place it in an inactive state |
 | Mutually exclusive looks | `uiFoundations`: `ViewStateMachine.SetState(stateName)` | View with one `GameObject` root per state |
-| Dynamic list | `recyclableScroller`: `RecyclableScrollRect<T>` | [`ScrollRect` with reused cells](#list-without-recyclablescroller) |
+| Dynamic list | `slotList`: `SlotList<T>` (`SectionedSlotList<TItem, THeader>` for sections) | [`ScrollRect` with reused cells](#list-without-slot-list) |
 | Screen shown | `screenSystem`: `IScreenShow.OnScreenShown()` | Controller `OnEnable`, on the screen root |
 | Open a screen | `screenSystem`: `ScreenManager.Instance.GoTo(screenName)` | [Navigation Model](#navigation-without-screensystem) |
 | Load a large asset | `addressables`: release the handle | Direct reference or `Resources` |
 
 If `otherContainer = true`, use that container's injection in place of the `fastIoC` form. Keep every other rule.
 
-The examples in this repository use this profile: `fastIoC`, `recyclableScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. Apply this mapping to adapt them.
+The examples in this repository use this profile: `fastIoC`, `slotList` and `screenSystem` are `true`, and `uiFoundations` is `false`. Apply this mapping to adapt them.
 
-## List without RecyclableScroller
+## List without Slot List
 
 The list View only creates cells and shows as many as there are items. It holds GameObjects, never a cell View (`VIEW-03`). Each cell finds the Model and pulls its own item by position, so no data is pushed (`ARCH-04`).
 
@@ -90,7 +90,7 @@ public class InventoryListView : MonoBehaviour
     }
 }
 
-public class InventoryCellView : MonoBehaviour
+public class InventorySlotView : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI itemNameText;
 

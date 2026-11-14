@@ -11,7 +11,7 @@ Implements `ARCH-01` to `ARCH-04` and `ARCH-09` from [AGENTS.md](../AGENTS.md).
 | **Model** | Class that owns state and business rules. See [Where a Model lives](#where-a-model-lives) |
 | **Outside-MVC Model** | Model created by the container that no View or Controller uses |
 | **Module** | Model that wraps a feature's backend access. See [Backend integration](BACKEND_INTEGRATION.md) |
-| **Cell Model** | MonoBehaviour Model on a list cell prefab |
+| **Slot Model** | MonoBehaviour Model on a list slot prefab |
 | **Connector** | Stateless class that performs backend calls |
 | **View** | MonoBehaviour that reads Models and renders |
 | **Controller** | MonoBehaviour that converts one input into one Model command |

@@ -4,9 +4,9 @@
 
 Two screens share one Module. `MainRoom` lists trophies. `DetailsTrophy` renders the selected trophy, with a countdown and a claim command.
 
-**Demonstrates:** folder layout, Module, Connector, load states, recyclable list, async command, timer, tests.
+**Demonstrates:** folder layout, Module, Connector, load states, Slot List, async command, timer, tests.
 
-Capability profile: `fastIoC`, `recyclableScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping). Screen navigation is omitted because that API is [not specified yet](../FEATURE_STRUCTURE.md#modals-and-navigation).
+Capability profile: `fastIoC`, `slotList` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping). Screen navigation is omitted because that API is [not specified yet](../FEATURE_STRUCTURE.md#modals-and-navigation).
 
 `TrophyRoomModule` is injected because two screens share it, with no common parent (row 2 in [Where a Model lives](../MVC.md#where-a-model-lives)).
 
@@ -16,13 +16,13 @@ Capability profile: `fastIoC`, `recyclableScroller` and `screenSystem` are `true
 Assets/Client/TrophyRoom/
 ├── MainRoom/
 │   ├── MainRoom.prefab
-│   ├── TrophyCell.prefab
+│   ├── TrophySlot.prefab
 │   ├── MainRoomLoadController.cs
 │   ├── MainRoomStateView.cs
 │   ├── TrophyListView.cs
-│   ├── TrophyScroller.cs
-│   ├── TrophyCellModel.cs
-│   ├── TrophyCellView.cs
+│   ├── TrophySlotList.cs
+│   ├── TrophySlotModel.cs
+│   ├── TrophySlotView.cs
 │   └── SelectTrophyController.cs
 ├── DetailsTrophy/
 │   ├── DetailsTrophy.prefab
@@ -80,7 +80,7 @@ public class SystemClock : IClock
 public enum TrophyLoadState { Idle, Loading, Loaded, Failed }
 public enum TrophyClaimState { NoSelection, Claimable, Claiming, Claimed }
 
-public class TrophyRoomModule : IRecyclableDataSource<TrophyData>
+public class TrophyRoomModule : IItemSource<TrophyData>
 {
     private const int NO_SELECTION = -1;
 
@@ -256,11 +256,11 @@ MainRoom [MainRoomStateView, MainRoomLoadController]
 ├── LoadingRoot
 │   └── LoadingSpinner (Image)
 ├── LoadedRoot [TrophyListView]
-│   └── TrophyScroller [TrophyScroller]
+│   └── TrophySlotList [TrophySlotList]
 └── FailedRoot
     └── FailureMessageText (TextMeshProUGUI)
 
-TrophyCell.prefab [TrophyCellModel, TrophyCellView]
+TrophySlot.prefab [TrophySlotModel, TrophySlotView]
 ├── TrophyNameText (TextMeshProUGUI)
 ├── ClaimedBadge (Image)
 ├── SelectedHighlight (Image)
@@ -317,13 +317,13 @@ public class MainRoomStateView : MonoBehaviour
     }
 }
 
-public class TrophyScroller : RecyclableScrollRect<TrophyData>
+public class TrophySlotList : SlotList<TrophyData>
 {
 }
 
 public class TrophyListView : MonoBehaviour
 {
-    [SerializeField] private TrophyScroller trophyScroller;
+    [SerializeField] private TrophySlotList trophySlotList;
 
     internal TrophyRoomModule trophyRoomModule;
 
@@ -331,8 +331,8 @@ public class TrophyListView : MonoBehaviour
     {
         trophyRoomModule.OnTrophiesChanged += RenderTrophies;
 
-        if (!trophyScroller.IsInitialized)
-            trophyScroller.Initialize(trophyRoomModule);
+        if (!trophySlotList.IsInitialized)
+            trophySlotList.SetSource(trophyRoomModule);
 
         RenderTrophies();
     }
@@ -344,17 +344,17 @@ public class TrophyListView : MonoBehaviour
 
     private void RenderTrophies()
     {
-        trophyScroller.Refresh();
+        trophySlotList.Refresh();
     }
 }
 ```
 
-The Cell Model exposes only what its View needs (`LIST-05`). The View never reaches through to the Module. The custom `add` and `remove` forward the subscription, so the Cell Model needs no lifecycle code.
+The Slot Model exposes only what its View needs (`LIST-05`). The View never reaches through to the Module. The custom `add` and `remove` forward the subscription, so the Slot Model needs no lifecycle code.
 
 ```csharp
-public class TrophyCellModel : MonoBehaviour, IInjectableForChildren, IRecyclableCell<TrophyData>
+public class TrophySlotModel : MonoBehaviour, IInjectableForChildren, ISlot<TrophyData>
 {
-    private const float CELL_HEIGHT = 96f;
+    private const float SLOT_HEIGHT = 96f;
 
     public event Action OnTrophyDataChanged;
 
@@ -368,7 +368,7 @@ public class TrophyCellModel : MonoBehaviour, IInjectableForChildren, IRecyclabl
 
     private TrophyData trophyData;
 
-    public float DefaultCellSize => CELL_HEIGHT;
+    public float DefaultExtent => SLOT_HEIGHT;
     public bool IsSelected => trophyData != null && trophyRoomModule.SelectedTrophyId == trophyData.id;
 
     public TrophyData Data
@@ -388,60 +388,60 @@ public class TrophyCellModel : MonoBehaviour, IInjectableForChildren, IRecyclabl
     }
 }
 
-public class TrophyCellView : MonoBehaviour
+public class TrophySlotView : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI trophyNameText;
     [SerializeField] private Image claimedBadge;
     [SerializeField] private Image selectedHighlight;
 
-    private TrophyCellModel trophyCellModel;
+    private TrophySlotModel trophySlotModel;
 
     private void Awake()
     {
-        trophyCellModel = GetComponentInParent<TrophyCellModel>();
+        trophySlotModel = GetComponentInParent<TrophySlotModel>();
     }
 
     private void OnEnable()
     {
-        trophyCellModel.OnTrophyDataChanged += RenderTrophy;
-        trophyCellModel.OnTrophySelectionChanged += RenderSelection;
+        trophySlotModel.OnTrophyDataChanged += RenderTrophy;
+        trophySlotModel.OnTrophySelectionChanged += RenderSelection;
         RenderTrophy();
     }
 
     private void OnDisable()
     {
-        trophyCellModel.OnTrophyDataChanged -= RenderTrophy;
-        trophyCellModel.OnTrophySelectionChanged -= RenderSelection;
+        trophySlotModel.OnTrophyDataChanged -= RenderTrophy;
+        trophySlotModel.OnTrophySelectionChanged -= RenderSelection;
     }
 
     private void RenderTrophy()
     {
-        if (trophyCellModel.Data == null)
+        if (trophySlotModel.Data == null)
             return;
 
-        trophyNameText.text = trophyCellModel.Data.displayName;
-        claimedBadge.enabled = trophyCellModel.Data.isClaimed;
+        trophyNameText.text = trophySlotModel.Data.displayName;
+        claimedBadge.enabled = trophySlotModel.Data.isClaimed;
         RenderSelection();
     }
 
     private void RenderSelection()
     {
-        selectedHighlight.enabled = trophyCellModel.IsSelected;
+        selectedHighlight.enabled = trophySlotModel.IsSelected;
     }
 }
 
 public class SelectTrophyController : MonoBehaviour, IPointerClickHandler
 {
-    private TrophyCellModel trophyCellModel;
+    private TrophySlotModel trophySlotModel;
 
     private void Awake()
     {
-        trophyCellModel = GetComponentInParent<TrophyCellModel>();
+        trophySlotModel = GetComponentInParent<TrophySlotModel>();
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        trophyCellModel.SelectTrophy();
+        trophySlotModel.SelectTrophy();
     }
 }
 ```

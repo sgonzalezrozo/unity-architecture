@@ -80,31 +80,33 @@ InventoryScreen
 
 ## Lists
 
-If `recyclableScroller = true`, dynamic lists and grids MUST use `RecyclableScrollRect<T>`. Otherwise, see [List without RecyclableScroller](OPTIONAL_PACKAGES.md#list-without-recyclablescroller).
+If `slotList = true`, dynamic lists and grids MUST use Slot List: `SlotList<T>`, or `SectionedSlotList<TItem, THeader>` for sections with headers. Otherwise, see [List without Slot List](OPTIONAL_PACKAGES.md#list-without-slot-list).
 
-`RecyclableScrollRect<T>` is abstract, so declare one concrete class per data type:
+`SlotList<T>` is generic, so declare one concrete class per data type. It isn't a Model, View or Controller: the suffix is `SlotList`.
 
 ```csharp
-public class ItemScroller : RecyclableScrollRect<ItemData>
+public class ItemSlotList : SlotList<ItemData>
 {
 }
 ```
 
+Add it to an empty UI object that already has the size and anchors the list needs on screen. Adding the component builds the rest, and its inspector shows only direction, layout (List, Grid, Auto Grid), spacing and padding:
+
 ```
 ItemList [ItemListView]
-└── ItemScroller [ItemScroller]
-    └── Viewport (RectMask2D)
-        └── Container (RectTransform)
+└── ItemSlotList [ItemSlotList]
+    └── Viewport (RectMask2D, Canvas, GraphicRaycaster)
+        └── Content (RectTransform)
 
-ItemCell.prefab [ItemCellModel, ItemCellView]
+ItemSlot.prefab [ItemSlotModel, ItemSlotView, VerticalLayoutGroup when measured]
 ├── ItemIcon (Image)
 ├── ItemNameText (TextMeshProUGUI)
 └── SelectItemController (Image: alpha 0) [SelectItemController]
 ```
 
-### Data source
+### Source
 
-The Model that owns the list implements `IRecyclableDataSource<T>`:
+The Model that owns the list implements `IItemSource<T>`:
 
 ```csharp
 public int ItemCount => items.Count;
@@ -120,33 +122,35 @@ public IReadOnlyList<ItemData> GetAllItems()
 }
 ```
 
-The list View initializes the scroller once and refreshes it on each change:
+The list View gives the list its source once and refreshes it on each change:
 
 ```csharp
 private void OnEnable()
 {
     inventoryModel.OnItemsChanged += RenderItems;
 
-    if (!itemScroller.IsInitialized)
-        itemScroller.Initialize(inventoryModel);
+    if (!itemSlotList.IsInitialized)
+        itemSlotList.SetSource(inventoryModel);
 
     RenderItems();
 }
 
 private void RenderItems()
 {
-    itemScroller.Refresh();
+    itemSlotList.Refresh();
 }
 ```
 
-### Cell Model
+`ListSource<T>`, `FilteredSource<T>` and `PagedSource<T>` (pages through an `IPageLoader<T>`) are ready-made sources. A paged source loads its next page by itself near the end of the list: don't call `Refresh()` for pages.
 
-A MonoBehaviour Model on the cell prefab. This form is for `fastIoC` and `recyclableScroller`.
+### Slot Model
+
+A MonoBehaviour Model on the slot prefab. It implements the package's `ISlot<T>`; the `Model` suffix still decides its layer.
 
 ```csharp
-public class ItemCellModel : MonoBehaviour, IInjectableForChildren, IRecyclableCell<ItemData>
+public class ItemSlotModel : MonoBehaviour, IInjectableForChildren, ISlot<ItemData>
 {
-    private const float CELL_HEIGHT = 120f;
+    private const float SLOT_HEIGHT = 120f;
 
     public event Action OnItemDataChanged;
 
@@ -154,7 +158,7 @@ public class ItemCellModel : MonoBehaviour, IInjectableForChildren, IRecyclableC
 
     private ItemData itemData;
 
-    public float DefaultCellSize => CELL_HEIGHT;
+    public float DefaultExtent => SLOT_HEIGHT;
     public bool IsSelected => itemData != null && inventoryModel.SelectedItemId == itemData.id;
 
     public ItemData Data
@@ -175,24 +179,72 @@ public class ItemCellModel : MonoBehaviour, IInjectableForChildren, IRecyclableC
 }
 ```
 
+### Expandable slots
+
+An expandable slot implements `IExpandableSlot<T>`. The list sets `Owner`, `ItemIndex` and `IsExpanded` on every bind. The `IsExpanded` setter fires the same event as `Data`, and the click asks the list to open or close the item. Never redraw the View from the click directly: the list measures the slot, moves the slots after it and remembers the state when the slot is reused.
+
+```csharp
+public bool IsExpanded
+{
+    get => isExpanded;
+    set
+    {
+        if (isExpanded == value)
+            return;
+
+        isExpanded = value;
+        OnItemDataChanged?.Invoke();
+    }
+}
+
+public ISlotList Owner { get; set; }
+public int ItemIndex { get; set; }
+
+public void OnCollapsed()
+    => IsExpanded = false;
+
+public void ToggleExpanded()
+{
+    if (Owner.IsExpanded(ItemIndex))
+        Owner.Collapse(ItemIndex);
+    else
+        Owner.Expand(ItemIndex);
+}
+```
+
+### Slot sizes
+
+| Slot | Size |
+|---|---|
+| `DefaultExtent > 0` | Fixed. Nothing is measured |
+| `DefaultExtent <= 0` | Measured with the slot's Unity layout when shown, then cached |
+| `DefaultExtent > 0`, expandable, `Expand(index)` without a size | Fixed when closed; measured with its layout while open |
+
+A measured slot (or an expandable one) needs a layout group on its root with **Control Child Size** on and **Child Force Expand** off, and layout down to the element that grows, such as the text. The list reads the root's preferred size itself.
+
 | ID | Rule |
 |---|---|
-| `LIST-01` | With the packages, `IInjectableForChildren` gives the cell its `internal` fields, and `IRecyclableCell<T>` is how the scroller sets `Data`. |
-| `LIST-02` | The `Data` setter MUST fire an event. A recycled cell can get data while active, so `OnEnable` alone would show stale content. This is the one accepted push, and it MUST stop at the Cell Model. |
-| `LIST-03` | Cell Views and Controllers MUST get the Cell Model with `GetComponentInParent<TCellModel>()` in `Awake`. |
-| `LIST-04` | Cells MUST NOT be instantiated by hand or call `Initialize(data)`. |
-| `LIST-05` | A Cell Model exists to serve its cell, so it MAY expose derived values for that cell's Views. This is the one exception to `ARCH-04`. |
+| `LIST-01` | With the packages, `IInjectableForChildren` gives the slot its `internal` fields, and `ISlot<T>` (or `IExpandableSlot<T>`) is how the list sets `Data`. |
+| `LIST-02` | The `Data` setter (and `IsExpanded`) MUST fire an event, and the Slot View MUST redraw from it. Pooled slots stay active out of view, so a reused slot's `OnEnable` doesn't run: `OnEnable` alone shows stale content. This is the one accepted push, and it MUST stop at the Slot Model. |
+| `LIST-03` | Slot Views and Controllers MUST get the Slot Model with `GetComponentInParent<TSlotModel>()` in `Awake`. |
+| `LIST-04` | Slots MUST NOT be instantiated by hand or call `Initialize(data)`. |
+| `LIST-05` | A Slot Model exists to serve its slot, so it MAY expose derived values for that slot's Views. This is the one exception to `ARCH-04`. |
+| `LIST-06` | Content MUST NOT have layout components (`ContentSizeFitter`, `LayoutGroup`, `LayoutElement`), and the slot's root MUST NOT have a `ContentSizeFitter`: the list sets those sizes itself. |
+| `LIST-07` | Item state (selected, expanded, unlocked) MUST live in the item or a Model, never in the slot: the slot shows another item later. |
 
-### Scroller API
+### Slot List API
 
 | Member | Use |
 |---|---|
-| `Initialize(source)` | Call once |
-| `SetDataSource(source)` | Replace the source |
+| `SetSource(source)` | Give the list its source (starts it), or replace the source |
 | `Refresh()` | Redraw after data changes. Call once per batch |
+| `InvalidateSize(index)`, `InvalidateAllSizes()` | Measure again when a measured slot's size depends on something it can't notice itself |
+| `Expand(index)`, `Collapse(index)`, `IsExpanded(index)`, `ExpandedCount` | Expandable slots |
 | `ScrollToItem(index)`, `ScrollToStart()`, `ScrollToEnd()` | Jump to a position |
-| `ForceStopScrolling()`, `Clear()` | Stop momentum, remove all cells |
-| `IsInitialized`, `VisibleStartIndex`, `VisibleEndIndex` | Read state |
+| `ForceStopScrolling()`, `Clear()` | Stop momentum, remove all slots |
+| `IsInitialized`, `VisibleStartIndex`, `VisibleEndIndex`, `GetItemOffset(index)`, `GetItemSize(index)`, `ContentSize` | Read state |
+| `ItemExpanded`, `ItemCollapsed`, `Rebuilt`, `ContentSizeChanged`, `PageLoaded`, `PageFailed`, `ReachedEnd` | Read-only events |
+| `SectionedSlotList`: `SetSource(SectionedSource<TItem, THeader>)`, `ScrollToSection(index)` | Sections with headers (Header Prefab implements `ISlot<THeader>`) |
 
 ## Layouts
 

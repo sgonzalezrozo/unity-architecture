@@ -140,7 +140,7 @@ public class LoseLifeController : MonoBehaviour, IPointerClickHandler
 |---|---|
 | View or Controller | `GetComponentInParent`, cached once. An injected `internal` field only when no common parent can exist or the Model must persist |
 | Pure C# class | Constructor |
-| Inside a list cell | `GetComponentInParent<CellModel>()`, cached once |
+| Inside a list slot | `GetComponentInParent<TSlotModel>()`, cached once |
 
 `internal` is reserved for injected fields; everything else is `private`. Forbidden: `[Inject]`, `Initialize(model)`, service locators. Do not null-check injected fields.
 
@@ -214,7 +214,7 @@ public void Process(List<ItemData> items)
 - One statement after `if` or `for`: next line, indented, no braces.
 - Braces on their own line.
 - Explicit types, never `var`. `new()` when the type is on the left.
-- No comments or `///`. Names explain. Comment only what code cannot, such as an engine bug.
+- Names explain. A short `///` summary on a class is allowed; none on members. Comment only what code cannot, such as an engine bug.
 - No `#region`. No magic numbers. No hardcoded user text.
 - No boolean flag parameters that pick a code path; write two methods.
 - `a.GetB()` is fine; `a.B.C.D` is not.

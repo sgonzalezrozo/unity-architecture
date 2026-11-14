@@ -6,7 +6,7 @@ One toggle prefab is reused for every on/off setting. Adding a setting takes one
 
 **Demonstrates:** reusable prefab driven by config values, visual state roots, drag input.
 
-Capability profile: `fastIoC`, `recyclableScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping).
+Capability profile: `fastIoC`, `slotList` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping).
 
 All Views and Controllers sit under one screen, so `SettingsModel` lives on the screen root (row 1 in [Where a Model lives](../MVC.md#where-a-model-lives)). No installer is needed.
 

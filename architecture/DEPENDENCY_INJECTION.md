@@ -16,7 +16,7 @@ Most Views and Controllers don't use injection: they find a Model on a common pa
 |---|---|
 | View or Controller, Model on a common parent | `GetComponentInParent<TModel>()`, cached once |
 | View or Controller, no common parent or persistent Model | `internal` field |
-| Inside a list cell | `GetComponentInParent<TCellModel>()`, cached once |
+| Inside a list slot | `GetComponentInParent<TSlotModel>()`, cached once |
 | MonoBehaviour Model, Model outside MVC, configuration asset | `internal` field |
 | Pure C# class | Constructor |
 
@@ -110,6 +110,6 @@ FastIoC has no factory delegates. When creation needs custom logic, bind a facto
 
 ## Runtime-created objects
 
-Scroller cells receive injection through `IInjectableForChildren` on their Cell Model. See [Lists](UI_PATTERNS.md#lists).
+List slots receive injection through `IInjectableForChildren` on their Slot Model. See [Lists](UI_PATTERNS.md#lists).
 
 Code MUST NOT call `Instantiate` directly for a prefab with injected fields. Use `IPrefabInstantiator`, or the fields stay empty.

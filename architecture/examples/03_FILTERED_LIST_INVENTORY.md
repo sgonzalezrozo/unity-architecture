@@ -6,7 +6,7 @@ Tabs filter one list, and a details panel renders the selection. All state is lo
 
 **Demonstrates:** tab elements from one class, a filtered list without allocations, shared selection.
 
-Capability profile: `fastIoC`, `recyclableScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping).
+Capability profile: `fastIoC`, `slotList` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping).
 
 `InventoryModel` is injected because this example's cells receive it through `IInjectableForChildren`.
 
@@ -24,14 +24,14 @@ InventoryScreen
 │   ├── ArmorTab (same, inventoryTab = Armor)
 │   └── ConsumablesTab (same, inventoryTab = Consumables)
 ├── ItemList [InventoryListView]
-│   └── InventoryScroller [InventoryScroller]
+│   └── InventorySlotList [InventorySlotList]
 └── Details [InventoryDetailsView]
     ├── EmptyRoot
     └── SelectedItemRoot
         ├── ItemNameText (TextMeshProUGUI)
         └── DropItemController (Image: alpha 0) [DropItemController]
 
-InventoryCell.prefab [InventoryCellModel, InventoryCellView]
+InventorySlot.prefab [InventorySlotModel, InventorySlotView]
 ├── ItemNameText (TextMeshProUGUI)
 ├── SelectedHighlight (Image)
 └── SelectItemController (Image: alpha 0) [SelectItemController]
@@ -52,7 +52,7 @@ public class InventoryItemData
     public InventoryTab inventoryTab;
 }
 
-public class InventoryModel : IRecyclableDataSource<InventoryItemData>
+public class InventoryModel : IItemSource<InventoryItemData>
 {
     private const int NO_SELECTION = -1;
 
@@ -202,13 +202,13 @@ public class SelectTabController : MonoBehaviour, IPointerClickHandler
 ## List and cell
 
 ```csharp
-public class InventoryScroller : RecyclableScrollRect<InventoryItemData>
+public class InventorySlotList : SlotList<InventoryItemData>
 {
 }
 
 public class InventoryListView : MonoBehaviour
 {
-    [SerializeField] private InventoryScroller inventoryScroller;
+    [SerializeField] private InventorySlotList inventorySlotList;
 
     internal InventoryModel inventoryModel;
 
@@ -216,8 +216,8 @@ public class InventoryListView : MonoBehaviour
     {
         inventoryModel.OnVisibleItemsChanged += RenderVisibleItems;
 
-        if (!inventoryScroller.IsInitialized)
-            inventoryScroller.Initialize(inventoryModel);
+        if (!inventorySlotList.IsInitialized)
+            inventorySlotList.SetSource(inventoryModel);
 
         RenderVisibleItems();
     }
@@ -229,13 +229,13 @@ public class InventoryListView : MonoBehaviour
 
     private void RenderVisibleItems()
     {
-        inventoryScroller.Refresh();
+        inventorySlotList.Refresh();
     }
 }
 
-public class InventoryCellModel : MonoBehaviour, IInjectableForChildren, IRecyclableCell<InventoryItemData>
+public class InventorySlotModel : MonoBehaviour, IInjectableForChildren, ISlot<InventoryItemData>
 {
-    private const float CELL_HEIGHT = 80f;
+    private const float SLOT_HEIGHT = 80f;
 
     public event Action OnItemDataChanged;
 
@@ -249,7 +249,7 @@ public class InventoryCellModel : MonoBehaviour, IInjectableForChildren, IRecycl
 
     private InventoryItemData itemData;
 
-    public float DefaultCellSize => CELL_HEIGHT;
+    public float DefaultExtent => SLOT_HEIGHT;
     public bool IsSelected => itemData != null && inventoryModel.SelectedItemId == itemData.id;
 
     public InventoryItemData Data
@@ -269,53 +269,53 @@ public class InventoryCellModel : MonoBehaviour, IInjectableForChildren, IRecycl
     }
 }
 
-public class InventoryCellView : MonoBehaviour
+public class InventorySlotView : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI itemNameText;
     [SerializeField] private Image selectedHighlight;
 
-    private InventoryCellModel inventoryCellModel;
+    private InventorySlotModel inventorySlotModel;
 
     private void Awake()
     {
-        inventoryCellModel = GetComponentInParent<InventoryCellModel>();
+        inventorySlotModel = GetComponentInParent<InventorySlotModel>();
     }
 
     private void OnEnable()
     {
-        inventoryCellModel.OnItemDataChanged += RenderItem;
-        inventoryCellModel.OnItemSelectionChanged += RenderItem;
+        inventorySlotModel.OnItemDataChanged += RenderItem;
+        inventorySlotModel.OnItemSelectionChanged += RenderItem;
         RenderItem();
     }
 
     private void OnDisable()
     {
-        inventoryCellModel.OnItemDataChanged -= RenderItem;
-        inventoryCellModel.OnItemSelectionChanged -= RenderItem;
+        inventorySlotModel.OnItemDataChanged -= RenderItem;
+        inventorySlotModel.OnItemSelectionChanged -= RenderItem;
     }
 
     private void RenderItem()
     {
-        if (inventoryCellModel.Data == null)
+        if (inventorySlotModel.Data == null)
             return;
 
-        itemNameText.text = inventoryCellModel.Data.displayName;
-        selectedHighlight.enabled = inventoryCellModel.IsSelected;
+        itemNameText.text = inventorySlotModel.Data.displayName;
+        selectedHighlight.enabled = inventorySlotModel.IsSelected;
     }
 }
 
 public class SelectItemController : MonoBehaviour, IPointerClickHandler
 {
-    private InventoryCellModel inventoryCellModel;
+    private InventorySlotModel inventorySlotModel;
 
     private void Awake()
     {
-        inventoryCellModel = GetComponentInParent<InventoryCellModel>();
+        inventorySlotModel = GetComponentInParent<InventorySlotModel>();
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        inventoryCellModel.SelectItem();
+        inventorySlotModel.SelectItem();
     }
 }
 ```

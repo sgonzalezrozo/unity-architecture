@@ -4,6 +4,19 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking:** Recyclable Scroller is now **Slot List** (`com.sgonzalezrozo.slot-list`, capability `slotList`). The rules, the examples and the API list use its names: `SlotList<T>`, `ISlot<T>`, `IExpandableSlot<T>`, `IItemSource<T>`, `DefaultExtent`, `SetSource`. Cells are slots: Slot Model, Slot View, `ItemSlot.prefab`, `GetComponentInParent<TSlotModel>()`.
+- Lists: adding the component builds its Viewport (`RectMask2D`, `Canvas`, `GraphicRaycaster`) and Content; the list View calls `SetSource` once and `Refresh()` after changes; paged sources load pages by themselves.
+- `LIST-02`: pooled slots stay active, so a reused slot's `OnEnable` doesn't run; the Slot View redraws from the `Data` (and `IsExpanded`) event.
+- C# standards: a short `///` summary on a class is allowed; still none on members.
+
+### Added
+
+- Lists: expandable slots (`IExpandableSlot<T>`, the click asks the list to open or close), slot sizes (fixed, measured with layout, or fixed when closed and measured when open), sections (`SectionedSlotList`) and the current API table.
+- `LIST-06`: no layout components on Content, and no `ContentSizeFitter` on a slot's root.
+- `LIST-07`: item state lives in the item or a Model, never in the slot.
+
 ## [0.2.0] - 2026-11-10
 
 ### Added
