@@ -41,8 +41,8 @@ Also set `otherContainer = true` if the project uses another dependency injectio
 | Screen hidden | `screenSystem`: `IScreenHide.OnScreenHidden()` (`SCR-05`) | Controller `OnDisable`, on the screen root |
 | Open a screen | `screenSystem`: `await ScreenManager.Instance.GoTo(ScreenIds.ShopMain)`, with the generated `ScreenIds` constants (`SCR-07`, `SCR-12`) | [Navigation Model](#navigation-without-screensystem) |
 | Go back | `screenSystem`: `await ScreenManager.Instance.GoBack()`; the Escape key does it too | [Navigation Model](#navigation-without-screensystem) |
-| Popup or confirmation | `screenSystem`: a screen whose `ScreenDefinition` type is `modal` (`SCR-09`) | A popup prefab in the screen folder, shown by a View |
-| Blocking message (connection lost) | `screenSystem`: a screen whose type is `alert`, closed with `DismissAlert()` (`SCR-09`) | A popup prefab over everything |
+| Popup or confirmation | `screenSystem`: a screen whose `ScreenDefinition` type is `Modal` (`SCR-09`) | A popup prefab in the screen folder, shown by a View |
+| Blocking message (connection lost) | `screenSystem`: a screen whose type is `Alert`, closed with `DismissAlert()` (`SCR-09`) | A popup prefab over everything |
 | Part shared by several screens (top bar, background, navigation bar) | `screenSystem`: a layer prefab listed in each screen's `LayerDefinition` (`SCR-04`) | A nested prefab in each screen |
 | Animate a screen | `screenSystem`: per layer, started from `OnScreenShown()` / `OnScreenHidden()` (`SCR-10`) | From the Controller's `OnEnable` / `OnDisable` |
 | Load a large asset | `addressables`: release the handle | Direct reference or `Resources` |

@@ -115,7 +115,7 @@ Rules:
 
 Popups are separate prefabs in the screen folder that uses them. A modal's state lives in a Model like any other state.
 
-With `screenSystem`, a popup is a screen whose `ScreenDefinition` type is `modal`, opened with `GoTo` and closed with `GoBack`. One modal is open at a time, an `alert` blocks navigation until `DismissAlert()`, `GoTo(screen, value)` passes a typed value to `IScreenParameter<T>` components and a modal returns no result (`SCR-07` to `SCR-09`). The package's README documents the rest; for anything not listed there, read how existing features do it, and ask if there is no precedent.
+With `screenSystem`, a popup is a screen whose `ScreenDefinition` type is `Modal`, opened with `GoTo` and closed with `GoBack`. One modal is open at a time, an `alert` blocks navigation until `DismissAlert()`, `GoTo(screen, value)` passes a typed value to `IScreenParameter<T>` components and a modal returns no result (`SCR-07` to `SCR-09`). The package's README documents the rest; for anything not listed there, read how existing features do it, and ask if there is no precedent.
 
 Pass what the navigation is about (which trophy to show) with `GoTo(screen, value)`. State that several screens share stays in a Model: if screen B and others need the selected trophy, screen A sets it on a shared Model and B reads it there. The [backend example](examples/01_BACKEND_FEATURE_TROPHY_ROOM.md) does this with `TrophyRoomModule.SelectTrophy`.
 
