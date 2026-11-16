@@ -108,17 +108,18 @@ Rules:
 
 - Separate static elements from dynamic ones. Dynamic content is either tab content or a Slot List.
 - Each scope has its View at its root (`SCOPE-02`). Divide a large screen into scopes. Interactive elements carry their own Controller.
-- Screen prefabs have no Canvas of their own. They sit under an existing Canvas, which owns the `CanvasScaler`.
+- Without `screenSystem`: screen prefabs have no Canvas of their own. They sit under an existing Canvas, which owns the `CanvasScaler`.
+- With `screenSystem`: each screen prefab and each layer prefab has its own `Canvas` (uGUI) or `UIDocument` (UI Toolkit) at its root, and Screen System sets its sorting (`SCR-02`). A part shared by several screens is a layer, not part of each screen's hierarchy (`SCR-04`).
 
 ## Modals and navigation
 
 Popups are separate prefabs in the screen folder that uses them. A modal's state lives in a Model like any other state.
 
-**Not specified yet.** With `screenSystem`, the `ScreenSystem` and `ScreenDefinition` APIs, modal stacking, returning a result from a modal, and passing context between screens have no documented API. Agents MUST read how existing features do it, and MUST ask if there is no precedent.
+With `screenSystem`, a popup is a screen whose `ScreenDefinition` type is `modal`, opened with `GoTo` and closed with `GoBack`. One modal is open at a time, an `alert` blocks navigation until `DismissAlert()`, `GoTo(screen, value)` passes a typed value to `IScreenParameter<T>` components and a modal returns no result (`SCR-07` to `SCR-09`). The package's README documents the rest; for anything not listed there, read how existing features do it, and ask if there is no precedent.
 
-One rule already applies: nothing is pushed to a screen. If screen B needs the selected trophy, screen A sets it on a shared Model and B reads it there. The [backend example](examples/01_BACKEND_FEATURE_TROPHY_ROOM.md) does this with `TrophyRoomModule.SelectTrophy`.
+Pass what the navigation is about (which trophy to show) with `GoTo(screen, value)`. State that several screens share stays in a Model: if screen B and others need the selected trophy, screen A sets it on a shared Model and B reads it there. The [backend example](examples/01_BACKEND_FEATURE_TROPHY_ROOM.md) does this with `TrophyRoomModule.SelectTrophy`.
 
-Scene transitions MUST go through one project scene loader, never `SceneManager` from feature code. Showing a menu screen is not the same as leaving a gameplay scene.
+Scene transitions MUST go through one project scene loader, never `SceneManager` from feature code. Showing a menu screen is not the same as leaving a gameplay scene. With `screenSystem`, a single scene load cleans up the UI by itself (`SCR-03`).
 
 ## Assembly definitions
 
