@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-16
+
 ### Changed
 
 - With `screenSystem`, screen and layer prefabs have their own `Canvas` or `UIDocument`. The "no Canvas of their own" rule now applies only without it.
