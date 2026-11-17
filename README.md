@@ -109,7 +109,7 @@ git submodule update --remote .ai
 
 ## Project status
 
-This is version `0.3.0`. The architecture and the code style are mandatory. [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), UI Scroller, Screen System and [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations) are optional: agents detect them, and use plain Unity forms when they're missing. UI Scroller and Screen System aren't published yet.
+This is version `0.4.0`. The architecture and the code style are mandatory. [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), [UI Scroller](https://github.com/sgonzalezrozo/unity-ui-scroller), [Screen System](https://github.com/sgonzalezrozo/unity-screen-system) and [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations) are optional: agents detect them, and use plain Unity forms when they're missing.
 
 ## FAQ
 
@@ -131,7 +131,7 @@ Strict MVC for uGUI: Models own state, Views render, Controllers receive input, 
 
 ### Do I need Fast IoC or the other packages?
 
-No. [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), UI Scroller, Screen System and [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations) are optional. Agents detect them in `Packages/manifest.json` and use plain Unity forms when they're missing.
+No. [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), [UI Scroller](https://github.com/sgonzalezrozo/unity-ui-scroller), [Screen System](https://github.com/sgonzalezrozo/unity-screen-system) and [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations) are optional. Agents detect them in `Packages/manifest.json` and use plain Unity forms when they're missing.
 
 ### Does it work with Unity 6, URP and HDRP?
 
@@ -151,7 +151,7 @@ Yes. It's MIT licensed.
 
 ### Does anyone else use it?
 
-Not yet. It's version `0.3.0` by a single author, used only in my personal projects so far, and the rules still change. Feedback and issues are very welcome.
+Not yet. It's version `0.4.0` by a single author, used only in my personal projects so far, and the rules still change. Feedback and issues are very welcome.
 
 ### Is there a sample project?
 
