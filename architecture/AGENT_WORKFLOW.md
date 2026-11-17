@@ -25,7 +25,7 @@ Model location: screen root, or Fast IoC scene "PlayerStats", priority 200
 Scopes: PlayerStats root, PlayerStats/ActionButtons
 Tests: PlayerStatsModelTests
 New dependencies: none
-Capabilities: fastIoC, slotList, screenSystem, uiFoundations, editorBridge, verifyScript
+Capabilities: fastIoC, uiScroller, screenSystem, uiFoundations, editorBridge, verifyScript
 Open questions: list
 ```
 

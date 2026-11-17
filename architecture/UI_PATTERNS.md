@@ -80,21 +80,21 @@ InventoryScreen
 
 ## Lists
 
-If `slotList = true`, dynamic lists and grids MUST use Slot List: `SlotList<T>`, or `SectionedSlotList<TItem, THeader>` for sections with headers. Otherwise, see [List without Slot List](OPTIONAL_PACKAGES.md#list-without-slot-list).
+If `uiScroller = true`, dynamic lists and grids MUST use UI Scroller: `Scroller<T>`, or `SectionedScroller<TItem, THeader>` for sections with headers. Otherwise, see [List without UI Scroller](OPTIONAL_PACKAGES.md#list-without-ui-scroller).
 
-`SlotList<T>` is generic, so declare one concrete class per data type. It isn't a Model, View or Controller: the suffix is `SlotList`.
+`Scroller<T>` is generic, so declare one concrete class per data type. It isn't a Model, View or Controller: the suffix is `Scroller`.
 
 ```csharp
-public class ItemSlotList : SlotList<ItemData>
+public class ItemScroller : Scroller<ItemData>
 {
 }
 ```
 
-Add it to an empty UI object that already has the size and anchors the list needs on screen. Adding the component builds the rest, and its inspector shows only direction, layout (List, Grid, Auto Grid), spacing and padding:
+Add it to an empty UI object that already has the size and anchors the list needs on screen. Adding the component builds the rest, and its inspector shows only direction, layout (List, Grid, Auto Grid, Bento), spacing, padding, snapping and loop:
 
 ```
 ItemList [ItemListView]
-└── ItemSlotList [ItemSlotList]
+└── ItemScroller [ItemScroller]
     └── Viewport (RectMask2D, Canvas, GraphicRaycaster)
         └── Content (RectTransform)
 
@@ -129,15 +129,15 @@ private void OnEnable()
 {
     inventoryModel.OnItemsChanged += RenderItems;
 
-    if (!itemSlotList.IsInitialized)
-        itemSlotList.SetSource(inventoryModel);
+    if (!itemScroller.IsInitialized)
+        itemScroller.SetSource(inventoryModel);
 
     RenderItems();
 }
 
 private void RenderItems()
 {
-    itemSlotList.Refresh();
+    itemScroller.Refresh();
 }
 ```
 
@@ -197,7 +197,7 @@ public bool IsExpanded
     }
 }
 
-public ISlotList Owner { get; set; }
+public IScroller Owner { get; set; }
 public int ItemIndex { get; set; }
 
 public void OnCollapsed()
@@ -222,6 +222,22 @@ public void ToggleExpanded()
 
 A measured slot (or an expandable one) needs a layout group on its root with **Control Child Size** on and **Child Force Expand** off, and layout down to the element that grows, such as the text. The list reads the root's preferred size itself.
 
+In a grid, slots stretch to fill their line. In a bento layout, the layout decides every tile's size: columns and tiles come from a **Layout JSON** (a TextAsset) or `SetBentoLayout(BentoLayout)`, and the row height from **Cell Aspect**. The slot stretches to its tile, so the Slot View lays out for any size.
+
+### Layout choices
+
+| Need | Settings |
+|---|---|
+| A list in any direction | **Layout: List**, **Direction** |
+| A fixed or responsive grid | **Layout: Grid** (`slotsPerLine`) or **Auto Grid** (`targetSlotSize`) |
+| Tiles of different sizes (featured, strips) | **Layout: Bento** with a Layout JSON; items never choose their size |
+| Sections with headers | `SectionedScroller<TItem, THeader>`; **Section Spacing** adds space before every header except the first |
+| A carousel | **Loop**, **Snap: Item**, **Snap Align: Center** |
+| A pager | **Snap: Page** |
+| An endless feed | A `PagedSource<T>` with an `IPageLoader<T>` |
+
+Grids and bento don't expand. A looping list is a plain list: no grid, bento, sections, paged source or expanding. A sectioned list doesn't page.
+
 | ID | Rule |
 |---|---|
 | `LIST-01` | With the packages, `IInjectableForChildren` gives the slot its `internal` fields, and `ISlot<T>` (or `IExpandableSlot<T>`) is how the list sets `Data`. |
@@ -231,8 +247,9 @@ A measured slot (or an expandable one) needs a layout group on its root with **C
 | `LIST-05` | A Slot Model exists to serve its slot, so it MAY expose derived values for that slot's Views. This is the one exception to `ARCH-04`. |
 | `LIST-06` | Content MUST NOT have layout components (`ContentSizeFitter`, `LayoutGroup`, `LayoutElement`), and the slot's root MUST NOT have a `ContentSizeFitter`: the list sets those sizes itself. |
 | `LIST-07` | Item state (selected, expanded, unlocked) MUST live in the item or a Model, never in the slot: the slot shows another item later. |
+| `LIST-08` | A bento tile's size MUST come from the layout (Layout JSON or `SetBentoLayout`), never from the item or the slot. Bento layouts are data: write the JSON, don't compute tile positions in code. |
 
-### Slot List API
+### UI Scroller API
 
 | Member | Use |
 |---|---|
@@ -240,11 +257,12 @@ A measured slot (or an expandable one) needs a layout group on its root with **C
 | `Refresh()` | Redraw after data changes. Call once per batch |
 | `InvalidateSize(index)`, `InvalidateAllSizes()` | Measure again when a measured slot's size depends on something it can't notice itself |
 | `Expand(index)`, `Collapse(index)`, `IsExpanded(index)`, `ExpandedCount` | Expandable slots |
-| `ScrollToItem(index)`, `ScrollToStart()`, `ScrollToEnd()` | Jump to a position |
+| `ScrollToItem(index, align, duration, offset)`, `ScrollToStart(duration)`, `ScrollToEnd(duration)` | Jump or animate to a position (`ScrollAlign`: Start, Center, End, Nearest) |
+| `SetBentoLayout(layout)`, `GetTile(index)` | Bento: change the layout, read where an item sits |
 | `ForceStopScrolling()`, `Clear()` | Stop momentum, remove all slots |
-| `IsInitialized`, `VisibleStartIndex`, `VisibleEndIndex`, `GetItemOffset(index)`, `GetItemSize(index)`, `ContentSize` | Read state |
-| `ItemExpanded`, `ItemCollapsed`, `Rebuilt`, `ContentSizeChanged`, `PageLoaded`, `PageFailed`, `ReachedEnd` | Read-only events |
-| `SectionedSlotList`: `SetSource(SectionedSource<TItem, THeader>)`, `ScrollToSection(index)` | Sections with headers (Header Prefab implements `ISlot<THeader>`) |
+| `IsInitialized`, `IsScrolling`, `VisibleStartIndex`, `VisibleEndIndex`, `GetItemOffset(index)`, `GetItemSize(index)`, `ViewportSize`, `ContentSize` | Read state |
+| `ItemExpanded`, `ItemCollapsed`, `Rebuilt`, `ContentSizeChanged`, `SnappedTo`, `PageLoaded`, `PageFailed`, `ReachedEnd` | Read-only events |
+| `SectionedScroller`: `SetSource(SectionedSource<TItem, THeader>)`, `ScrollToSection(index, duration)` | Sections with headers (Header Prefab implements `ISlot<THeader>`) |
 
 ## Layouts
 

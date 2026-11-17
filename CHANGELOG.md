@@ -6,10 +6,14 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
+- Lists: a layout choices table (list, grid, bento, sections, carousel, pager, endless feed) and what each layout can't combine with; bento tiles and Section Spacing.
+- `LIST-08`: a bento tile's size comes from the layout (Layout JSON or `SetBentoLayout`), never from the item or the slot.
 - `SCR-14`: the splash and the quit confirmation are created with **Create Special Screens** (or `SpecialScreensCreator.Create()`), keep their names, and the quit modal uses `QuitConfirmationLayer`; feature code never calls `Application.Quit`.
 
 ### Changed
 
+- **Breaking:** Slot List is now **UI Scroller** (`com.sgonzalezrozo.ui-scroller`, namespace `UIScroller`, capability `uiScroller`). The rules, the examples and the API list use its names: `Scroller<T>`, `SectionedScroller<TItem, THeader>`, `IScroller` (an expandable slot's `Owner`). A concrete list class takes the `Scroller` suffix (`ItemScroller`). Slots keep their names (`ISlot<T>`, Slot Model, Slot View).
+- Lists: the API table adds animated `ScrollToItem(index, align, duration, offset)`, `SetBentoLayout`, `GetTile`, `IsScrolling`, `ViewportSize` and `SnappedTo`.
 - `SCR-10`: an outro plays before `GoTo` and navigates from its completion callback; `OnScreenHidden()` is too late. Keep a background opaque, and restore layers changed by an outro, since they stay loaded.
 - `SCR-09`: a modal or alert can answer its caller with `GoToForResult<T>` and `CloseWithResult(value)`, instead of always writing the result to a Model.
 

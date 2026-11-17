@@ -6,7 +6,7 @@ Tabs filter one list, and a details panel renders the selection. All state is lo
 
 **Demonstrates:** tab elements from one class, a filtered list without allocations, shared selection.
 
-Capability profile: `fastIoC`, `slotList` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping).
+Capability profile: `fastIoC`, `uiScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping).
 
 `InventoryModel` is injected because this example's cells receive it through `IInjectableForChildren`.
 
@@ -24,7 +24,7 @@ InventoryScreen
 │   ├── ArmorTab (same, inventoryTab = Armor)
 │   └── ConsumablesTab (same, inventoryTab = Consumables)
 ├── ItemList [InventoryListView]
-│   └── InventorySlotList [InventorySlotList]
+│   └── InventoryScroller [InventoryScroller]
 └── Details [InventoryDetailsView]
     ├── EmptyRoot
     └── SelectedItemRoot
@@ -202,13 +202,13 @@ public class SelectTabController : MonoBehaviour, IPointerClickHandler
 ## List and cell
 
 ```csharp
-public class InventorySlotList : SlotList<InventoryItemData>
+public class InventoryScroller : Scroller<InventoryItemData>
 {
 }
 
 public class InventoryListView : MonoBehaviour
 {
-    [SerializeField] private InventorySlotList inventorySlotList;
+    [SerializeField] private InventoryScroller inventoryScroller;
 
     internal InventoryModel inventoryModel;
 
@@ -216,8 +216,8 @@ public class InventoryListView : MonoBehaviour
     {
         inventoryModel.OnVisibleItemsChanged += RenderVisibleItems;
 
-        if (!inventorySlotList.IsInitialized)
-            inventorySlotList.SetSource(inventoryModel);
+        if (!inventoryScroller.IsInitialized)
+            inventoryScroller.SetSource(inventoryModel);
 
         RenderVisibleItems();
     }
@@ -229,7 +229,7 @@ public class InventoryListView : MonoBehaviour
 
     private void RenderVisibleItems()
     {
-        inventorySlotList.Refresh();
+        inventoryScroller.Refresh();
     }
 }
 

@@ -106,7 +106,7 @@ A MonoBehaviour Model sits on its scope root (`SCOPE-03`). Pure C# Models never 
 
 Rules:
 
-- Separate static elements from dynamic ones. Dynamic content is either tab content or a Slot List.
+- Separate static elements from dynamic ones. Dynamic content is either tab content or a UI Scroller.
 - Each scope has its View at its root (`SCOPE-02`). Divide a large screen into scopes. Interactive elements carry their own Controller.
 - Without `screenSystem`: screen prefabs have no Canvas of their own. They sit under an existing Canvas, which owns the `CanvasScaler`.
 - With `screenSystem`: each screen prefab and each layer prefab has its own `Canvas` (uGUI) or `UIDocument` (UI Toolkit) at its root, and Screen System sets its sorting (`SCR-02`). A part shared by several screens is a layer, not part of each screen's hierarchy (`SCR-04`).

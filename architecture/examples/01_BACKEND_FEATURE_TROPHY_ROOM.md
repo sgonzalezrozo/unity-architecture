@@ -4,9 +4,9 @@
 
 Two screens share one Module. `MainRoom` lists trophies. `DetailsTrophy` renders the selected trophy, with a countdown and a claim command.
 
-**Demonstrates:** folder layout, Module, Connector, load states, Slot List, async command, timer, tests.
+**Demonstrates:** folder layout, Module, Connector, load states, UI Scroller, async command, timer, tests.
 
-Capability profile: `fastIoC`, `slotList` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping). Screen navigation is omitted because that API is [not specified yet](../FEATURE_STRUCTURE.md#modals-and-navigation).
+Capability profile: `fastIoC`, `uiScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping). Screen navigation is omitted because that API is [not specified yet](../FEATURE_STRUCTURE.md#modals-and-navigation).
 
 `TrophyRoomModule` is injected because two screens share it, with no common parent (row 2 in [Where a Model lives](../MVC.md#where-a-model-lives)).
 
@@ -20,7 +20,7 @@ Assets/Client/TrophyRoom/
 │   ├── MainRoomLoadController.cs
 │   ├── MainRoomStateView.cs
 │   ├── TrophyListView.cs
-│   ├── TrophySlotList.cs
+│   ├── TrophyScroller.cs
 │   ├── TrophySlotModel.cs
 │   ├── TrophySlotView.cs
 │   └── SelectTrophyController.cs
@@ -256,7 +256,7 @@ MainRoom [MainRoomStateView, MainRoomLoadController]
 ├── LoadingRoot
 │   └── LoadingSpinner (Image)
 ├── LoadedRoot [TrophyListView]
-│   └── TrophySlotList [TrophySlotList]
+│   └── TrophyScroller [TrophyScroller]
 └── FailedRoot
     └── FailureMessageText (TextMeshProUGUI)
 
@@ -317,13 +317,13 @@ public class MainRoomStateView : MonoBehaviour
     }
 }
 
-public class TrophySlotList : SlotList<TrophyData>
+public class TrophyScroller : Scroller<TrophyData>
 {
 }
 
 public class TrophyListView : MonoBehaviour
 {
-    [SerializeField] private TrophySlotList trophySlotList;
+    [SerializeField] private TrophyScroller trophyScroller;
 
     internal TrophyRoomModule trophyRoomModule;
 
@@ -331,8 +331,8 @@ public class TrophyListView : MonoBehaviour
     {
         trophyRoomModule.OnTrophiesChanged += RenderTrophies;
 
-        if (!trophySlotList.IsInitialized)
-            trophySlotList.SetSource(trophyRoomModule);
+        if (!trophyScroller.IsInitialized)
+            trophyScroller.SetSource(trophyRoomModule);
 
         RenderTrophies();
     }
@@ -344,7 +344,7 @@ public class TrophyListView : MonoBehaviour
 
     private void RenderTrophies()
     {
-        trophySlotList.Refresh();
+        trophyScroller.Refresh();
     }
 }
 ```

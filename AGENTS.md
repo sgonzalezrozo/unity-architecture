@@ -9,7 +9,7 @@ Normative entry point for coding agents working on a Unity project. Read this fi
 
 ## Scope
 
-The architecture rules cover all client code except gameplay simulation, which is usually written in ECS. Code after a wrapper that translates ECS to view code does follow them, such as a View that uses an ECS-based tween tool. Packages and tools, such as Slot List, don't have to follow them, and how a tool works internally is not a violation.
+The architecture rules cover all client code except gameplay simulation, which is usually written in ECS. Code after a wrapper that translates ECS to view code does follow them, such as a View that uses an ECS-based tween tool. Packages and tools, such as UI Scroller, don't have to follow them, and how a tool works internally is not a violation.
 
 ## What is mandatory
 
@@ -19,7 +19,7 @@ The architecture rules cover all client code except gameplay simulation, which i
 | [MVC](architecture/MVC.md) layer rules | **Mandatory in every project** |
 | [C# standards](architecture/CSHARP_STANDARDS.md): code form, style and format | **Mandatory in every project** |
 | Unity, C#, uGUI, TextMeshPro | Required runtime |
-| Fast IoC, Slot List, Screen System, UI Foundations, Addressables | **Optional.** They change the implementation, never the architecture |
+| Fast IoC, UI Scroller, Screen System, UI Foundations, Addressables | **Optional.** They change the implementation, never the architecture |
 
 Run [capability detection](architecture/OPTIONAL_PACKAGES.md#capability-detection) before generating code, and [editor tool detection](architecture/EDITOR_TOOLS.md#capability-detection) before verifying it.
 
@@ -75,4 +75,4 @@ A task is complete only when it passes the [pre-response checklist](architecture
 
 MUST NOT invent an API. The documented surface of project packages is in the linked documents. For anything else, read the package source or ask. Verify each symbol below before use:
 
-`SlotList<T>`, `SectionedSlotList<TItem, THeader>`, `ISlot<T>`, `IExpandableSlot<T>`, `ISlotList`, `IItemSource<T>`, `ListSource<T>`, `PagedSource<T>`, `IPageLoader<T>`, `IInjectableForChildren`, `BindingRecorder`, `MonoInstaller`, `ScreenManager`, `ScreenDefinition`, `LayerDefinition`, `IScreenShow`, `IScreenHide`, `IScreenLifecycle`, `IScreenParameter<T>`, `ModalResult<T>`, `NavigationResult`, `NavigationHistory`, `ScreenIds`, `ScreenAuthoring`, `IPrefabInstantiator`, `IInjectingPrefabInstantiator`, `BaseClickController`, `ViewStateMachine`.
+`Scroller<T>`, `SectionedScroller<TItem, THeader>`, `ISlot<T>`, `IExpandableSlot<T>`, `IScroller`, `IItemSource<T>`, `ListSource<T>`, `FilteredSource<T>`, `PagedSource<T>`, `IPageLoader<T>`, `SectionedSource<TItem, THeader>`, `BentoLayout`, `ScrollAlign`, `IInjectableForChildren`, `BindingRecorder`, `MonoInstaller`, `ScreenManager`, `ScreenDefinition`, `LayerDefinition`, `IScreenShow`, `IScreenHide`, `IScreenLifecycle`, `IScreenParameter<T>`, `ModalResult<T>`, `NavigationResult`, `NavigationHistory`, `ScreenIds`, `ScreenAuthoring`, `IPrefabInstantiator`, `IInjectingPrefabInstantiator`, `BaseClickController`, `ViewStateMachine`.

@@ -19,4 +19,4 @@
 
 ## Optional
 
-- [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), Slot List, Screen System (not published yet), [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations)
+- [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), UI Scroller, Screen System (not published yet), [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations)
