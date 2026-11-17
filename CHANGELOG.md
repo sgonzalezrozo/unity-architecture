@@ -10,6 +10,7 @@ All notable changes to this project are documented in this file.
 
 ### Changed
 
+- `SCR-10`: an outro plays before `GoTo` and navigates from its completion callback; `OnScreenHidden()` is too late. Keep a background opaque, and restore layers changed by an outro, since they stay loaded.
 - `SCR-09`: a modal or alert can answer its caller with `GoToForResult<T>` and `CloseWithResult(value)`, instead of always writing the result to a Model.
 
 ## [0.3.0] - 2026-11-16
