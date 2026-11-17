@@ -149,6 +149,7 @@ Applies when `screenSystem = true`. All UI lives in one persistent `ScreenSystem
 | `SCR-11` | Screen components that need services are injected by the project's container through Tools Core (`fastIoC`: `internal` fields; VContainer: `builder.UseToolsCore()`; Zenject: `ToolsCoreInstaller`). Layers are injected once, before `Awake`, so components MAY rely on their dependencies in `Awake`. Screen System never requires Fast IoC. |
 | `SCR-12` | Navigation MUST use the generated `ScreenIds` constants instead of string literals, so typos and renamed screens fail at compile time. |
 | `SCR-13` | Screens and layers are created with the wizard or, with editor tools, `ScreenAuthoring` (`CreateScreen`, `CreateLayer`, `AddLayer`, `GetLayers`). Never write their `.prefab` or `.asset` files as text (`EDIT-06`). |
+| `SCR-14` | The splash and the quit confirmation are the screens the `ScreenManager` names (`SplashMain`, `QuitConfirmation` by default). Create them with **Tools > Screen System > Create Special Screens** or, with editor tools, `SpecialScreensCreator.Create()`; redesign their contents but keep their names. The quit modal's buttons call `QuitConfirmationLayer.Quit` and `Cancel`; feature code MUST NOT call `Application.Quit`. On WebGL and iOS, leave out the quit confirmation and turn off **Quit On Back At Root**. |
 
 The package ships its own agent rules in `Documentation~/agent-rules.md` (under `Packages/com.sgonzalezrozo.screen-system/` once installed). Read them before using an API not listed here.
 

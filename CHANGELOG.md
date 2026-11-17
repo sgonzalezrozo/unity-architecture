@@ -4,6 +4,10 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- `SCR-14`: the splash and the quit confirmation are created with **Create Special Screens** (or `SpecialScreensCreator.Create()`), keep their names, and the quit modal uses `QuitConfirmationLayer`; feature code never calls `Application.Quit`.
+
 ### Changed
 
 - `SCR-09`: a modal or alert can answer its caller with `GoToForResult<T>` and `CloseWithResult(value)`, instead of always writing the result to a Model.
