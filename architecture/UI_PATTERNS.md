@@ -232,7 +232,8 @@ In a grid, slots stretch to fill their line. In a bento layout, the layout decid
 | A fixed or responsive grid | **Layout: Grid** (`slotsPerLine`) or **Auto Grid** (`targetSlotSize`) |
 | Tiles of different sizes (featured, strips) | **Layout: Bento** with a Layout JSON; items never choose their size |
 | Sections with headers | `SectionedScroller<TItem, THeader>`; **Section Spacing** adds space before every header except the first |
-| A carousel | **Loop**, **Snap: Item**, **Snap Align: Center** |
+| A carousel | **Loop**, **Snap: Item**, **Snap Align: Center**; scale or fade the centred card from `IViewportPositionListener` on the Slot View |
+| A carousel inside a vertical list | Nothing to set up: drags across a list's axis go to its parent. Each row's Slot Model gives the inner list its source |
 | A pager | **Snap: Page** |
 | An endless feed | A `PagedSource<T>` with an `IPageLoader<T>` |
 
@@ -259,6 +260,7 @@ Grids and bento don't expand. A looping list is a plain list: no grid, bento, se
 | `Expand(index)`, `Collapse(index)`, `IsExpanded(index)`, `ExpandedCount` | Expandable slots |
 | `ScrollToItem(index, align, duration, offset)`, `ScrollToStart(duration)`, `ScrollToEnd(duration)` | Jump or animate to a position (`ScrollAlign`: Start, Center, End, Nearest) |
 | `SetBentoLayout(layout)`, `GetTile(index)` | Bento: change the layout, read where an item sits |
+| `GetViewportPosition(index)`, `IViewportPositionListener` | Where a shown item sits in the viewport (0 centre, ±0.5 edges), for carousel effects |
 | `ForceStopScrolling()`, `Clear()` | Stop momentum, remove all slots |
 | `IsInitialized`, `IsScrolling`, `VisibleStartIndex`, `VisibleEndIndex`, `GetItemOffset(index)`, `GetItemSize(index)`, `ViewportSize`, `ContentSize` | Read state |
 | `ItemExpanded`, `ItemCollapsed`, `Rebuilt`, `ContentSizeChanged`, `SnappedTo`, `PageLoaded`, `PageFailed`, `ReachedEnd` | Read-only events |
