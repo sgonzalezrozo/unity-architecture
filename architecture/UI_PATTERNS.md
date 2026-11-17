@@ -231,7 +231,7 @@ In a grid, slots stretch to fill their line. In a bento layout, the layout decid
 | A list in any direction | **Layout: List**, **Direction** |
 | A fixed or responsive grid | **Layout: Grid** (`slotsPerLine`) or **Auto Grid** (`targetSlotSize`) |
 | Tiles of different sizes (featured, strips) | **Layout: Bento** with a Layout JSON; items never choose their size |
-| Sections with headers | `SectionedScroller<TItem, THeader>`; **Section Spacing** adds space before every header except the first |
+| Sections with headers | `SectionedScroller<TItem, THeader>`; **Section Spacing** adds space before every header except the first, **Header To Content Spacing** between a header and its content |
 | A carousel | **Loop**, **Snap: Item**, **Snap Align: Center**; scale or fade the centred card from `IViewportPositionListener` on the Slot View |
 | A carousel inside a vertical list | Nothing to set up: drags across a list's axis go to its parent. Each row's Slot Model gives the inner list its source |
 | A pager | **Snap: Page** |
