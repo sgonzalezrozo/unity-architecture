@@ -7,6 +7,7 @@ All notable changes to this project are documented in this file.
 ### Added
 
 - Lists: a layout choices table (list, grid, bento, sections, carousel, pager, endless feed) and what each layout can't combine with; bento tiles and Section Spacing.
+- Lists: bento layouts can loop (bento carousels).
 - Lists: carousel effects with `IViewportPositionListener` and `GetViewportPosition`, and nested lists (a carousel in a vertical list) with no setup.
 - `LIST-08`: a bento tile's size comes from the layout (Layout JSON or `SetBentoLayout`), never from the item or the slot.
 - `SCR-14`: the splash and the quit confirmation are created with **Create Special Screens** (or `SpecialScreensCreator.Create()`), keep their names, and the quit modal uses `QuitConfirmationLayer`; feature code never calls `Application.Quit`.
