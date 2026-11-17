@@ -237,7 +237,7 @@ In a grid, slots stretch to fill their line. In a bento layout, the layout decid
 | A pager | **Snap: Page** |
 | An endless feed | A `PagedSource<T>` with an `IPageLoader<T>` |
 
-Grids and bento don't expand. A looping list is a list or a bento layout (each round starts the bento layout again): no grid, sections, paged source or expanding. A sectioned list doesn't page.
+Grids and bento don't expand. A looping list is a list or a bento layout (each round starts the bento layout again): no grid, sections or expanding. With a `PagedSource`, Loop uses the first page as the whole list and loads no more pages. A sectioned list doesn't page.
 
 | ID | Rule |
 |---|---|
