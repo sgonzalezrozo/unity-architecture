@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Stop hook: an agent can't finish with a broken build.
-# Runs scripts/verify.sh when Unity files changed, and sends failures back to the agent.
+# When Unity files changed, it checks the project and sends failures back to the agent:
+# with the Editor closed it runs scripts/verify.sh (batch mode); with the Editor open, scripts/verify-editor.sh,
+# which reads the compile and test results the Editor writes (the agent compiles and tests through a Unity MCP).
 set -u
 
 MAX_ATTEMPTS=3
@@ -15,8 +17,21 @@ cat > /dev/null
 cd "$ROOT" || exit 0
 mkdir -p "$STATE"
 
+# Unity holds Temp/UnityLockfile while the project is open. lsof tells a live lock from one left by a crash.
+editor_open() {
+    local lock="$ROOT/Temp/UnityLockfile"
+    [ -f "$lock" ] || return 1
+    if command -v lsof >/dev/null 2>&1; then
+        lsof "$lock" >/dev/null 2>&1
+        return $?
+    fi
+    return 0
+}
+
 notify() {
-    printf '{"systemMessage": "%s"}\n' "$1"
+    local message
+    message="$(printf '%s' "$1" | tr '\n' ' ' | sed 's/\\/\\\\/g; s/"/\\"/g')"
+    printf '{"systemMessage": "%s"}\n' "$message"
 }
 
 fingerprint() {
@@ -37,14 +52,20 @@ if [ "$CURRENT" = "$(cat "$PASSED_FILE" 2>/dev/null)" ]; then
     exit 0
 fi
 
-OUTPUT="$(scripts/verify.sh 2>&1)"
+if editor_open && [ -x scripts/verify-editor.sh ]; then
+    VERIFY="scripts/verify-editor.sh"
+else
+    VERIFY="scripts/verify.sh"
+fi
+
+OUTPUT="$("$VERIFY" 2>&1)"
 CODE=$?
 
 case "$CODE" in
     0)
         echo "$CURRENT" > "$PASSED_FILE"
         rm -f "$ATTEMPTS_FILE"
-        notify "Verify passed."
+        notify "$(echo "$OUTPUT" | tail -1)"
         exit 0
         ;;
     1)
@@ -57,13 +78,13 @@ case "$CODE" in
 
         echo "$ATTEMPTS" > "$ATTEMPTS_FILE"
         {
-            echo "scripts/verify.sh failed (attempt $ATTEMPTS of $MAX_ATTEMPTS). Fix this before finishing:"
+            echo "$VERIFY failed (attempt $ATTEMPTS of $MAX_ATTEMPTS). Fix this before finishing:"
             echo "$OUTPUT"
         } >&2
         exit 2
         ;;
     *)
-        notify "Verify couldn't run, so this change isn't checked. See Logs/verify/."
+        notify "$VERIFY couldn't check this change: $(echo "$OUTPUT" | head -1 | tr -d '"')"
         exit 0
         ;;
 esac

@@ -16,7 +16,7 @@ Run this with [package capability detection](OPTIONAL_PACKAGES.md#capability-det
 
 Unity's in-Editor MCP server in the AI Assistant package (`com.unity.ai.assistant`) is deprecated by Unity. Treat it as an `editorBridge`, but don't suggest it: the Unity CLI replaces it.
 
-A bridge and the verify script can't both own the project. `verify.sh` needs the Editor closed, and a bridge needs it open. Use the bridge while the Editor is open.
+A bridge and the verify script can't both own the project. `verify.sh` needs the Editor closed, and a bridge needs it open. While the Editor is open, the Editor itself writes its compile and test results to `Logs/verify/` (from `Assets/Editor/UnityArchitecture`, which `install.sh` installs), and `scripts/verify-editor.sh` reads them.
 
 ## Rules
 
@@ -31,6 +31,7 @@ A bridge and the verify script can't both own the project. `verify.sh` needs the
 | `EDIT-07` | With `editorBridge`, a new screen's Play mode check (`TEST-10`) is automated: enter Play mode, open the screen, read the Console, exit. Report it as verified only if all of that ran. |
 | `EDIT-08` | Bridge actions that add or remove packages, change Project Settings, delete assets or start a build MUST follow [When to ask](AGENT_WORKFLOW.md#when-to-ask). |
 | `EDIT-09` | Prefer a package's own validation tool or status file to the agent's judgment of that package (`DET-01`). |
+| `EDIT-10` | With the Editor open, after changing scripts the agent MUST ask the Editor to compile (`refresh_unity` with MCP for Unity): an Editor without focus doesn't refresh on its own. Then it MUST run the EditMode tests in the Editor (`run_tests`, then `get_test_job` until it finishes) before it finishes. |
 
 ## Verification order
 
@@ -40,16 +41,23 @@ Run the cheapest deterministic check first, and stop at the first failure:
 compile + analyzers → EditMode tests → generation status → Play mode check → report
 ```
 
-| Step | With `editorBridge` | With `verifyScript` | With neither |
+| Step | With `editorBridge` (Editor open) | With `verifyScript` (Editor closed) | With neither |
 |---|---|---|---|
-| Compile and analyzers | Read the Console after the compile | `verify.sh`, exit code `1` lists errors | Not verified |
-| EditMode tests | Run them through the bridge | `verify.sh` | Not verified |
+| Compile and analyzers | `refresh_unity`, then read the Console; `verify-editor.sh` reads the compile result | `verify.sh`, exit code `1` lists errors | Not verified |
+| EditMode tests | `run_tests` through the bridge; `verify-editor.sh` reads the result | `verify.sh` | Not verified |
 | Generation status | Read `GenerationStatus.json` | `verify.sh` reads it | Read the file. It may be stale |
 | Play mode check | Automate it (`EDIT-07`) | Manual step for the developer | Manual step for the developer |
 
 ## Automatic verification
 
-`verify.sh` and a Claude Code Stop hook stop an agent from finishing with a broken build. Copy them from [`templates/`](../templates) with `templates/scripts/install.sh`, as the [README](../README.md#use-it-in-a-project) shows. The hook runs only when `Assets`, `Packages` or `ProjectSettings` changed, sends failures back to the agent, and gives up after three attempts in a row.
+A Claude Code Stop hook stops an agent from finishing with a broken build. `templates/scripts/install.sh` installs it, as the [README](../README.md#use-it-in-a-project) shows. It runs only when `Assets`, `Packages` or `ProjectSettings` changed, sends failures back to the agent, and gives up after three attempts in a row.
+
+| Editor | The hook runs | What it checks |
+|---|---|---|
+| Closed | `scripts/verify.sh` | Compiles and runs the EditMode tests in batch mode |
+| Open | `scripts/verify-editor.sh` | Reads `Logs/verify/editor-compile.json` and `editor-tests.json`, written by the Editor. Asks the agent to compile (`refresh_unity`) when a script changed after the last compile, and to run the tests when they're older than the compile |
+
+Both check Fast IoC's `GenerationStatus.json` and use the same exit codes: `0` passed, `1` failed, `2` couldn't run.
 
 ## Reporting back
 

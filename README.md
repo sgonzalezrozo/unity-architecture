@@ -78,6 +78,9 @@ Run it from a terminal; double-clicking a `.sh` file opens it in an editor on mo
 | `.cursor/rules/unity-architecture.mdc` | Cursor | The same, for Cursor |
 | `.editorconfig` | Rider, Visual Studio | Formatting, `var`, braces and naming |
 | `scripts/verify.sh` | Agents, CI | Compiles in batch mode, runs EditMode tests, checks Fast IoC generation |
+| `scripts/verify-editor.sh` | Agents, the hook | Checks the project while the Editor is open, from the results the Editor writes |
+| `Assets/Editor/UnityArchitecture/` | Unity | Writes each compile and test run in the open Editor to `Logs/verify/` |
+| `.mcp.json` | Claude Code | Registers a local Unity MCP server (MCP for Unity) on `localhost:8080`. Never replaced |
 | `.claude/hooks/verify-on-stop.sh`, `.claude/settings.json` | Claude Code | Runs `verify.sh` when the agent finishes and sends failures back. Also allows `verify.sh` and read-only `git` commands, so Claude doesn't ask for each one |
 | `Assets/Client/Analyzers/UnityArchitecture.Analyzers.dll` | Unity | The [analyzers](analyzers): the mechanical rules become compile errors. Prebuilt, so no .NET SDK needed |
 | `Assets/Client/Client.asmdef` | Unity | Only when `Assets/Client` doesn't exist yet. The analyzers check this assembly only, not third-party code |
@@ -120,7 +123,7 @@ One command gets the latest rules and refreshes the files at the root:
 bash .ai/templates/scripts/update.sh
 ```
 
-It updates the `.ai` submodule from GitHub, then runs `install.sh --update`: the copies that came from `.ai` (Copilot, Rider and Cursor rules, `.editorconfig`, `verify.sh`, the hook and the analyzers) are replaced when they changed, and listed. It never touches `AGENTS.md`, `CLAUDE.md` or `.claude/settings.json`, which are yours. If you edited a copied template, the update replaces your edit: keep project rules in `AGENTS.md` instead.
+It updates the `.ai` submodule from GitHub, then runs `install.sh --update`: the copies that came from `.ai` (Copilot, Rider and Cursor rules, `.editorconfig`, `verify.sh`, `verify-editor.sh`, the hook, the Editor scripts and the analyzers) get the new version, and are listed. A copy you changed in your project, such as a hook that also watches local packages, is kept: the script recognizes an unchanged copy because it matches an earlier version in `.ai`'s history, and lists the changed ones for you to merge by hand. It never touches `AGENTS.md`, `CLAUDE.md`, `.claude/settings.json` or `.mcp.json`, which are yours.
 
 Then commit, so everyone on the project gets the same version:
 
@@ -132,6 +135,16 @@ git commit -m "Update Unity Architecture Agents"
 What changed is in `.ai/CHANGELOG.md`. Teammates get it with `git pull` followed by `git submodule update --init`.
 
 The files are copies rather than symbolic links because links need extra setup on Windows, and Copilot and Rider don't always follow them.
+
+### Work with the Editor open (MCP for Unity)
+
+An agent can also work while the project is open in Unity, through a local Unity MCP server, such as [MCP for Unity](https://github.com/CoplayDev/unity-mcp) (by Coplay). Everything runs on your machine: Claude Code talks to the server on `localhost`, and the server talks to the open Editor. There's no other server or pipeline to set up.
+
+1. In Unity, **Window > Package Manager > + > Add package from git URL**: `https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity` (needs Python 3.10+ and `uv`).
+2. `install.sh` already wrote `.mcp.json`, which registers the server for Claude Code as `unityMCP` on `http://localhost:8080/mcp`, MCP for Unity's default. Open Claude Code in the project and approve the server.
+3. Keep the Editor open while the agent works.
+
+With the Editor open, the Stop hook can't run `verify.sh`, because batch mode can't open a project the Editor has open. The Editor scripts that `install.sh` puts in `Assets/Editor/UnityArchitecture` write each compile and test run to `Logs/verify/`, and the hook reads them with `scripts/verify-editor.sh`. If a script changed after the last compile, or the tests are older than it, the hook asks the agent to compile (`refresh_unity`) or run the tests (`run_tests`) through the MCP server before finishing.
 
 ### How verification works
 

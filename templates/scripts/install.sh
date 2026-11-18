@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # Puts the files assistants and tools read from fixed paths at the project root, next to the .ai submodule:
-# AGENTS.md, CLAUDE.md, .editorconfig, Copilot, Rider and Cursor rules, scripts/verify.sh and the Claude Code hook.
+# AGENTS.md, CLAUDE.md, .editorconfig, Copilot, Rider and Cursor rules, scripts/verify.sh, scripts/verify-editor.sh,
+# the Claude Code hook, the Unity MCP config (.mcp.json) and the Editor reporters in Assets/Editor/UnityArchitecture.
 #
 # Usage, from the project root (the folder that holds Assets and .ai):
 #   bash .ai/templates/scripts/install.sh            creates the files that are missing, keeps the rest
-#   bash .ai/templates/scripts/install.sh --update   also refreshes the copied templates after updating .ai
+#   bash .ai/templates/scripts/install.sh --update   also refreshes copies nobody changed after updating .ai
 #   add --verify to run scripts/verify.sh at the end without asking, or --no-verify to skip it
 #
 # It also installs the prebuilt analyzers in Assets/Client/Analyzers, creating Assets/Client/Client.asmdef
-# when Assets/Client doesn't exist yet. AGENTS.md, CLAUDE.md and .claude/settings.json are never replaced.
+# when Assets/Client doesn't exist yet. AGENTS.md, CLAUDE.md, .claude/settings.json and .mcp.json are never replaced.
 set -u
 
 UPDATE=false
@@ -34,15 +35,31 @@ if [ ! -d "$ROOT/Assets" ] || [ ! -d "$ROOT/ProjectSettings" ]; then
     exit 2
 fi
 
-created=(); updated=(); kept=()
+created=(); updated=(); kept=(); customized=()
+
+# True when <file> has the exact content of an earlier version of <template> in the .ai repository's history,
+# so it's an old copy nobody edited. Without that history, nothing counts as unedited.
+is_unedited_copy() {
+    local file="$1" template="${2#"$AI_DIR"/}" blob revision
+    blob="$(git hash-object "$file" 2>/dev/null)" || return 1
+    for revision in $(git -C "$AI_DIR" rev-list HEAD -- "$template" 2>/dev/null); do
+        [ "$(git -C "$AI_DIR" rev-parse "$revision:$template" 2>/dev/null)" = "$blob" ] && return 0
+    done
+    return 1
+}
 
 # copy <destination relative to root> <source file> [executable]
-# A copied template: created when missing, refreshed with --update when it differs.
+# A copied template: created when missing. --update refreshes it when it's an unedited earlier version of the
+# template, and keeps it when someone changed it, so project customizations survive updates.
 copy() {
     local dest="$ROOT/$1"
     if [ -e "$dest" ]; then
         if [ "$UPDATE" = false ] || cmp -s "$2" "$dest"; then
             kept+=("$1")
+            return
+        fi
+        if ! is_unedited_copy "$dest" "$2"; then
+            customized+=("$1")
             return
         fi
         cp "$2" "$dest"
@@ -87,7 +104,27 @@ copy ".github/copilot-instructions.md" "$TEMPLATES/copilot-instructions.md"
 copy ".aiassistant/rules/project.md" "$TEMPLATES/rider-project-rule.md"
 copy ".cursor/rules/unity-architecture.mdc" "$TEMPLATES/cursor-rule.mdc"
 copy "scripts/verify.sh" "$TEMPLATES/scripts/verify.sh" executable
+copy "scripts/verify-editor.sh" "$TEMPLATES/scripts/verify-editor.sh" executable
 copy ".claude/hooks/verify-on-stop.sh" "$TEMPLATES/claude/hooks/verify-on-stop.sh" executable
+
+# Editor scripts that write compile and test results to Logs/verify/, so the hook can check the project while the
+# Editor is open, as it is when an agent works through a Unity MCP server.
+EDITOR_TOOLS="$TEMPLATES/unity/Editor/UnityArchitecture"
+while IFS= read -r source; do
+    copy "Assets/Editor/UnityArchitecture/${source#"$EDITOR_TOOLS"/}" "$source"
+done < <(find "$EDITOR_TOOLS" -type f \( -name '*.cs' -o -name '*.asmdef' \) | sort)
+
+# Registers the Unity MCP server (MCP for Unity, by Coplay) for Claude Code, on its default local address.
+# It runs only on this machine and only while the Editor is open with the package installed.
+if [ -e "$ROOT/.mcp.json" ]; then
+    kept+=(".mcp.json")
+    if ! grep -q '"unityMCP"' "$ROOT/.mcp.json"; then
+        MCP_NOTE="Your .mcp.json was kept and has no unityMCP server. Add the one in .ai/templates/mcp.json to use a Unity MCP server."
+    fi
+else
+    cp "$TEMPLATES/mcp.json" "$ROOT/.mcp.json"
+    created+=(".mcp.json")
+fi
 
 if [ -e "$ROOT/.claude/settings.json" ]; then
     kept+=(".claude/settings.json")
@@ -141,12 +178,13 @@ print_list() {
 }
 print_list "Created:" ${created[@]+"${created[@]}"}
 print_list "Updated from .ai:" ${updated[@]+"${updated[@]}"}
+print_list "Changed in this project, kept (compare with .ai/templates and merge what you want by hand):" ${customized[@]+"${customized[@]}"}
 if [ "$UPDATE" = true ]; then
     print_list "Already up to date, or yours to edit:" ${kept[@]+"${kept[@]}"}
 else
     print_list "Already there, kept (--update refreshes the copied templates):" ${kept[@]+"${kept[@]}"}
 fi
-for note in "${SETTINGS_NOTE:-}" "${ANALYZER_NOTE:-}"; do
+for note in "${SETTINGS_NOTE:-}" "${MCP_NOTE:-}" "${ANALYZER_NOTE:-}"; do
     if [ -n "$note" ]; then
         echo
         echo "$note"
@@ -174,4 +212,6 @@ echo "Next:"
 echo "  1. Commit these files and .ai in your project."
 echo "  2. In Rider, open .aiassistant/rules/project.md and set the rule's type to Always."
 echo "  3. Write rules that only apply to this project in AGENTS.md."
-echo "  4. Ask Claude for a feature. Keep the project closed in Unity while it works, so the hook can verify."
+echo "  4. Ask Claude for a feature. With the project closed in Unity, the hook verifies in batch mode."
+echo "     With it open, it reads the Editor's results: install MCP for Unity so the agent can compile and test there"
+echo "     (Package Manager > Add package from git URL: https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity)."

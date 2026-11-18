@@ -6,7 +6,13 @@
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
-      "Bash(git show:*)"
+      "Bash(git show:*)",
+      "Bash(scripts/verify-editor.sh)",
+      "Bash(bash scripts/verify-editor.sh)",
+      "mcp__unityMCP__read_console",
+      "mcp__unityMCP__refresh_unity",
+      "mcp__unityMCP__run_tests",
+      "mcp__unityMCP__get_test_job"
     ]
   },
   "hooks": {

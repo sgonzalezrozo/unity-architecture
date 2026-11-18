@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Working with the Editor open, through a local Unity MCP server such as MCP for Unity (Coplay). `install.sh` writes `.mcp.json`, which registers the server on `localhost:8080`, and puts Editor scripts in `Assets/Editor/UnityArchitecture` that write every compile and test run to `Logs/verify/`. The test reporter only compiles when the Test Framework package is installed.
+- `scripts/verify-editor.sh` checks the project from those results. The Stop hook uses it when the Editor is open (Unity holds `Temp/UnityLockfile`) and `verify.sh` when it's closed. It asks the agent to compile (`refresh_unity`) when a script changed after the last compile, and to run the tests (`run_tests`) when they're older than it. Script changes in local packages (`file:` entries in `Packages/manifest.json`) count too, except in folders ending in `~`.
+- `EDIT-10`: with the Editor open, the agent compiles and runs the EditMode tests in the Editor before finishing.
+- The Claude Code settings template allows `verify-editor.sh` and the read-only Unity MCP tools `read_console`, `refresh_unity`, `run_tests` and `get_test_job`.
+- `install.sh --update` keeps a copied template you changed in your project, such as a customized hook or `verify.sh`, and lists it to merge by hand. It updates a copy only when it matches an earlier version of the template in the `.ai` repository's history, so nobody edited it. Before, it replaced any copy that differed.
+- The Stop hook escapes its messages, so text with quotes or backslashes from the verify scripts stays valid JSON.
+
 ## [0.4.1] - 2026-11-17
 
 ### Added
