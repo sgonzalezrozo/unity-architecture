@@ -6,7 +6,7 @@ An instruction is a request, not a guarantee. These rules fail the build, whethe
 
 | Rule | Checklist item | Fails when |
 |---|---|---|
-| `UA0001` | 1, 2 | A Model knows a View, a Controller or a Unity component, or a View or Controller knows a View or Controller |
+| `UA0001` | 1, 2 | A Model knows a View, a Controller or a Unity component, a Controller knows a View or Controller, or a View knows a Controller. A View may know its inner Views (`VIEW-03`) |
 | `UA0002` | 2 | A View implements an `EventSystems` input interface |
 | `UA0003` | 3 | A Controller serializes a reference to a Unity object |
 | `UA0004` | 4 | An event has parameters |
@@ -21,6 +21,7 @@ An instruction is a request, not a guarantee. These rules fail the build, whethe
 | `UA0013` | 12 | A Model has a serialized field |
 | `UA0014` | 12 | Models depend on each other in a cycle |
 | `UA0015` | 8 | A method, constructor, property, field, event or enum member has a `///` comment. Types may have one |
+| `UA0016` | 2 | A View has more than 5 serialized fields (`VIEW-07`) |
 
 Layers come from class names: `*Model` and `*Module`, `*View`, and `*Controller`. A `BaseClickController` subclass also counts as a Controller, if the project has UI Foundations. `TMP_InputField` is allowed.
 

@@ -6,6 +6,7 @@ Normative entry point for coding agents working on a Unity project. Read this fi
 - **Rule IDs:** every rule has a stable ID. Cite the ID when you report or discuss a violation.
 - **Source of truth:** each rule has one home. If two documents disagree, the document routed for that topic wins, and the conflict is a defect to report.
 - **Human summary:** [Developer overview](architecture/DEVELOPER_OVERVIEW.md).
+- **Deliberate decisions:** some rules differ from *Clean Code* on purpose. They're listed in the [Developer overview](architecture/DEVELOPER_OVERVIEW.md#10-deliberate-decisions); don't change them to match it.
 
 ## Scope
 
@@ -29,7 +30,7 @@ Strict MVC. Code that violates an invariant is incorrect even if it compiles and
 
 | ID | Rule | Enforced by |
 |---|---|---|
-| `ARCH-01` | Dependencies are one-way. A Model MAY reference only Models and configuration assets. A View MAY reference only Models and rendering components. A Controller MAY reference only Models and input interfaces. Views and Controllers MUST NOT reference each other. | `UA0001` |
+| `ARCH-01` | Dependencies are one-way. A Model MAY reference only Models and configuration assets. A View MAY reference only Models, rendering components and its inner Views (`VIEW-03`). A Controller MAY reference only Models and input interfaces. Views and Controllers MUST NOT reference each other. | `UA0001` |
 | `ARCH-02` | Models own all data and state. Views and Controllers MUST hold no state beyond cached references. | Review |
 | `ARCH-03` | Views render and Controllers receive input. A View MUST NOT handle input or call a Model command. A Controller MUST NOT change anything visual. | `UA0002`, `UA0003`, review |
 | `ARCH-04` | State flows by pull. If A references B, A reads from B and B never sends data to A. If A knows B, A MUST do all the work to get what it needs from B, and B MUST NOT prepare, format or deliver data for A. Events MUST have no parameters: they signal a change, and the listener reads the Model. | `UA0004`, review |
@@ -53,6 +54,7 @@ Input event → Controller → Model command → state change → parameterless 
 | Clicks, visual states, tabs, lists, layouts | [UI patterns](architecture/UI_PATTERNS.md) |
 | Any dependency on a package, or code that differs by package | [Optional packages](architecture/OPTIONAL_PACKAGES.md) |
 | New feature or screen, file location, naming, prefab hierarchy | [Feature structure](architecture/FEATURE_STRUCTURE.md) |
+| Building, reviewing or describing a UI prefab | [Prefabs](architecture/PREFABS.md) |
 | Reference acquisition, Fast IoC bindings | [Dependency injection](architecture/DEPENDENCY_INJECTION.md) |
 | Backend calls | [Backend integration](architecture/BACKEND_INTEGRATION.md) |
 | C# style, performance, async, logging, tests | [C# standards](architecture/CSHARP_STANDARDS.md) |

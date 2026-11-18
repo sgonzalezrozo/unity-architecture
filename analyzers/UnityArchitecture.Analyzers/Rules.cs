@@ -14,7 +14,7 @@ namespace UnityArchitecture.Analyzers
         public static readonly DiagnosticDescriptor Knowledge = Create(
             "UA0001",
             "A layer references something it must not know",
-            "{0} must not know {1}. Models know only Models, and Views and Controllers know only Models. Read the Model instead.");
+            "{0} must not know {1}. Models know only Models, Controllers know only Models, and Views know Models and their inner Views. Read the Model instead.");
 
         public static readonly DiagnosticDescriptor ViewHandlesInput = Create(
             "UA0002",
@@ -81,6 +81,11 @@ namespace UnityArchitecture.Analyzers
             "A member has a /// comment",
             "Remove the /// comment on {0}. Only types may have a /// summary: let the name explain, and use a // comment only for what the code can't say.");
 
+        public static readonly DiagnosticDescriptor TooManyViewFields = Create(
+            "UA0016",
+            "A View has too many serialized fields",
+            "{0} has {1} serialized fields; a View has {2} at most. Group its components into inner Views and serialize those (VIEW-07).");
+
         public static readonly DiagnosticDescriptor ModelCycle = new DiagnosticDescriptor(
             "UA0014",
             "Models form a dependency cycle",
@@ -105,7 +110,8 @@ namespace UnityArchitecture.Analyzers
             ConditionalAccessOnUnityObject,
             SerializedModelField,
             ModelCycle,
-            MemberDocumentationComment);
+            MemberDocumentationComment,
+            TooManyViewFields);
 
         private static DiagnosticDescriptor Create(string id, string title, string message)
         {

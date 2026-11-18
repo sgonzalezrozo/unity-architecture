@@ -71,7 +71,7 @@ Agent output varies between runs. A deterministic tool gives the same result eve
 Run this before returning code. Item numbers are stable: the [analyzers](../analyzers) refer to them.
 
 1. Does any Model know a View, a Controller or a Unity component?
-2. Does any View handle input, call a command, or know another View or a service?
+2. Does any View handle input, call a command, or know a service? Does an inner View read a Model or subscribe, or does a View reach into a nested prefab or have more than 5 serialized fields?
 3. Does any Controller change a visual, hold a rule, or serialize a reference?
 4. Does any event have parameters? Is anything pushed that could be pulled?
 5. Is there a `Button`, `Toggle`, `Slider`, `Dropdown`, `onClick` or `Initialize(model)`?
@@ -92,17 +92,17 @@ Without an [editor bridge](EDITOR_TOOLS.md#capability-detection), an agent can't
 
 | ID | Rule |
 |---|---|
-| `HAND-01` | List every object with its parent, anchors, size, position and components. |
-| `HAND-02` | State Raycast Target for every `Graphic`. Only an input object has it on. |
+| `HAND-01` | List every object with its parent, anchors, pivot, size, position, scale and components, and mark the containers filled at runtime (`PREFAB-08`). |
+| `HAND-02` | State Raycast Target for every `Graphic`. Only `Action` and a blocking `Background` have it on (`INPUT-03`, `PREFAB-14`). |
 | `HAND-03` | List every serialized field and what to assign to it. |
 | `HAND-04` | List the setup a first run needs, such as TMP Essentials or the EventSystem input module. |
 | `HAND-05` | Say what to test in Play mode, and report Play mode as not verified. |
 
 ```
-| Object | Parent | Anchors | Size, position | Components | Raycast Target |
-|---|---|---|---|---|---|
-| CoinBalance | Canvas | stretch | fills parent | none | n/a |
-| BalanceText | CoinBalance | top center | 400x100, y -120 | TextMeshProUGUI, CoinBalanceView | off |
+| Object | Parent | Anchors | Pivot | Size, position | Scale | Components | Raycast Target | Runtime container |
+|---|---|---|---|---|---|---|---|---|
+| CoinBalance | Canvas | stretch | 0.5, 0.5 | fills parent | 1 | CoinBalanceModel, CoinBalanceView | n/a | no |
+| BalanceText | CoinBalance | top center | 0.5, 1 | 400x100, y -120 | 1 | TextMeshProUGUI | off | no |
 ```
 
 ## Reporting back

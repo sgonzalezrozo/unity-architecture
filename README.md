@@ -18,6 +18,7 @@ Unity Architecture Agents is a free, open-source `AGENTS.md` and `CLAUDE.md` rul
 | [Dependency injection](architecture/DEPENDENCY_INJECTION.md) | Bindings, installers and references |
 | [Backend integration](architecture/BACKEND_INTEGRATION.md) | How features talk to a backend |
 | [UI patterns](architecture/UI_PATTERNS.md) | Clickable elements, visual states, tabs, lists and layouts |
+| [Prefabs](architecture/PREFABS.md) | The shape of a UI prefab: root, `Action`, backgrounds, anchors, masks and the `PREFAB-xx` rules |
 | [Optional packages](architecture/OPTIONAL_PACKAGES.md) | How an agent detects optional packages and adapts its code |
 | [C# standards](architecture/CSHARP_STANDARDS.md) | Style, performance, async, logging and tests |
 | [Editor tools](architecture/EDITOR_TOOLS.md) | How an agent verifies its work with Unity MCP, the Unity CLI or `verify.sh` |

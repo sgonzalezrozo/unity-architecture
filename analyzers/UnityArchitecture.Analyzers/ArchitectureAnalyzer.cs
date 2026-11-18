@@ -13,6 +13,7 @@ namespace UnityArchitecture.Analyzers
         private const string INPUT_FIELD = "TMPro.TMP_InputField";
         private const string COMPONENT = "UnityEngine.Component";
         private const string SERIALIZE_FIELD = "UnityEngine.SerializeField";
+        private const int MAX_VIEW_SERIALIZED_FIELDS = 5;
         private const string EVENT_SYSTEMS = "UnityEngine.EventSystems";
         private const string LINQ = "System.Linq";
 
@@ -61,10 +62,26 @@ namespace UnityArchitecture.Analyzers
                 return;
 
             if (UnityTypes.IsView(type))
+            {
                 ReportInputInterfaces(context, type);
+                ReportTooManySerializedFields(context, type);
+            }
 
             foreach (ISymbol member in type.GetMembers())
                 AnalyzeMemberKnowledge(context, type, member);
+        }
+
+        private static void ReportTooManySerializedFields(SymbolAnalysisContext context, INamedTypeSymbol type)
+        {
+            int count = 0;
+            foreach (ISymbol member in type.GetMembers())
+            {
+                if (member is IFieldSymbol field && !field.IsStatic && HasSerializeField(field))
+                    count++;
+            }
+
+            if (count > MAX_VIEW_SERIALIZED_FIELDS)
+                context.ReportDiagnostic(Diagnostic.Create(Rules.TooManyViewFields, type.Locations[0], type.Name, count, MAX_VIEW_SERIALIZED_FIELDS));
         }
 
         private static void ReportInputInterfaces(SymbolAnalysisContext context, INamedTypeSymbol type)
@@ -129,7 +146,11 @@ namespace UnityArchitecture.Analyzers
                 return isViewOrController || isOtherComponent;
             }
 
-            return (UnityTypes.IsView(owner) || UnityTypes.IsController(owner)) && isViewOrController;
+            // A root View MAY know its inner Views (VIEW-03), so a View may reference a View, never a Controller.
+            if (UnityTypes.IsView(owner))
+                return UnityTypes.IsController(referenced);
+
+            return UnityTypes.IsController(owner) && isViewOrController;
         }
 
         private static void AnalyzeEvent(SymbolAnalysisContext context)

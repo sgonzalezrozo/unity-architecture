@@ -6,6 +6,9 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
+- `architecture/PREFABS.md` with `PREFAB-01` to `PREFAB-14`: the root's transform, anchors, pivot, TextMeshPro, no `Animator`, no persistent `UnityEvent`, `RectMask2D`, empty runtime containers, the `Action` hitbox, screen and modal shape, nested Canvases, depth, and a `Background` with raycast on that blocks touches under an element with an `Action` or a screen. `AGENTS.md` routes prefab work to it.
+- `VIEW-07` and `UA0016`: a View has at most 5 serialized fields. With more, it delegates to inner Views placed near the components they set, and it serializes components and inner Views, not assets.
+- Deliberate decisions in the Developer overview: where the rules differ from *Clean Code* on purpose, linked from `AGENTS.md` so agents don't "fix" them.
 - `UA0015`: a `///` comment on a method, constructor, property, field, event or enum member fails the build. A class or other type may still have a short summary. It catches `///` whether or not the compiler parses documentation comments.
 - Working with the Editor open, through a local Unity MCP server such as MCP for Unity (Coplay). `install.sh` writes `.mcp.json`, which registers the server on `localhost:8080`, and puts Editor scripts in `Assets/Editor/UnityArchitecture` that write every compile and test run to `Logs/verify/`. The test reporter only compiles when the Test Framework package is installed.
 - `scripts/verify-editor.sh` checks the project from those results. The Stop hook uses it when the Editor is open (Unity holds `Temp/UnityLockfile`) and `verify.sh` when it's closed. It asks the agent to compile (`refresh_unity`) when a script changed after the last compile, and to run the tests (`run_tests`) when the last run started before the newest script change. It doesn't compare them with the last compile, since Unity compiles again after a test run. Script changes in local packages (`file:` entries in `Packages/manifest.json`) count too, except in folders ending in `~`.
@@ -16,6 +19,9 @@ All notable changes to this project are documented in this file.
 
 ### Changed
 
+- `VIEW-03`: each scope has one root View, on its root, and only it subscribes to the Model. It may tell inner Views what to show, and they set their own components without reading the Model or subscribing. No View reaches into a nested prefab, its root View included. `UA0001` now lets a View reference a View, and still fails when a View references a Controller. `VIEW-01` applies to root Views.
+- `INPUT-01`: the input object is always called `Action`, and its Controller class is named after what it does (`{Action}Controller`), whatever the hierarchy. `INPUT-03` allows a blocking `Background` with raycast on (`PREFAB-14`).
+- The prefab handoff (`HAND-01`) lists pivot, scale and runtime containers too, and the examples use `Action`.
 - The Stop hook only compiles on most stops. It runs the tests at most every two hours, and only when something changed since they last passed, so verifying doesn't slow down every change. `VERIFY_TESTS_EVERY_SECONDS` changes the interval, and a passing test run in the open Editor counts as the last run. `verify.sh` and `verify-editor.sh` take `VERIFY_COMPILE_ONLY=1` to only compile. The full suite runs only when the hook asks for it.
 - `TEST-11`: before finishing a change, the agent runs the tests directly related to it, existing and new, and they must pass. `EDIT-10` and the Definition of Done point to it. `verify.sh` takes `VERIFY_TEST_FILTER` to run only those tests with the Editor closed.
 - `install.sh` no longer creates `Assets/Client/Client.asmdef`: Unity warns about an assembly definition with no scripts, and the project's code may live in other folders. It installs the analyzers only when that file exists, and otherwise says how to add it.

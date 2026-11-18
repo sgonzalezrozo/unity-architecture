@@ -104,8 +104,9 @@ public class LivesView : MonoBehaviour
 }
 ```
 
-- Subscribe and render in `OnEnable`. Unsubscribe in `OnDisable`.
-- Serializes rendering components only. Never calls a Model command. Never references another View.
+- One root View per scope, on its root. It subscribes and renders in `OnEnable`, and unsubscribes in `OnDisable`.
+- At most 5 serialized fields: rendering components, and inner Views when it needs more. An inner View only sets its components; it never reads the Model or subscribes.
+- Never calls a Model command. Never reaches into a nested prefab, which is another scope.
 - `Update()` only for values that change with time, such as countdowns, and throttled.
 
 ### Controller
@@ -129,7 +130,7 @@ public class LoseLifeController : MonoBehaviour, IPointerClickHandler
 }
 ```
 
-- One Controller per action, placed on an `{Action}Controller` child of the element it acts on.
+- One Controller per action, named `{Action}Controller`, on a child called `Action` of the element it acts on.
 - Implement `IPointerClickHandler`, `IPointerDownHandler`, `IDragHandler` and so on. If the project has UI Foundations, clicks can use `BaseClickController`: see [Optional packages](OPTIONAL_PACKAGES.md).
 - May convert a pointer position to a value. May not check state or decide anything.
 - No serialized references. A plain config value, such as which tab it opens, is allowed.
@@ -258,7 +259,7 @@ Assets/Client/TrophyRoom/
 ## 9. Before you open a PR
 
 - [ ] Could a Model compile without any View or Controller existing?
-- [ ] Does any View handle input or call a command?
+- [ ] Does any View handle input or call a command? One root View per scope, 5 serialized fields at most?
 - [ ] Does any Controller touch a visual or check a rule?
 - [ ] Does any event carry data? Is anything pushed that could be pulled?
 - [ ] Any `Button`, `Toggle`, `Slider`, `Dropdown` or `onClick`?
@@ -267,3 +268,17 @@ Assets/Client/TrophyRoom/
 - [ ] Subscriptions and tokens cleaned up?
 - [ ] Everything that can be unit tested covered?
 - [ ] Could a deterministic tool have decided this?
+
+## 10. Deliberate decisions
+
+Some rules differ from Robert C. Martin's *Clean Code* on purpose. Don't "fix" them:
+
+| Topic | *Clean Code* | These rules | Why |
+|---|---|---|---|
+| Tell, don't ask | Objects do the work | Views pull from the Model (`ARCH-04`) | It's the core of the design; the getters are read-only |
+| Boy scout rule | Improve what you touch | Refactor old code only when asked | Keeps an agent's diff small and its risk low |
+| Exceptions over return codes | Exceptions | `Result<T>` or state for what's expected | "Not enough coins" isn't exceptional |
+| Separate construction from use | Dependencies through the constructor | `GetComponentInParent` and `internal` field injection | MonoBehaviours have no constructor; the hierarchy is the wiring |
+| Avoid global state | Statics hide dependencies | `ROOT-07` allows singletons without a container | A public constructor and `ROOT-09` keep them testable |
+| Readability first | Optimize after measuring | No LINQ or lambdas anywhere | Hot paths then need no audit |
+| No duplication | Remove repeated structure | Every root View repeats the subscribe pattern | Agents write it right, and it avoids deep inheritance |

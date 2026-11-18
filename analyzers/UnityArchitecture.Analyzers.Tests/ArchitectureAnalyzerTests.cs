@@ -22,7 +22,7 @@ using UnityEngine.UI;
         [InlineData("UA0001", "public class ShopView : MonoBehaviour { } public class ShopModel { private ShopView view; }")]
         [InlineData("UA0001", "public class ShopController { } public class ShopModel { private List<ShopController> items; }")]
         [InlineData("UA0001", "public class ShopModel { private Transform root; }")]
-        [InlineData("UA0001", "public class ItemView : MonoBehaviour { } public class ShopView : MonoBehaviour { private ItemView item; }")]
+        [InlineData("UA0001", "public class BuyController : MonoBehaviour { } public class ShopView : MonoBehaviour { private BuyController buy; }")]
         [InlineData("UA0001", "public class ShopView : MonoBehaviour { } public class ShopController : MonoBehaviour { private ShopView view; }")]
         [InlineData("UA0001", "public class ShopView : MonoBehaviour { } public class ShopModel { public void Set(ShopView view) { } }")]
         [InlineData("UA0002", "public class ShopView : MonoBehaviour, IPointerClickHandler { }")]
@@ -51,6 +51,7 @@ using UnityEngine.UI;
         [InlineData("UA0015", "public class Shop {\n/// <summary>Changed.</summary>\npublic event Action OnChanged; }")]
         [InlineData("UA0015", "public enum Mode {\n/// <summary>Off.</summary>\nOff }")]
         [InlineData("UA0015", "public class Shop {\n/** <summary>Runs.</summary> */\nprivate void Run() { } }")]
+        [InlineData("UA0016", "public class ShopView : MonoBehaviour { [SerializeField] private Image a; [SerializeField] private Image b; [SerializeField] private Image c; [SerializeField] private Image d; [SerializeField] private Image e; [SerializeField] private Image f; }")]
         public async Task ReportsRule(string rule, string source)
         {
             string[] rules = await AnalyzerHarness.AnalyzeAsync(USINGS + source);
@@ -67,6 +68,8 @@ using UnityEngine.UI;
         [InlineData("public class ShopModel { } public class ShopView : MonoBehaviour { internal ShopModel model; [SerializeField] private Image image; }")]
         [InlineData("public class ShopModel { } public class BuyController : BaseClickController { internal ShopModel model; [SerializeField] private int amount; }")]
         [InlineData("public class Form : MonoBehaviour { private TMP_InputField input; }")]
+        [InlineData("public class RewardView : MonoBehaviour { } public class ShopView : MonoBehaviour { [SerializeField] private RewardView reward; }")]
+        [InlineData("public class ShopView : MonoBehaviour { [SerializeField] private Image a; [SerializeField] private Image b; [SerializeField] private Image c; [SerializeField] private Image d; [SerializeField] private Image e; private int count; }")]
         [InlineData("public class Shop : MonoBehaviour { public const int MAX = 3; public static int Count; }")]
         [InlineData("public class Shop { public void Initialize(int count) { } }")]
         [InlineData("public class InjectAttribute : Attribute { } public class Screen : MonoBehaviour { [Inject] internal int value; }")]

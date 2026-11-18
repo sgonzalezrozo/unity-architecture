@@ -53,7 +53,7 @@ The examples in this repository use this profile: `fastIoC`, `uiScroller` and `s
 
 ## List without UI Scroller
 
-The list View only creates cells and shows as many as there are items. It holds GameObjects, never a cell View (`VIEW-03`). Each cell finds the Model and pulls its own item by position, so no data is pushed (`ARCH-04`).
+The list View only creates cells and shows as many as there are items. It holds GameObjects, never a cell View: each cell is a prefab, so its own scope (`VIEW-03`). Each cell finds the Model and pulls its own item by position, so no data is pushed (`ARCH-04`).
 
 ```csharp
 public class InventoryListView : MonoBehaviour

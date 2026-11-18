@@ -39,8 +39,8 @@ A scope is a self-contained part of a feature with one root GameObject, usually 
 InventoryScreen.prefab [InventoryModel, InventoryView]      main scope
 ├── ItemList [InventoryListView]                            scope
 └── ActionButtons [ActionButtonsView]                       scope
-    ├── ApplyController (Image: alpha 0) [ApplyController]
-    └── RevertController (Image: alpha 0) [RevertController]
+    ├── Action (Image: alpha 0) [ApplyController]
+    └── Action (Image: alpha 0) [RevertController]
 ```
 
 | ID | Rule |
@@ -64,7 +64,7 @@ This applies to every project, with or without a container. Use the first row th
 ```
 LivesScreen.prefab [LivesModel, LivesView]
 ├── RemainingLivesText (TextMeshProUGUI)
-└── LoseLifeController (Image: alpha 0) [LoseLifeController]
+└── Action (Image: alpha 0) [LoseLifeController]
 ```
 
 | ID | Rule |
@@ -170,14 +170,45 @@ public class LivesView : MonoBehaviour
 
 | ID | Rule |
 |---|---|
-| `VIEW-01` | A View MUST subscribe in `OnEnable`, render immediately, and unsubscribe in `OnDisable`. The Model may have changed while the View was inactive. |
+| `VIEW-01` | A root View MUST subscribe in `OnEnable`, render immediately, and unsubscribe in `OnDisable`. The Model may have changed while the View was inactive. |
 | `VIEW-02` | A View MUST NOT call a command, sync or async. |
-| `VIEW-03` | A View MUST NOT reference another View, even a child (`UA0001`). Each View reads its own Model. |
+| `VIEW-03` | Each scope has one root View, on its root (`SCOPE-02`), and only it subscribes to the Model's events. It MAY tell inner Views below it in the scope what to show, and they set their own components. An inner View MUST NOT reference a Model, subscribe to an event, or reference its parent or another inner View. No View MAY reference anything inside a nested prefab, its root View included: that prefab is another scope (`SCOPE-04`). |
 | `VIEW-04` | A View MUST NOT implement input interfaces (`UA0002`). |
 | `VIEW-05` | A View MAY change activeness, color, size, text, alpha and sprites, and MAY format values for display. |
 | `VIEW-06` | A View MAY use `Update()` only for time-based values, throttled as in the [countdown example](examples/01_BACKEND_FEATURE_TROPHY_ROOM.md#detailstrophy-screen). |
+| `VIEW-07` | A View MUST NOT have more than 5 serialized fields (`UA0016`). With more, it groups its components into inner Views and serializes those. An inner View sits on the nearest common parent of the components it sets. A View serializes only components and inner Views, not assets: a fixed sprite or font is set on its component in the prefab, and one that depends on data comes from the Model (`PREFAB-04`). |
 
 Name rendering methods `Render{Subject}`.
+
+### Root View and inner Views
+
+All the Views of a scope are the V of MVC, so passing values from the root View to an inner View crosses no layer boundary (`ARCH-04` is about the Model and its readers). The root View reads the Model; an inner View works like a rendering component with a few fields of its own.
+
+```
+TrophyCard [TrophyCardModel, TrophyCardView]      root View: subscribes, reads the Model
+├── Background (Image)
+├── Title (TextMeshProUGUI)
+├── Reward [TrophyRewardView]                      inner View: no Model, no events
+│   ├── RewardIcon (Image)
+│   └── RewardAmount (TextMeshProUGUI)
+└── Action (Image: alpha 0) [ClaimTrophyController]
+```
+
+```csharp
+public class TrophyRewardView : MonoBehaviour
+{
+    [SerializeField] private Image rewardIcon;
+    [SerializeField] private TextMeshProUGUI rewardAmountText;
+
+    public void RenderReward(Sprite icon, string amount)
+    {
+        rewardIcon.sprite = icon;
+        rewardAmountText.text = amount;
+    }
+}
+```
+
+`TrophyCardView` serializes `titleText` and `rewardView`, and in its render method calls `rewardView.RenderReward(trophyCardModel.RewardIcon, trophyCardModel.RewardAmount.ToString())`.
 
 ## Controller rules
 
@@ -217,7 +248,9 @@ For the `BaseClickController` form, see [Optional packages](OPTIONAL_PACKAGES.md
 | `public Action OnChanged { get; set; }` | `public event Action OnChanged;` | `MODEL-05` |
 | `model.OnSelected?.Invoke()` in a Controller | `model.SelectItem(itemId)` | `ARCH-04` |
 | `view.Initialize(model)` | `GetComponentInParent`, or an injected field for row 2 | `UA0006` |
-| `parentView.Show(data)` or `itemViews[i].Render()` | The child View reads its own Model | `VIEW-03` |
+| An inner View subscribes to `model.OnChanged` | Only the root View subscribes, and tells its inner Views what to show | `VIEW-03` |
+| A View serializes the View of a nested prefab | The nested prefab's root View reads its own Model | `VIEW-03` |
+| A View with 8 serialized fields | Group them into inner Views, 5 fields at most per View | `VIEW-07` |
 | `view.RefreshButton.onClick += ...` | A Controller implementing `IPointerClickHandler` | `ARCH-05` |
 | `if (model.State == Active) model.Buy();` in a Controller | `model.Buy()` validates internally | `CTRL-03` |
 | View calls `module.LoadAsync()` | A Controller calls it and the View reads the result | `VIEW-02` |
