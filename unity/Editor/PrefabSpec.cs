@@ -25,6 +25,8 @@ namespace UnityArchitecture.Prefabs
         public string Controller;
         public string PrefabPath;
         public PrefabSpecLayout Layout;
+        public readonly Dictionary<string, string> Fields = new();
+        public bool IgnoreLayout;
         public readonly List<PrefabSpecNode> Children = new();
 
         public static PrefabSpecNode Parse(string json)
@@ -49,6 +51,8 @@ namespace UnityArchitecture.Prefabs
             node.Color = ReadColor(data, path);
             node.Layout = PrefabSpecLayout.Read(Optional(data, "layout"), path);
             ReadStrings(data, "components", node.Components, path);
+            ReadFields(data, node.Fields, path);
+            node.IgnoreLayout = Optional(data, "ignoreLayout") is true;
             CheckRequiredFields(node, path);
 
             if (Optional(data, "children") is List<object> children)
@@ -118,6 +122,24 @@ namespace UnityArchitecture.Prefabs
                     throw new FormatException($"{path}: {key} lists type names as strings.");
 
                 into.Add(text);
+            }
+        }
+
+        private static void ReadFields(Dictionary<string, object> data, Dictionary<string, string> into, string path)
+        {
+            object value = Optional(data, "fields");
+            if (value == null)
+                return;
+
+            if (value is not Dictionary<string, object> fields)
+                throw new FormatException($"{path}: fields maps a serialized field to the path of an object under this one: {{\"amountText\": \"Amount\"}}.");
+
+            foreach (KeyValuePair<string, object> field in fields)
+            {
+                if (field.Value is not string target)
+                    throw new FormatException($"{path}: the field {field.Key} points to an object path, as a string.");
+
+                into[field.Key] = target;
             }
         }
 

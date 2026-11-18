@@ -79,6 +79,18 @@ namespace UnityArchitecture.Prefabs.Tests
         }
 
         [Test]
+        public void AMeasuredSlot_KeepsItsBackgroundAndActionOutOfTheLayout()
+        {
+            GameObject slot = PrefabRecipes.CreateSlotRoot("MeasuredSlot", new Vector2(400f, 120f), typeof(CardModel), typeof(CardView), typeof(VerticalLayoutGroup));
+            PrefabRecipes.AddBackground(slot);
+            PrefabRecipes.AddText(slot, "Name", "Sword");
+            PrefabRecipes.AddAction(slot, typeof(ClaimController));
+
+            Assert.IsTrue(slot.transform.Find("Background").GetComponent<LayoutElement>().ignoreLayout);
+            AssertFollowsTheRules(slot);
+        }
+
+        [Test]
         public void StateRoots_FollowTheRules()
         {
             GameObject purchase = PrefabRecipes.CreateRoot("PurchaseArea", typeof(CardModel), typeof(CardView));

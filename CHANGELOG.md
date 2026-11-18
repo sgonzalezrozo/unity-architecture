@@ -6,6 +6,7 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
+- From the prefab pilot, where an agent built three prefabs through MCP: `PREFAB-15` (every serialized reference a Model, View or Controller declares is assigned) and `PREFAB-16` (a `Background`, `Action` or overlay inside a layout group ignores it), both checked by the validator. Specs take `fields`, which assigns serialized fields by object path, `ignoreLayout`, and Unity's UI components such as `VerticalLayoutGroup`. `AddBackground` and `AddAction` keep themselves out of a parent's layout group.
 - The Stop hook checks prefabs: when a prefab under `Assets/Client` changed, it runs the prefab validator on every stop, even between test runs. With the Editor open, `verify-editor.sh` asks the agent to run it through `run_tests` and shows its errors, from `Logs/verify/editor-prefabs.json`, which the test reporter writes. With it closed, the hook runs `verify.sh` filtered to that test.
 - `prefabTools` capability, `EDIT-11` (build and change prefabs only through the recipes or a spec, called through the bridge's code tool) and `EDIT-12` (validate every prefab built or changed, and compare it with its spec).
 - Prefab specs (`HAND-06`): the handoff table as JSON. `PrefabSpecs.BuildFromSpec` builds it with the recipes and validates it, and `PrefabSpecs.Compare` lists every difference between a spec and its prefab. A small JSON reader in the package keeps it free of dependencies, and bad specs fail with the line, column or object to fix.

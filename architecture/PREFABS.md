@@ -44,6 +44,8 @@ QuitGameAlert                 root: Model and root View (SCOPE-02), scale 1, rot
 | `PREFAB-12` | Anything that animates or changes often MUST have its own nested `Canvas`, so the static part isn't rebuilt (`ARCH-11`). |
 | `PREFAB-13` | A prefab SHOULD NOT go deeper than about 5 levels under its root. Justify it in the handoff when it does. |
 | `PREFAB-14` | The `Background` of an element with an `Action` MUST have raycast on, so a touch doesn't reach what's under it. So does the `Background` of a screen, but not the one of each layer. This is the exception to `INPUT-03`. |
+| `PREFAB-15` | Every serialized reference a Model, View or Controller declares MUST be assigned in the prefab. An empty one fails at runtime, after the prefab looked right. |
+| `PREFAB-16` | Inside a parent with a layout group, such as a measured list slot, the `Background`, the `Action` and any overlay that fills the parent MUST ignore the layout (`LayoutElement` with Ignore Layout on), so the layout group only places the content. |
 
 Press and hover feedback, such as scaling a button while it's pressed, has no rule yet: it needs a reusable component, like `BaseClickController`, that doesn't exist yet.
 
@@ -57,7 +59,7 @@ Press and hover feedback, such as scaling a button while it's pressed, has no ru
 | `CreateScreenRoot(name, components)` | A root, a blocking `Background` and a `Content` |
 | `CreateModalRoot(name, windowSize, closeController, components)` | A dimming `Background`, an optional close `Action`, and a centered `Window` with its own `Background` |
 | `CreateSlotRoot(name, size, components)` | A list slot with a fixed size; UI Scroller sets its anchors |
-| `AddBackground`, `AddVisuals`, `AddContainer`, `AddImage`, `AddText` | The pieces, with Raycast Target off on visuals and on in a `Background` |
+| `AddBackground`, `AddVisuals`, `AddContainer`, `AddImage`, `AddText` | The pieces, with Raycast Target off on visuals and on in a `Background`. A `Background` or `Action` under a layout group ignores it (`PREFAB-16`) |
 | `AddAction(parent, controllerType)` | `Action`, last, with an invisible `Image` and Cull Transparent Mesh, or no `Image` when the Controller is its own `Graphic` |
 | `AddStateRoots(parent, states)` | One `{State}Root` per state |
 | `AddNestedPrefab(parent, path)` | An instance of another prefab, which stays its own scope |
@@ -76,7 +78,9 @@ The spec lists the whole hierarchy in order: nothing is added that it doesn't na
 |---|---|
 | `name` | The object's name. `background`, `visuals` and `action` have fixed names; a `prefab` defaults to the asset's |
 | `type` | `container`, `background` (Image, raycast on), `visuals`, `image` (raycast off), `text` (TextMeshProUGUI), `action` or `prefab`. The root has none |
-| `components` | Class names in the `Client` assembly, such as the root's Model and View, or an inner View |
+| `components` | Class names in the `Client` assembly, such as the root's Model and View, or an inner View, and Unity's UI components, such as `VerticalLayoutGroup`, `ContentSizeFitter` or `Canvas` |
+| `fields` | The serialized fields of this object's components and the object each points to, by path under it: `{"amountText": "Amount"}`, or `"."` for the object itself (`HAND-03`, `PREFAB-15`) |
+| `ignoreLayout` | `true` for an overlay that fills a parent with a layout group (`PREFAB-16`) |
 | `controller` | An `action`'s Controller class |
 | `text`, `color` | A `text`'s text; an `image` or `background`'s color as `[r, g, b, a]` from 0 to 1 |
 | `prefab` | A nested prefab's asset path |
@@ -87,6 +91,7 @@ The spec lists the whole hierarchy in order: nothing is added that it doesn't na
 {
   "name": "ClaimTrophyBanner",
   "components": ["ClaimTrophyBannerModel", "ClaimTrophyBannerView"],
+  "fields": { "labelText": "Label" },
   "children": [
     { "type": "background", "color": [0.1, 0.1, 0.2, 1] },
     { "type": "text", "name": "Label", "text": "Claim your trophy" },
@@ -102,7 +107,7 @@ The prefab validator (`TEST-12`) is an EditMode test in the rules' package, `com
 
 | Checked | Rules |
 |---|---|
-| Errors | `PREFAB-01`, `-04` (legacy `Text`), `-05`, `-06`, `-09`, `-14`, `ARCH-05` (`Selectable` components), `INPUT-01`, `INPUT-02`, `INPUT-03`, `SCOPE-02` (Models), `SCOPE-04` (references into a nested prefab) and `VIEW-03` (inner Views without a root View) |
+| Errors | `PREFAB-01`, `-04` (legacy `Text`), `-05`, `-06`, `-09`, `-14`, `-15`, `-16` (`Background` and `Action`), `ARCH-05` (`Selectable` components), `INPUT-01`, `INPUT-02`, `INPUT-03`, `SCOPE-02` (Models), `SCOPE-04` (references into a nested prefab) and `VIEW-03` (inner Views without a root View) |
 | Warnings, in the test output | `PREFAB-07` (`Mask`) and `PREFAB-13` (depth) |
 | Not checked | `PREFAB-02`, `-03`, `-08`, `-10`, `-11` and `-12`, which need intent the prefab doesn't record. The handoff states them (`HAND-01`), and review checks them |
 

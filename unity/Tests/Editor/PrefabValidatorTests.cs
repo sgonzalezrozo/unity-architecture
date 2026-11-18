@@ -161,11 +161,40 @@ namespace UnityArchitecture.Prefabs.Tests
         {
             GameObject card = BuildCard();
             GameObject nested = InstantiateNestedPrefab(card);
-            SerializedObject view = new(card.GetComponent<CardView>());
+            SerializedObject view = new(card.AddComponent<ShelfView>());
             view.FindProperty("rewardView").objectReferenceValue = nested.GetComponent<RewardView>();
             view.ApplyModifiedPropertiesWithoutUndo();
 
             AssertRule(card, "SCOPE-04");
+        }
+
+        [Test]
+        public void AnUnassignedViewField_BreaksPrefab15()
+        {
+            GameObject card = BuildCard();
+            card.AddComponent<ShelfView>();
+
+            AssertRule(card, "PREFAB-15");
+        }
+
+        [Test]
+        public void AnAssignedViewField_IsFine()
+        {
+            GameObject card = BuildCard();
+            SerializedObject view = new(card.AddComponent<ShelfView>());
+            view.FindProperty("rewardView").objectReferenceValue = card.transform.Find("Reward").GetComponent<RewardView>();
+            view.ApplyModifiedPropertiesWithoutUndo();
+
+            CollectionAssert.IsEmpty(Validate(card));
+        }
+
+        [Test]
+        public void ABackgroundInsideALayoutGroup_BreaksPrefab16()
+        {
+            GameObject card = BuildCard();
+            card.AddComponent<VerticalLayoutGroup>();
+
+            AssertRule(card, "PREFAB-16");
         }
 
         [Test]

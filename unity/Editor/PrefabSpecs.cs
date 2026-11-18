@@ -17,6 +17,9 @@ namespace UnityArchitecture.Prefabs
         private const float TOLERANCE = 0.01f;
         private static readonly string[] CLIENT_ASSEMBLY = { "Client" };
 
+        // Unity's own UI components a spec may add, such as a VerticalLayoutGroup for a measured slot or a nested Canvas.
+        private static readonly string[] UNITY_ASSEMBLIES = { "UnityEngine.UI", "UnityEngine.UIModule", "UnityEngine.CoreModule" };
+
         public static List<PrefabViolation> BuildFromSpec(string json, string prefabPath)
         {
             return BuildFromSpec(json, prefabPath, CLIENT_ASSEMBLY);
@@ -37,6 +40,7 @@ namespace UnityArchitecture.Prefabs
             {
                 ApplyLayout(root, spec.Layout);
                 BuildChildren(root, spec, layerAssemblies);
+                AssignFields(root, spec);
                 return root;
             }
             catch
@@ -79,6 +83,9 @@ namespace UnityArchitecture.Prefabs
                     child.AddComponent(component);
 
                 ApplyLayout(child, childSpec.Layout);
+                if (childSpec.IgnoreLayout)
+                    child.AddComponent<LayoutElement>().ignoreLayout = true;
+
                 children.Add(child);
             }
 
@@ -109,6 +116,76 @@ namespace UnityArchitecture.Prefabs
                 default:
                     return PrefabRecipes.AddContainer(parent, spec.Name);
             }
+        }
+
+        // Fields are assigned once the whole hierarchy exists, since they may point to objects built after their owner.
+        private static void AssignFields(GameObject target, PrefabSpecNode spec)
+        {
+            foreach (KeyValuePair<string, string> field in spec.Fields)
+                AssignField(target, field.Key, field.Value);
+
+            if (spec.Type == PrefabSpecNode.PREFAB)
+                return;
+
+            for (int i = 0; i < spec.Children.Count; i++)
+                AssignFields(target.transform.GetChild(i).gameObject, spec.Children[i]);
+        }
+
+        private static void AssignField(GameObject owner, string fieldName, string targetPath)
+        {
+            SerializedProperty property = FindField(owner, fieldName, out Type fieldType);
+            if (property == null)
+                throw new ArgumentException($"{owner.name}: no component here has a serialized field called {fieldName}.");
+
+            Transform target = FindTarget(owner, targetPath);
+            UnityEngine.Object value = fieldType == typeof(GameObject) ? target.gameObject : target.GetComponent(fieldType);
+            if (value == null)
+                throw new ArgumentException($"{owner.name}.{fieldName}: {targetPath} has no {fieldType.Name}.");
+
+            property.objectReferenceValue = value;
+            property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static SerializedProperty FindField(GameObject owner, string fieldName, out Type fieldType)
+        {
+            foreach (MonoBehaviour behaviour in owner.GetComponents<MonoBehaviour>())
+            {
+                SerializedProperty property = new SerializedObject(behaviour).FindProperty(fieldName);
+                System.Reflection.FieldInfo info = FindFieldInfo(behaviour.GetType(), fieldName);
+                if (property != null && property.propertyType == SerializedPropertyType.ObjectReference && info != null)
+                {
+                    fieldType = info.FieldType;
+                    return property;
+                }
+            }
+
+            fieldType = null;
+            return null;
+        }
+
+        private static System.Reflection.FieldInfo FindFieldInfo(Type type, string fieldName)
+        {
+            const System.Reflection.BindingFlags FLAGS = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
+            for (Type current = type; current != null; current = current.BaseType)
+            {
+                System.Reflection.FieldInfo info = current.GetField(fieldName, FLAGS);
+                if (info != null)
+                    return info;
+            }
+
+            return null;
+        }
+
+        private static Transform FindTarget(GameObject owner, string targetPath)
+        {
+            if (string.IsNullOrEmpty(targetPath) || targetPath == ".")
+                return owner.transform;
+
+            Transform target = owner.transform.Find(targetPath);
+            if (target == null)
+                throw new ArgumentException($"{owner.name}: no object at {targetPath} under it.");
+
+            return target;
         }
 
         private static GameObject NestedPrefab(GameObject parent, PrefabSpecNode spec)
@@ -156,6 +233,9 @@ namespace UnityArchitecture.Prefabs
             }
 
             CompareLayout(spec.Layout, actual.GetComponent<RectTransform>(), path, differences);
+            CompareFields(spec, actual, path, differences);
+            if (spec.IgnoreLayout && (actual.GetComponent<LayoutElement>() == null || !actual.GetComponent<LayoutElement>().ignoreLayout))
+                differences.Add($"{path}: expected a LayoutElement with Ignore Layout on.");
             if (spec.Type != PrefabSpecNode.PREFAB)
                 CompareChildren(spec, actual, path, layerAssemblies, differences);
         }
@@ -199,6 +279,29 @@ namespace UnityArchitecture.Prefabs
                     if (sourcePath != spec.PrefabPath)
                         differences.Add($"{path}: expected an instance of {spec.PrefabPath}, found {sourcePath ?? "no prefab instance"}.");
                     break;
+            }
+        }
+
+        private static void CompareFields(PrefabSpecNode spec, GameObject actual, string path, List<string> differences)
+        {
+            foreach (KeyValuePair<string, string> field in spec.Fields)
+            {
+                SerializedProperty property = FindField(actual, field.Key, out Type _);
+                if (property == null)
+                {
+                    differences.Add($"{path}: expected a serialized field called {field.Key}.");
+                    continue;
+                }
+
+                Transform expected = string.IsNullOrEmpty(field.Value) || field.Value == "." ? actual.transform : actual.transform.Find(field.Value);
+                Transform assigned = property.objectReferenceValue switch
+                {
+                    GameObject gameObject => gameObject.transform,
+                    Component component => component.transform,
+                    _ => null
+                };
+                if (expected == null || assigned != expected)
+                    differences.Add($"{path}: expected {field.Key} to point to {field.Value}, found {(assigned == null ? "nothing" : assigned.name)}.");
             }
         }
 
@@ -275,19 +378,32 @@ namespace UnityArchitecture.Prefabs
 
         private static Type Resolve(string typeName, string[] layerAssemblies)
         {
+            Type layerType = FindComponentType(typeName, layerAssemblies);
+            if (layerType != null)
+                return layerType;
+
+            Type unityType = FindComponentType(typeName, UNITY_ASSEMBLIES);
+            if (unityType != null)
+                return unityType;
+
+            throw new ArgumentException($"No component called {typeName} in {string.Join(", ", layerAssemblies)} or Unity's UI.");
+        }
+
+        private static Type FindComponentType(string typeName, string[] assemblies)
+        {
             foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                if (Array.IndexOf(layerAssemblies, assembly.GetName().Name) < 0)
+                if (Array.IndexOf(assemblies, assembly.GetName().Name) < 0)
                     continue;
 
                 foreach (Type type in assembly.GetTypes())
                 {
-                    if ((type.Name == typeName || type.FullName == typeName) && typeof(Component).IsAssignableFrom(type))
+                    if ((type.Name == typeName || type.FullName == typeName) && typeof(Component).IsAssignableFrom(type) && !type.IsAbstract)
                         return type;
                 }
             }
 
-            throw new ArgumentException($"No component called {typeName} in {string.Join(", ", layerAssemblies)}.");
+            return null;
         }
 
         private static string Names(PrefabSpecNode spec)

@@ -76,6 +76,7 @@ namespace UnityArchitecture.Prefabs
         {
             GameObject background = AddChild(parent, BACKGROUND, typeof(Image));
             background.transform.SetAsFirstSibling();
+            IgnoreParentLayout(background);
             return background;
         }
 
@@ -124,6 +125,7 @@ namespace UnityArchitecture.Prefabs
 
             action.AddComponent(controllerType);
             action.transform.SetAsLastSibling();
+            IgnoreParentLayout(action);
             return action;
         }
 
@@ -198,6 +200,23 @@ namespace UnityArchitecture.Prefabs
 
             KeepActionLast(parent.transform);
             return child;
+        }
+
+        /// <summary>
+        /// Keeps an object that fills its parent out of the parent's layout group (PREFAB-16): a measured slot's
+        /// layout group sizes the content, and its Background, Action and overlays still fill the slot.
+        /// </summary>
+        public static void IgnoreParentLayout(GameObject target)
+        {
+            Transform parent = target.transform.parent;
+            if (parent == null || parent.GetComponent<LayoutGroup>() == null)
+                return;
+
+            LayoutElement element = target.GetComponent<LayoutElement>();
+            if (element == null)
+                element = target.AddComponent<LayoutElement>();
+
+            element.ignoreLayout = true;
         }
 
         private static void KeepActionLast(Transform parent)

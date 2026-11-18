@@ -116,6 +116,9 @@ namespace UnityArchitecture.Prefabs
                 if (target.name == ACTION)
                     CheckAction(target);
 
+                if (target.name == ACTION || target.name == BACKGROUND)
+                    CheckIgnoresParentLayout(target);
+
                 foreach (Component component in target.GetComponents<Component>())
                 {
                     if (component == null)
@@ -125,6 +128,9 @@ namespace UnityArchitecture.Prefabs
                     CheckPersistentListeners(target, component);
                     if (component is MonoBehaviour)
                         CheckReferencesIntoNestedPrefabs(target, component);
+
+                    if (component is MonoBehaviour && IsLayerType(component))
+                        CheckReferencesAssigned(target, component);
                 }
             }
 
@@ -212,6 +218,17 @@ namespace UnityArchitecture.Prefabs
                 return true;
             }
 
+            private void CheckIgnoresParentLayout(GameObject target)
+            {
+                Transform parent = target.transform.parent;
+                if (parent == null || parent.GetComponent<LayoutGroup>() == null)
+                    return;
+
+                LayoutElement element = target.GetComponent<LayoutElement>();
+                if (element == null || !element.ignoreLayout)
+                    Error("PREFAB-16", target, $"{target.name} fills its parent, so it ignores the parent's layout group: add a LayoutElement with Ignore Layout on.");
+            }
+
             private void CheckActionGraphic(GameObject action)
             {
                 // A Controller that is its own Graphic, like BaseClickController, is the raycast target.
@@ -278,6 +295,32 @@ namespace UnityArchitecture.Prefabs
 
                     Error("SCOPE-04", target, $"{component.GetType().Name}.{property.name} points inside a nested prefab, which is another scope. Its own root View renders it.");
                 }
+            }
+
+            private void CheckReferencesAssigned(GameObject target, Component component)
+            {
+                // Only the fields the project's own classes declare: Unity's optional ones, like a Graphic's m_Material, aren't.
+                SerializedProperty property = new SerializedObject(component).GetIterator();
+                while (property.NextVisible(true))
+                {
+                    if (property.depth != 0 || property.propertyType != SerializedPropertyType.ObjectReference || property.objectReferenceValue != null)
+                        continue;
+
+                    if (IsDeclaredInLayerType(component.GetType(), property.name))
+                        Error("PREFAB-15", target, $"{component.GetType().Name}.{property.name} isn't assigned. Assign it in the prefab, or in the spec's fields.");
+                }
+            }
+
+            private bool IsDeclaredInLayerType(Type type, string fieldName)
+            {
+                const System.Reflection.BindingFlags FLAGS = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly;
+                for (Type current = type; current != null; current = current.BaseType)
+                {
+                    if (current.GetField(fieldName, FLAGS) != null)
+                        return Array.IndexOf(layerAssemblies, current.Assembly.GetName().Name) >= 0;
+                }
+
+                return false;
             }
 
             private bool IsInsideNestedPrefab(Object referenced)

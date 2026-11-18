@@ -135,6 +135,41 @@ namespace UnityArchitecture.Prefabs.Tests
             AssertContains(differences, "expected 6 children");
         }
 
+        [Test]
+        public void Fields_AreAssignedAndCompared()
+        {
+            const string json = @"{ ""name"": ""Shelf"", ""components"": [""CardModel"", ""CardView"", ""ShelfView""], ""fields"": { ""rewardView"": ""Reward"" },
+  ""children"": [ { ""type"": ""container"", ""name"": ""Reward"", ""components"": [""RewardView""] } ] }";
+            const string pointsElsewhere = @"{ ""name"": ""Shelf"", ""components"": [""CardModel"", ""CardView"", ""ShelfView""], ""fields"": { ""rewardView"": ""."" },
+  ""children"": [ { ""type"": ""container"", ""name"": ""Reward"", ""components"": [""RewardView""] } ] }";
+
+            string path = Build(json, "Shelf");
+
+            AssertMatches(json, path);
+            AssertContains(PrefabSpecs.Compare(pointsElsewhere, path, LAYER_ASSEMBLY), "expected rewardView to point to");
+        }
+
+        [Test]
+        public void AUnityLayoutComponent_CanBeAdded()
+        {
+            const string json = @"{ ""name"": ""MeasuredSlot"", ""components"": [""CardModel"", ""CardView"", ""VerticalLayoutGroup""], ""children"": [ { ""type"": ""text"", ""name"": ""Name"", ""text"": ""Sword"" } ] }";
+
+            string path = Build(json, "MeasuredSlot");
+
+            AssertMatches(json, path);
+            Assert.IsNotNull(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<UnityEngine.UI.VerticalLayoutGroup>());
+        }
+
+        [Test]
+        public void AFieldThatDoesntExist_SaysSo()
+        {
+            const string json = @"{ ""name"": ""Card"", ""components"": [""CardModel"", ""CardView""], ""fields"": { ""missingField"": ""."" } }";
+
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => PrefabSpecs.BuildFromSpec(json, FOLDER + "/Card.prefab", LAYER_ASSEMBLY));
+
+            StringAssert.Contains("no component here has a serialized field called missingField", exception.Message);
+        }
+
         [TestCase("{ \"name\": \"Card\", \"children\": [ { \"type\": \"button\", \"name\": \"Buy\" } ] }", "unknown type 'button'")]
         [TestCase("{ \"name\": \"Card\", \"children\": [ { \"type\": \"action\" } ] }", "an action needs a controller")]
         [TestCase("{ \"name\": \"Card\", \"children\": [ { \"type\": \"background\", \"name\": \"Back\" } ] }", "always called Background")]
