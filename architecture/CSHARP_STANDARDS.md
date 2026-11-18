@@ -47,7 +47,7 @@ Method lines count the body, without blank lines and lines holding only a brace.
 - A single statement after `if`/`for`/`foreach` goes on the next line, indented, without braces.
 - Opening braces on a new line. Expression-bodied methods put `=>` on a new line.
 - No `#region`.
-- No `///` summaries on members (methods, properties, fields, events). A short `///` summary on a class is allowed. No other comments unless explaining something the code cannot, such as an engine bug or an order dependency.
+- No `///` summaries on members (methods, properties, fields, events, enum members); `UA0015` fails the build. A short `///` summary on a class or other type is allowed. No other comments unless explaining something the code cannot, such as an engine bug or an order dependency.
 - No magic numbers (0, 1 and -1 in obvious contexts are fine). Name timeouts, retries, delays and thresholds.
 - No hardcoded user-facing text. Use the localization system.
 - No boolean flag parameters that select a code path; make two methods. `SetVisible(bool)` is fine, since the value is the state being set.

@@ -44,6 +44,13 @@ using UnityEngine.UI;
         [InlineData("UA0014", "public class AModel { private BModel b; } public class BModel { private AModel a; }")]
         [InlineData("UA0014", "public class AModel { private BModel b; } public class BModel { private CModel c; } public class CModel { private AModel a; }")]
         [InlineData("UA0014", "public class AModel { private List<BModel> items; } public class BModel { public BModel(AModel a) { } }")]
+        [InlineData("UA0015", "public class Shop {\n/// <summary>Runs.</summary>\nprivate void Run() { } }")]
+        [InlineData("UA0015", "public class Shop {\n/// <summary>Builds.</summary>\npublic Shop() { } }")]
+        [InlineData("UA0015", "public class Shop {\n/// <summary>The count.</summary>\npublic int Count { get; } }")]
+        [InlineData("UA0015", "public class Shop {\n/// <summary>The count.</summary>\nprivate int count; }")]
+        [InlineData("UA0015", "public class Shop {\n/// <summary>Changed.</summary>\npublic event Action OnChanged; }")]
+        [InlineData("UA0015", "public enum Mode {\n/// <summary>Off.</summary>\nOff }")]
+        [InlineData("UA0015", "public class Shop {\n/** <summary>Runs.</summary> */\nprivate void Run() { } }")]
         public async Task ReportsRule(string rule, string source)
         {
             string[] rules = await AnalyzerHarness.AnalyzeAsync(USINGS + source);
@@ -66,6 +73,10 @@ using UnityEngine.UI;
         [InlineData("public class Screen : MonoBehaviour { [SerializeField] internal int value; }")]
         [InlineData("public class Shop { private void Run(List<int> items) { for (int i = 0; i < items.Count; i++) { } } }")]
         [InlineData("public class Shop { private void Run(string text) { int? length = text?.Length; } }")]
+        [InlineData("\n/// <summary>A shop.</summary>\npublic class Shop { }")]
+        [InlineData("\n/// <summary>A mode.</summary>\npublic enum Mode { Off }\n/// <summary>A point.</summary>\npublic struct Point { }\n/// <summary>A source.</summary>\npublic interface ISource { }")]
+        [InlineData("public class Shop {\n// Unity calls this before Start.\nprivate void Run() { } }")]
+        [InlineData("public class Shop {\n//// disabled\nprivate void Run() { } }")]
         public async Task AllowsValidCode(string source)
         {
             string[] rules = await AnalyzerHarness.AnalyzeAsync(USINGS + source);

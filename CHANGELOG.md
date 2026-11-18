@@ -6,6 +6,7 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
+- `UA0015`: a `///` comment on a method, constructor, property, field, event or enum member fails the build. A class or other type may still have a short summary. It catches `///` whether or not the compiler parses documentation comments.
 - Working with the Editor open, through a local Unity MCP server such as MCP for Unity (Coplay). `install.sh` writes `.mcp.json`, which registers the server on `localhost:8080`, and puts Editor scripts in `Assets/Editor/UnityArchitecture` that write every compile and test run to `Logs/verify/`. The test reporter only compiles when the Test Framework package is installed.
 - `scripts/verify-editor.sh` checks the project from those results. The Stop hook uses it when the Editor is open (Unity holds `Temp/UnityLockfile`) and `verify.sh` when it's closed. It asks the agent to compile (`refresh_unity`) when a script changed after the last compile, and to run the tests (`run_tests`) when the last run started before the newest script change. It doesn't compare them with the last compile, since Unity compiles again after a test run. Script changes in local packages (`file:` entries in `Packages/manifest.json`) count too, except in folders ending in `~`.
 - `EDIT-10`: with the Editor open, the agent compiles and runs the EditMode tests in the Editor before finishing.

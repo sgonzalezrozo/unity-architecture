@@ -78,7 +78,7 @@ Run this before returning code. Item numbers are stable: the [analyzers](../anal
    Does the code reference a package whose capability is `false`?
 6. Are assigned fields `internal`, with no attribute under Fast IoC, and everything else `private`?
 7. Is every file in the right folder, and is source art outside the feature?
-8. Are there lambdas, LINQ, `var`, `?.` on Unity objects, or hardcoded text?
+8. Are there lambdas, LINQ, `var`, `?.` on Unity objects, `///` comments on members, or hardcoded text?
 9. Could a deterministic tool have decided this? Does a Model read time or randomness directly?
 10. Is everything that can be unit tested covered by a test, with Model tests written first?
 11. Is each Model and View on its scope root? Does any View render outside its scope?

@@ -76,6 +76,11 @@ namespace UnityArchitecture.Analyzers
             "A Model has a serialized field",
             "Remove the serialized field {1} from {0}. Use an injected configuration asset, backend JSON or a constant.");
 
+        public static readonly DiagnosticDescriptor MemberDocumentationComment = Create(
+            "UA0015",
+            "A member has a /// comment",
+            "Remove the /// comment on {0}. Only types may have a /// summary: let the name explain, and use a // comment only for what the code can't say.");
+
         public static readonly DiagnosticDescriptor ModelCycle = new DiagnosticDescriptor(
             "UA0014",
             "Models form a dependency cycle",
@@ -99,7 +104,8 @@ namespace UnityArchitecture.Analyzers
             Var,
             ConditionalAccessOnUnityObject,
             SerializedModelField,
-            ModelCycle);
+            ModelCycle,
+            MemberDocumentationComment);
 
         private static DiagnosticDescriptor Create(string id, string title, string message)
         {

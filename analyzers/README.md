@@ -20,6 +20,7 @@ An instruction is a request, not a guarantee. These rules fail the build, whethe
 | `UA0012` | 8 | Code uses `?.` on a Unity object |
 | `UA0013` | 12 | A Model has a serialized field |
 | `UA0014` | 12 | Models depend on each other in a cycle |
+| `UA0015` | 8 | A method, constructor, property, field, event or enum member has a `///` comment. Types may have one |
 
 Layers come from class names: `*Model` and `*Module`, `*View`, and `*Controller`. A `BaseClickController` subclass also counts as a Controller, if the project has UI Foundations. `TMP_InputField` is allowed.
 

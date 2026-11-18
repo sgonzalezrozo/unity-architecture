@@ -39,6 +39,19 @@ namespace UnityArchitecture.Analyzers
                 SyntaxKind.ParenthesizedLambdaExpression,
                 SyntaxKind.AnonymousMethodExpression);
             context.RegisterSyntaxNodeAction(ReportLinq, SyntaxKind.QueryExpression);
+            context.RegisterSyntaxNodeAction(
+                AnalyzeMemberDocumentation,
+                SyntaxKind.MethodDeclaration,
+                SyntaxKind.ConstructorDeclaration,
+                SyntaxKind.DestructorDeclaration,
+                SyntaxKind.OperatorDeclaration,
+                SyntaxKind.ConversionOperatorDeclaration,
+                SyntaxKind.PropertyDeclaration,
+                SyntaxKind.IndexerDeclaration,
+                SyntaxKind.EventDeclaration,
+                SyntaxKind.EventFieldDeclaration,
+                SyntaxKind.FieldDeclaration,
+                SyntaxKind.EnumMemberDeclaration);
         }
 
         private static void AnalyzeType(SymbolAnalysisContext context)
@@ -249,6 +262,65 @@ namespace UnityArchitecture.Analyzers
         private static void ReportLinq(SyntaxNodeAnalysisContext context)
         {
             context.ReportDiagnostic(Diagnostic.Create(Rules.Linq, context.Node.GetLocation()));
+        }
+
+        private static void AnalyzeMemberDocumentation(SyntaxNodeAnalysisContext context)
+        {
+            foreach (SyntaxTrivia trivia in context.Node.GetLeadingTrivia())
+            {
+                if (!IsDocumentationComment(trivia))
+                    continue;
+
+                context.ReportDiagnostic(Diagnostic.Create(Rules.MemberDocumentationComment, trivia.GetLocation(), MemberName(context.Node)));
+                return;
+            }
+        }
+
+        // Without documentation parsing, the compiler keeps /// as a plain comment, so both forms count.
+        private static bool IsDocumentationComment(SyntaxTrivia trivia)
+        {
+            switch (trivia.Kind())
+            {
+                case SyntaxKind.SingleLineDocumentationCommentTrivia:
+                case SyntaxKind.MultiLineDocumentationCommentTrivia:
+                    return true;
+                case SyntaxKind.SingleLineCommentTrivia:
+                    string text = trivia.ToString();
+                    return text.StartsWith("///") && !text.StartsWith("////");
+                case SyntaxKind.MultiLineCommentTrivia:
+                    return trivia.ToString().StartsWith("/**") && !trivia.ToString().StartsWith("/**/");
+                default:
+                    return false;
+            }
+        }
+
+        private static string MemberName(SyntaxNode member)
+        {
+            switch (member)
+            {
+                case MethodDeclarationSyntax method:
+                    return method.Identifier.Text;
+                case ConstructorDeclarationSyntax constructor:
+                    return constructor.Identifier.Text;
+                case DestructorDeclarationSyntax destructor:
+                    return "~" + destructor.Identifier.Text;
+                case OperatorDeclarationSyntax op:
+                    return "operator " + op.OperatorToken.Text;
+                case ConversionOperatorDeclarationSyntax conversion:
+                    return "operator " + conversion.Type;
+                case PropertyDeclarationSyntax property:
+                    return property.Identifier.Text;
+                case IndexerDeclarationSyntax:
+                    return "this[]";
+                case EventDeclarationSyntax evt:
+                    return evt.Identifier.Text;
+                case BaseFieldDeclarationSyntax field:
+                    return field.Declaration.Variables[0].Identifier.Text;
+                case EnumMemberDeclarationSyntax enumMember:
+                    return enumMember.Identifier.Text;
+                default:
+                    return member.Kind().ToString();
+            }
         }
     }
 }
