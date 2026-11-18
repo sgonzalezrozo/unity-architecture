@@ -5,6 +5,9 @@
 ## Docs
 
 - [README](https://github.com/sgonzalezrozo/unity-architecture-agents/blob/main/README.md): installation, templates, verify loop, FAQ
+- [Installation](https://github.com/sgonzalezrozo/unity-architecture-agents/blob/main/docs/INSTALLATION.md): step by step from a new Unity project: Git, submodule, install.sh, MCP for Unity setup, Claude Code
+- [Usage](https://github.com/sgonzalezrozo/unity-architecture-agents/blob/main/docs/USAGE.md): Claude Code prompts with the Editor open or closed, prefab specs, the Stop hook's messages
+- [Prefabs](https://github.com/sgonzalezrozo/unity-architecture-agents/blob/main/architecture/PREFABS.md): prefab rules, recipes, JSON specs and the prefab validator
 - [AGENTS.md](https://github.com/sgonzalezrozo/unity-architecture-agents/blob/main/AGENTS.md): entry point, architecture invariants, document routing
 - [Agent workflow](https://github.com/sgonzalezrozo/unity-architecture-agents/blob/main/architecture/AGENT_WORKFLOW.md): task classification, plan, checklist, Definition of Done
 - [Editor tools](https://github.com/sgonzalezrozo/unity-architecture-agents/blob/main/architecture/EDITOR_TOOLS.md): verification with Unity MCP, the Unity CLI or verify.sh

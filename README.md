@@ -10,6 +10,8 @@ Unity Architecture Agents is a free, open-source `AGENTS.md` and `CLAUDE.md` rul
 
 | File | Purpose |
 |---|---|
+| [Installation](docs/INSTALLATION.md) | Step by step, from a new Unity project to an agent building a checked feature: Git, the submodule, MCP for Unity and its setup |
+| [Usage](docs/USAGE.md) | Working with Claude Code: prompts that work, with the Editor open or closed, and the Stop hook's messages |
 | [AGENTS.md](AGENTS.md) | Entry point: stack, philosophy and where to read next |
 | [Developer overview](architecture/DEVELOPER_OVERVIEW.md) | One-file summary for human developers |
 | [Agent workflow](architecture/AGENT_WORKFLOW.md) | Task classification, plan format, checklist, Definition of Done and Git |
@@ -25,6 +27,7 @@ Unity Architecture Agents is a free, open-source `AGENTS.md` and `CLAUDE.md` rul
 | [Examples](architecture/examples) | Three complete features with invented names: a backend feature, custom input and a filtered list |
 | [Templates](templates) | `.editorconfig`, Copilot, Cursor and Rider rules, `verify.sh`, a Claude Code Stop hook, and `install.sh` and `update.sh` to put them in your project and keep them current |
 | [Analyzers](analyzers) | Roslyn analyzers that turn the mechanical rules into compile errors |
+| [Unity package](unity) | `com.sgonzalezrozo.unity-architecture`: prefab recipes, JSON specs, the prefab validator, and the reporters that write each compile and test run in the open Editor to `Logs/verify/` |
 
 ## How the process scales
 
@@ -38,7 +41,9 @@ Before returning code, the agent runs the [pre-response checklist](architecture/
 
 ## Use it in a project
 
-Five steps, about five minutes. You need Git, and a terminal open at your **project root**: the folder that holds `Assets`, `Packages` and `ProjectSettings`. On Windows, use Git Bash.
+Starting from a new Unity project, or want every step including MCP for Unity? Follow the [installation guide](docs/INSTALLATION.md). Then see [Usage](docs/USAGE.md) for prompts that work.
+
+The short version: five steps, about five minutes. You need Git, and a terminal open at your **project root**: the folder that holds `Assets`, `Packages` and `ProjectSettings`. On Windows, use Git Bash.
 
 ### 1. Make sure the project is a Git repository
 
@@ -104,7 +109,7 @@ This commits the files above and `.gitmodules`, which records the `.ai` version 
 - **Rider:** open `.aiassistant/rules/project.md` and set the rule's type to **Always**.
 - **Rules for this project only:** write them in your root `AGENTS.md`, under "Rules for this project only". Never edit files inside `.ai`: the next update would overwrite them.
 
-That's it: open the project with Claude Code and ask for a feature. It reads the rules from `.ai`, the analyzers stop code that breaks the mechanical rules, and when it finishes the hook compiles and runs the tests, and sends any failure back for it to fix. Keep the project closed in Unity while it works: batch mode can't open a project the Editor has open, so the hook would skip the check and say so.
+That's it: open the project with Claude Code and ask for a feature ([examples](docs/USAGE.md#examples)). It reads the rules from `.ai`, the analyzers stop code that breaks the mechanical rules, and when it finishes the hook compiles and runs the tests, and sends any failure back for it to fix. Either keep the project closed in Unity while it works, so the hook checks in batch mode, or keep it open with [MCP for Unity](#work-with-the-editor-open-mcp-for-unity), so the hook reads the Editor's own results. Batch mode can't open a project the Editor has open.
 
 ### Cloning a project that uses it
 
@@ -142,8 +147,12 @@ The files are copies rather than symbolic links because links need extra setup o
 An agent can also work while the project is open in Unity, through a local Unity MCP server, such as [MCP for Unity](https://github.com/CoplayDev/unity-mcp) (by Coplay). Everything runs on your machine: Claude Code talks to the server on `localhost`, and the server talks to the open Editor. There's no other server or pipeline to set up.
 
 1. In Unity, **Window > Package Manager > + > Add package from git URL**: `https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity` (needs Python 3.10+ and `uv`).
-2. `install.sh` already wrote `.mcp.json`, which registers the server for Claude Code as `unityMCP` on `http://localhost:8080/mcp`, MCP for Unity's default. Open Claude Code in the project and approve the server.
-3. Keep the Editor open while the agent works.
+2. In **Window > MCP for Unity**, choose the **HTTP Local** transport and click **Start Server**.
+3. In the window's **Tools** section, turn on **Testing** (`run_tests`, `get_test_job`) and **Scripting Extensions** (`execute_code`). They're off by default, and the agent needs them to run tests and to build and validate prefabs.
+4. `install.sh` already wrote `.mcp.json`, which registers the server for Claude Code as `unityMCP` on `http://localhost:8080/mcp`, MCP for Unity's default. Don't also register it from the window, or Claude Code sees it twice. Open Claude Code in the project, approve the server, and check it with `/mcp`.
+5. Keep the Editor open while the agent works.
+
+The [installation guide](docs/INSTALLATION.md#6-set-up-mcp-for-unity) has the details, including Roslyn for `execute_code` and what to allow in `.claude/settings.json`.
 
 With the Editor open, the Stop hook can't run `verify.sh`, because batch mode can't open a project the Editor has open. The reporters in the `.ai/unity` package, which `install.sh` adds to the manifest, write each compile and test run to `Logs/verify/`, and the hook reads them with `scripts/verify-editor.sh`. If a script changed after the last compile, the hook asks the agent to compile (`refresh_unity`) through the MCP server before finishing. When the tests are due, it also asks the agent to run them (`run_tests`).
 

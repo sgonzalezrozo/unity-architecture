@@ -70,7 +70,7 @@ With Screen System, create the screen or layer first with `ScreenAuthoring` (`SC
 
 ## Prefab spec
 
-The [handoff](AGENT_WORKFLOW.md#prefab-handoff) table can also be written as a JSON spec (`HAND-06`). `PrefabSpecs.BuildFromSpec(json, path)` builds it with the recipes, saves it and returns the validator's result, and `PrefabSpecs.Compare(json, path)` lists every difference between the spec and the prefab, so the same spec always builds the same prefab and a change made by hand shows up.
+The [handoff](AGENT_WORKFLOW.md#prefab-handoff) table can also be written as a JSON spec (`HAND-06`). `PrefabSpecs.BuildFromSpec(json, path)` builds it with the recipes, saves it and returns the validator's result (`List<PrefabViolation>`, empty when it passes), and `PrefabSpecs.Compare(json, path)` lists every difference (`List<string>`, empty when they match) between the spec and the prefab, so the same spec always builds the same prefab and a change made by hand shows up.
 
 The spec lists the whole hierarchy in order: nothing is added that it doesn't name.
 
@@ -103,7 +103,7 @@ The spec lists the whole hierarchy in order: nothing is added that it doesn't na
 
 ## Checking a prefab
 
-The prefab validator (`TEST-12`) is an EditMode test in the rules' package, `com.sgonzalezrozo.unity-architecture`, which `install.sh` adds to `Packages/manifest.json` from `.ai/unity`. It loads every prefab under `Assets/Client` and fails with the prefab, the object and the rule ID of each error. It runs with the other tests: in `verify.sh`, and in the open Editor through `run_tests`.
+The prefab validator (`TEST-12`) is an EditMode test in the rules' package, `com.sgonzalezrozo.unity-architecture`, which `install.sh` adds to `Packages/manifest.json` from `.ai/unity`. It loads every prefab under `Assets/Client` and fails with the prefab, the object and the rule ID of each error. It runs with the other tests: in `verify.sh`, and in the open Editor through `run_tests`. To run only it, filter by its name, `UnityArchitecture.Prefabs.Tests.ClientPrefabsTests.ClientPrefabsFollowThePrefabRules` (`test_names` with `run_tests`, or `VERIFY_TEST_FILTER` with `verify.sh`); `group_names: ClientPrefabsTests` works with `run_tests` too.
 
 | Checked | Rules |
 |---|---|
@@ -113,4 +113,4 @@ The prefab validator (`TEST-12`) is an EditMode test in the rules' package, `com
 
 A nested prefab is another scope, so its insides are checked as its own asset, not from the prefab that nests it. Models, Views and Controllers are recognized by their class name in the `Client` assembly, like the analyzers. `VIEW-07` (5 serialized fields) is checked in code by `UA0016`.
 
-Through a Unity MCP server, `UnityArchitecture.Prefabs.PrefabValidator.ValidateAsset(path)` returns the same results for one prefab, so an agent can check a prefab right after building it. **Tools > Unity Architecture > Validate Client Prefabs** runs it from the menu, and `-executeMethod UnityArchitecture.Prefabs.PrefabValidatorCommands.ValidateFromCommandLine` in batch mode, which exits with 1 when a prefab has an error.
+Through a Unity MCP server, `UnityArchitecture.Prefabs.PrefabValidator.ValidateAsset(path)` returns the same results for one prefab, as a `List<PrefabViolation>` (each with `RuleId`, `ObjectPath`, `Message` and `IsWarning`), so an agent can check a prefab right after building it. **Tools > Unity Architecture > Validate Client Prefabs** runs it from the menu, and `-executeMethod UnityArchitecture.Prefabs.PrefabValidatorCommands.ValidateFromCommandLine` in batch mode, which exits with 1 when a prefab has an error.

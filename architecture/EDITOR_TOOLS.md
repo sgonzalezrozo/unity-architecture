@@ -19,6 +19,17 @@ Unity's in-Editor MCP server in the AI Assistant package (`com.unity.ai.assistan
 
 A bridge and the verify script can't both own the project. `verify.sh` needs the Editor closed, and a bridge needs it open. While the Editor is open, the Editor itself writes its compile and test results to `Logs/verify/` (from the reporters in the `.ai/unity` package, which `install.sh` adds), and `scripts/verify-editor.sh` reads them.
 
+### With MCP for Unity
+
+| Need | Tool | Note |
+|---|---|---|
+| Compile, read errors | `refresh_unity`, `read_console` | Core tools, on by default |
+| Run tests | `run_tests`, `get_test_job` | **Testing** tool group, off by default |
+| Build and check prefabs | `execute_code` | **Scripting Extensions** tool group, off by default |
+| Play mode | `manage_editor` (`play`, `stop`) | Core tools |
+
+If a tool the task needs isn't available, report which group to turn on in **Window > MCP for Unity > Tools**; don't fall back to the generic tools for prefabs (`EDIT-11`). Without Roslyn installed in that window, `execute_code` compiles C# 6: write `UnityEngine.Object`, not `Object`, and no newer syntax. The setup is in the [installation guide](../docs/INSTALLATION.md#6-set-up-mcp-for-unity).
+
 ## Rules
 
 | ID | Rule |
