@@ -97,6 +97,7 @@ Without an [editor bridge](EDITOR_TOOLS.md#capability-detection), an agent can't
 | `HAND-03` | List every serialized field and what to assign to it. |
 | `HAND-04` | List the setup a first run needs, such as TMP Essentials or the EventSystem input module. |
 | `HAND-05` | Say what to test in Play mode, and report Play mode as not verified. |
+| `HAND-06` | With the rules' package, the handoff MAY also be a [prefab spec](PREFABS.md#prefab-spec): the same table as JSON, listing the whole hierarchy in order. Build it with `PrefabSpecs.BuildFromSpec` and check the prefab with `PrefabSpecs.Compare`, which MUST report no differences. |
 
 ```
 | Object | Parent | Anchors | Pivot | Size, position | Scale | Components | Raycast Target | Runtime container |

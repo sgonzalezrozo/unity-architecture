@@ -66,6 +66,36 @@ Press and hover feedback, such as scaling a button while it's pressed, has no ru
 
 With Screen System, create the screen or layer first with `ScreenAuthoring` (`SCR-13`) and build its content with the recipes. `PREFAB-03` (pivot) and `PREFAB-12` (nested Canvas) still depend on the content, so set them where the handoff says.
 
+## Prefab spec
+
+The [handoff](AGENT_WORKFLOW.md#prefab-handoff) table can also be written as a JSON spec (`HAND-06`). `PrefabSpecs.BuildFromSpec(json, path)` builds it with the recipes, saves it and returns the validator's result, and `PrefabSpecs.Compare(json, path)` lists every difference between the spec and the prefab, so the same spec always builds the same prefab and a change made by hand shows up.
+
+The spec lists the whole hierarchy in order: nothing is added that it doesn't name.
+
+| Field | Meaning |
+|---|---|
+| `name` | The object's name. `background`, `visuals` and `action` have fixed names; a `prefab` defaults to the asset's |
+| `type` | `container`, `background` (Image, raycast on), `visuals`, `image` (raycast off), `text` (TextMeshProUGUI), `action` or `prefab`. The root has none |
+| `components` | Class names in the `Client` assembly, such as the root's Model and View, or an inner View |
+| `controller` | An `action`'s Controller class |
+| `text`, `color` | A `text`'s text; an `image` or `background`'s color as `[r, g, b, a]` from 0 to 1 |
+| `prefab` | A nested prefab's asset path |
+| `layout` | `"stretch"` (the default), or `{"anchor": [x, y], "size": [w, h], "position": [x, y], "pivot": [x, y]}`; the pivot defaults to the anchor |
+| `children` | The objects under it, in order |
+
+```json
+{
+  "name": "ClaimTrophyBanner",
+  "components": ["ClaimTrophyBannerModel", "ClaimTrophyBannerView"],
+  "children": [
+    { "type": "background", "color": [0.1, 0.1, 0.2, 1] },
+    { "type": "text", "name": "Label", "text": "Claim your trophy" },
+    { "type": "image", "name": "Icon", "layout": { "anchor": [0, 0.5], "size": [96, 96], "position": [16, 0] } },
+    { "type": "action", "controller": "ClaimTrophyController" }
+  ]
+}
+```
+
 ## Checking a prefab
 
 The prefab validator (`TEST-12`) is an EditMode test in the rules' package, `com.sgonzalezrozo.unity-architecture`, which `install.sh` adds to `Packages/manifest.json` from `.ai/unity`. It loads every prefab under `Assets/Client` and fails with the prefab, the object and the rule ID of each error. It runs with the other tests: in `verify.sh`, and in the open Editor through `run_tests`.
