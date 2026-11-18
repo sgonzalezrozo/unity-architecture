@@ -11,6 +11,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="$ROOT/Logs/verify"
 COMPILE="$OUT/editor-compile.json"
 TESTS="$OUT/editor-tests.json"
+PREFABS="$OUT/editor-prefabs.json"
+PREFAB_TEST="UnityArchitecture.Prefabs.Tests.ClientPrefabsTests.ClientPrefabsFollowThePrefabRules"
 GENERATION_STATUS="$ROOT/Assets/FastIoC/Generated/GenerationStatus.json"
 
 json_number() {
@@ -51,6 +53,18 @@ newest_script_change() {
     echo "$newest"
 }
 
+# The newest change to a prefab under Assets/Client, which the prefab validator (TEST-12) checks.
+newest_prefab_change() {
+    local newest=0 path time
+    while IFS= read -r path; do
+        [ -f "$path" ] || continue
+        time="$(modified_time "$path")"
+        [ "$time" -gt "$newest" ] && newest="$time"
+    done < <(cd "$ROOT" && git status --porcelain --untracked-files=all -- Assets/Client 2>/dev/null \
+        | sed 's/^...//; s/^.* -> //; s/^"//; s/"$//; s|^|'"$ROOT"'/|' | grep '\.prefab$')
+    echo "$newest"
+}
+
 if [ ! -f "$COMPILE" ]; then
     echo "The Editor is open, but it hasn't written Logs/verify/editor-compile.json yet."
     echo "Run bash .ai/templates/scripts/install.sh so the .ai/unity package is in Packages/manifest.json, let Unity compile once, then try again."
@@ -78,15 +92,33 @@ if [ "${ERRORS:-0}" != "0" ]; then
     exit 1
 fi
 
+# A changed prefab is checked on every stop, even between test runs: the validator is one quick test.
+PREFAB_CHANGE="$(newest_prefab_change)"
+if [ "$PREFAB_CHANGE" -gt 0 ] && grep -qs '"com.sgonzalezrozo.unity-architecture"' "$ROOT/Packages/manifest.json"; then
+    VALIDATED_AT="$(json_number startedAtUnixSeconds "$PREFABS" 2>/dev/null)"
+    if [ ! -f "$PREFABS" ] || [ "${VALIDATED_AT:-0}" -lt "$PREFAB_CHANGE" ]; then
+        echo "A prefab under Assets/Client changed after the prefab validator last ran."
+        echo "Run it with run_tests through the Unity MCP (EditMode, test_names: [\"$PREFAB_TEST\"]), poll get_test_job until it finishes, then check again."
+        exit 1
+    fi
+
+    if grep -Eq '"passed": *false' "$PREFABS"; then
+        echo "The prefab validator found errors. Fix the prefabs through the recipes or a spec, never as text (EDIT-06):"
+        json_list errors "$PREFABS"
+        exit 1
+    fi
+fi
+
 COMPILE_ONLY="${VERIFY_COMPILE_ONLY:-0}"
 if [ "$COMPILE_ONLY" != "1" ] && grep -qs '"com.unity.test-framework"' "$ROOT/Packages/manifest.json" "$ROOT/Packages/packages-lock.json"; then
     # Compared with the newest script change, not the last compile: Unity also compiles after a test run, with no
     # script changed. A run that started after the change tested the code as it is.
     TESTED_AT="$(json_number startedAtUnixSeconds "$TESTS" 2>/dev/null)"
     [ -n "$TESTED_AT" ] || TESTED_AT="$(json_number finishedAtUnixSeconds "$TESTS" 2>/dev/null)"
-    if [ ! -f "$TESTS" ] || [ "${TESTED_AT:-0}" -lt "$NEWEST_CHANGE" ]; then
-        echo "The EditMode tests haven't run since the last script change."
-        echo "Run them with run_tests through the Unity MCP (EditMode), poll get_test_job until it finishes, then check again."
+    # Only a full run counts: the related tests or the prefab validator alone (a filtered run) aren't the suite.
+    if [ ! -f "$TESTS" ] || [ "${TESTED_AT:-0}" -lt "$NEWEST_CHANGE" ] || ! grep -Eq '"fullRun": *true' "$TESTS"; then
+        echo "The full EditMode suite is due, and it hasn't run since the last script change."
+        echo "Run every EditMode test with run_tests through the Unity MCP (EditMode, no filter), poll get_test_job until it finishes, then check again."
         exit 1
     fi
 

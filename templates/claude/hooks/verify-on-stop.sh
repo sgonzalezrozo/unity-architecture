@@ -47,15 +47,10 @@ fingerprint() {
     } 2>/dev/null | git hash-object --stdin
 }
 
-# Unix time of the last test run that passed: one this hook asked for, or one run in the open Editor.
+# Unix time of the last full test run that passed, one this hook asked for. A run in the Editor doesn't count: it may
+# be filtered (the related tests, or the prefab validator), and it would keep pushing the full run back.
 last_tests_time() {
-    local last editor
-    last="$(cat "$LAST_TESTS_FILE" 2>/dev/null)"
-    if grep -Eqs '"failed": *0,' "$STATE/editor-tests.json"; then
-        editor="$(sed -n 's/.*"startedAtUnixSeconds": *\([0-9][0-9]*\).*/\1/p' "$STATE/editor-tests.json" | head -1)"
-        [ "${editor:-0}" -gt "${last:-0}" ] && last="$editor"
-    fi
-    echo "${last:-0}"
+    cat "$LAST_TESTS_FILE" 2>/dev/null || echo 0
 }
 
 seconds_until_tests() {
@@ -88,8 +83,20 @@ else
     VERIFY="scripts/verify.sh"
 fi
 
+# A changed prefab under Assets/Client gets the prefab validator (TEST-12) on every stop, even between test runs.
+# With the Editor open, verify-editor.sh asks the agent to run it; with it closed, verify.sh runs only that test.
+PREFAB_TEST="UnityArchitecture.Prefabs.Tests.ClientPrefabsTests.ClientPrefabsFollowThePrefabRules"
+prefab_changed() {
+    git status --porcelain --untracked-files=all -- Assets/Client 2>/dev/null | grep -Eq '\.prefab"?$' \
+        && grep -qs '"com.sgonzalezrozo.unity-architecture"' Packages/manifest.json
+}
+
 if [ "$MODE" = compile ]; then
-    export VERIFY_COMPILE_ONLY=1
+    if [ "$VERIFY" = "scripts/verify.sh" ] && prefab_changed; then
+        export VERIFY_TEST_FILTER="$PREFAB_TEST" VERIFY_EDITMODE_ONLY=1
+    else
+        export VERIFY_COMPILE_ONLY=1
+    fi
 fi
 OUTPUT="$("$VERIFY" 2>&1)"
 CODE=$?
