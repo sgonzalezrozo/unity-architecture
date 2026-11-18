@@ -186,8 +186,8 @@ namespace UnityArchitecture.Prefabs
             private void CheckAction(GameObject action)
             {
                 Transform transform = action.transform;
-                if (transform.parent != null && transform.GetSiblingIndex() != transform.parent.childCount - 1)
-                    Error("INPUT-02", action, "Action is the last sibling, so it receives the touch first.");
+                if (transform.parent != null && !OnlyBlockersAbove(transform))
+                    Error("INPUT-02", action, "Action is the last sibling, so it receives the touch first. Only a panel with its own blocking Background, like a modal's Window, may sit above it.");
 
                 if (!HasController(action))
                     Error("INPUT-01", action, "Action has no Controller.");
@@ -196,9 +196,26 @@ namespace UnityArchitecture.Prefabs
                 CheckBlockingBackground(transform);
             }
 
+            // A modal's close Action sits under its Window (PREFAB-11): what's above it must block touches itself.
+            private static bool OnlyBlockersAbove(Transform action)
+            {
+                Transform parent = action.parent;
+                for (int i = action.GetSiblingIndex() + 1; i < parent.childCount; i++)
+                {
+                    Transform above = parent.GetChild(i);
+                    Transform background = above.name == BACKGROUND ? above : above.Find(BACKGROUND);
+                    Graphic graphic = background != null ? background.GetComponent<Graphic>() : null;
+                    if (graphic == null || !graphic.raycastTarget)
+                        return false;
+                }
+
+                return true;
+            }
+
             private void CheckActionGraphic(GameObject action)
             {
-                if (HasComponentOfType(action, BASE_CLICK_CONTROLLER))
+                // A Controller that is its own Graphic, like BaseClickController, is the raycast target.
+                if (HasInputGraphic(action))
                     return;
 
                 Image image = action.GetComponent<Image>();
@@ -342,6 +359,17 @@ namespace UnityArchitecture.Prefabs
             foreach (Component component in target.GetComponents<Component>())
             {
                 if (component is IEventSystemHandler)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool HasInputGraphic(GameObject target)
+        {
+            foreach (Component component in target.GetComponents<Component>())
+            {
+                if (component is Graphic && component is IEventSystemHandler)
                     return true;
             }
 

@@ -40,12 +40,31 @@ QuitGameAlert                 root: Model and root View (SCOPE-02), scale 1, rot
 | `PREFAB-08` | A container filled at runtime, such as a list's `Content` or the parent of instantiated items, MUST be empty in the prefab. |
 | `PREFAB-09` | `Action` MUST have an `Image` with alpha 0, and **Cull Transparent Mesh** on in its `CanvasRenderer`, so it draws nothing and costs no overdraw. |
 | `PREFAB-10` | A screen or layer has this shape: a stretch root, an optional `Background` and a `Content` inside the safe area. With Screen System, visibility belongs to the package. Without it, turn off the screen's own `Canvas`. `CanvasGroup` is only for fades and interaction. |
-| `PREFAB-11` | A modal blocks what's behind it: with Screen System, through its background; without it, through a `Dimmer` with raycast on. Closing on a tap outside is an `Action` that stretches between the background and the window, with a `CloseController`. |
+| `PREFAB-11` | A modal blocks what's behind it: with Screen System, through its background; without it, through a dimming `Background` with raycast on. Closing on a tap outside is an `Action` that stretches between the `Background` and the `Window`, with a `CloseController`; the `Window` blocks touches with its own `Background`, so only taps outside it close the modal. |
 | `PREFAB-12` | Anything that animates or changes often MUST have its own nested `Canvas`, so the static part isn't rebuilt (`ARCH-11`). |
 | `PREFAB-13` | A prefab SHOULD NOT go deeper than about 5 levels under its root. Justify it in the handoff when it does. |
 | `PREFAB-14` | The `Background` of an element with an `Action` MUST have raycast on, so a touch doesn't reach what's under it. So does the `Background` of a screen, but not the one of each layer. This is the exception to `INPUT-03`. |
 
 Press and hover feedback, such as scaling a button while it's pressed, has no rule yet: it needs a reusable component, like `BaseClickController`, that doesn't exist yet.
+
+## Building a prefab
+
+`UnityArchitecture.Prefabs.PrefabRecipes`, in the rules' package, builds the standard pieces already following these rules, so a prefab is a list of calls, not values set by hand. With a Unity MCP server, an agent calls them with `execute_code`; a person can call them from an Editor script.
+
+| Recipe | Builds |
+|---|---|
+| `CreateRoot(name, components)` | A stretch root with scale 1 and rotation 0, with its Model and root View |
+| `CreateScreenRoot(name, components)` | A root, a blocking `Background` and a `Content` |
+| `CreateModalRoot(name, windowSize, closeController, components)` | A dimming `Background`, an optional close `Action`, and a centered `Window` with its own `Background` |
+| `CreateSlotRoot(name, size, components)` | A list slot with a fixed size; UI Scroller sets its anchors |
+| `AddBackground`, `AddVisuals`, `AddContainer`, `AddImage`, `AddText` | The pieces, with Raycast Target off on visuals and on in a `Background` |
+| `AddAction(parent, controllerType)` | `Action`, last, with an invisible `Image` and Cull Transparent Mesh, or no `Image` when the Controller is its own `Graphic` |
+| `AddStateRoots(parent, states)` | One `{State}Root` per state |
+| `AddNestedPrefab(parent, path)` | An instance of another prefab, which stays its own scope |
+| `ApplyStretch`, `ApplyPoint` | Stretch anchors, or a point anchor with a size |
+| `SaveAndValidate(root, path)` | Saves the prefab and returns the validator's result |
+
+With Screen System, create the screen or layer first with `ScreenAuthoring` (`SCR-13`) and build its content with the recipes. `PREFAB-03` (pivot) and `PREFAB-12` (nested Canvas) still depend on the content, so set them where the handoff says.
 
 ## Checking a prefab
 
@@ -59,4 +78,4 @@ The prefab validator (`TEST-12`) is an EditMode test in the rules' package, `com
 
 A nested prefab is another scope, so its insides are checked as its own asset, not from the prefab that nests it. Models, Views and Controllers are recognized by their class name in the `Client` assembly, like the analyzers. `VIEW-07` (5 serialized fields) is checked in code by `UA0016`.
 
-Through a Unity MCP server, `UnityArchitecture.Prefabs.PrefabValidator.ValidateAsset(path)` returns the same results for one prefab, so an agent can check a prefab right after building it.
+Through a Unity MCP server, `UnityArchitecture.Prefabs.PrefabValidator.ValidateAsset(path)` returns the same results for one prefab, so an agent can check a prefab right after building it. **Tools > Unity Architecture > Validate Client Prefabs** runs it from the menu, and `-executeMethod UnityArchitecture.Prefabs.PrefabValidatorCommands.ValidateFromCommandLine` in batch mode, which exits with 1 when a prefab has an error.

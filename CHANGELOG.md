@@ -6,6 +6,7 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
+- Prefab recipes: `PrefabRecipes` in the `.ai/unity` package builds roots, screens, modals, slots, backgrounds, text, images, state roots, nested prefabs and the `Action` object already following the prefab rules, and `SaveAndValidate` checks the result. A menu item and an `-executeMethod` entry point run the validator on `Assets/Client`.
 - The prefab validator (`TEST-12`): a local package in `.ai/unity`, `com.sgonzalezrozo.unity-architecture`, that `install.sh` adds to `Packages/manifest.json` and to `testables`. An EditMode test checks every prefab under `Assets/Client` for the prefab rules a tool can check, with the prefab, object and rule ID in each error. `PrefabValidator.ValidateAsset(path)` gives the same results for one prefab, through a Unity MCP server.
 - `architecture/PREFABS.md` with `PREFAB-01` to `PREFAB-14`: the root's transform, anchors, pivot, TextMeshPro, no `Animator`, no persistent `UnityEvent`, `RectMask2D`, empty runtime containers, the `Action` hitbox, screen and modal shape, nested Canvases, depth, and a `Background` with raycast on that blocks touches under an element with an `Action` or a screen. `AGENTS.md` routes prefab work to it.
 - `VIEW-07` and `UA0016`: a View has at most 5 serialized fields. With more, it delegates to inner Views placed near the components they set, and it serializes components and inner Views, not assets.
@@ -20,6 +21,7 @@ All notable changes to this project are documented in this file.
 
 ### Changed
 
+- `INPUT-02` and `PREFAB-11`: a modal's close `Action` sits under the `Window`, which blocks touches with its own `Background`; the validator accepts it there. A modal dims with a `Background`, not a `Dimmer`, so it follows `INPUT-03`.
 - The Editor reporters moved from `Assets/Editor/UnityArchitecture` to the `.ai/unity` package, so updating `.ai` updates them. `install.sh` removes the old copies nobody edited, and lists the edited ones to merge and delete by hand.
 - `VIEW-03`: each scope has one root View, on its root, and only it subscribes to the Model. It may tell inner Views what to show, and they set their own components without reading the Model or subscribing. No View reaches into a nested prefab, its root View included. `UA0001` now lets a View reference a View, and still fails when a View references a Controller. `VIEW-01` applies to root Views.
 - `INPUT-01`: the input object is always called `Action`, and its Controller class is named after what it does (`{Action}Controller`), whatever the hierarchy. `INPUT-03` allows a blocking `Background` with raycast on (`PREFAB-14`).

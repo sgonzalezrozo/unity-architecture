@@ -1,7 +1,9 @@
 {
     "name": "UnityArchitecture.Prefabs.Fixtures",
     "rootNamespace": "UnityArchitecture.Prefabs.Fixtures",
-    "references": [],
+    "references": [
+        "UnityEngine.UI"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

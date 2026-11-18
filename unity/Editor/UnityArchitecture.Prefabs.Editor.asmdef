@@ -2,7 +2,8 @@
     "name": "UnityArchitecture.Prefabs.Editor",
     "rootNamespace": "UnityArchitecture.Prefabs",
     "references": [
-        "UnityEngine.UI"
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [
         "Editor"

@@ -5,6 +5,7 @@
         "UnityArchitecture.Prefabs.Editor",
         "UnityArchitecture.Prefabs.Fixtures",
         "UnityEngine.UI",
+        "Unity.TextMeshPro",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
