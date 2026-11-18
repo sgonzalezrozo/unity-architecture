@@ -31,7 +31,7 @@ A bridge and the verify script can't both own the project. `verify.sh` needs the
 | `EDIT-07` | With `editorBridge`, a new screen's Play mode check (`TEST-10`) is automated: enter Play mode, open the screen, read the Console, exit. Report it as verified only if all of that ran. |
 | `EDIT-08` | Bridge actions that add or remove packages, change Project Settings, delete assets or start a build MUST follow [When to ask](AGENT_WORKFLOW.md#when-to-ask). |
 | `EDIT-09` | Prefer a package's own validation tool or status file to the agent's judgment of that package (`DET-01`). |
-| `EDIT-10` | With the Editor open, after changing scripts the agent MUST ask the Editor to compile (`refresh_unity` with MCP for Unity) before it finishes: an Editor without focus doesn't refresh on its own. It MUST run the EditMode tests in the Editor (`run_tests`, then `get_test_job` until it finishes) when the Stop hook asks for them, and SHOULD NOT run them on every change. |
+| `EDIT-10` | With the Editor open, after changing scripts the agent MUST ask the Editor to compile (`refresh_unity` with MCP for Unity) before it finishes: an Editor without focus doesn't refresh on its own. It runs the tests related to the change (`TEST-11`) in the Editor, with `run_tests` filtered by `test_names`, `group_names` or `assembly_names`, then `get_test_job` until it finishes. It runs every EditMode test only when the Stop hook asks for them. |
 
 ## Verification order
 
@@ -52,7 +52,7 @@ compile + analyzers → EditMode tests → generation status → Play mode check
 
 A Claude Code Stop hook stops an agent from finishing with a broken build. `templates/scripts/install.sh` installs it, as the [README](../README.md#use-it-in-a-project) shows. It runs only when `Assets`, `Packages` or `ProjectSettings` changed, sends failures back to the agent, and gives up after three attempts in a row.
 
-Compiling is quick, so the hook checks it on every stop. The tests are slow, so it runs them at most every two hours, and only when something changed since they last passed. Between runs it sets `VERIFY_COMPILE_ONLY=1`, and its message says when the tests are due. A test run in the open Editor, such as one the developer starts in the Test Runner, counts as the last run. Set `VERIFY_TESTS_EVERY_SECONDS` to change the interval.
+Compiling is quick, so the hook checks it on every stop. The tests are slow, so it runs them at most every two hours, and only when something changed since they last passed. Between runs it sets `VERIFY_COMPILE_ONLY=1`, and its message says when the tests are due. A test run in the open Editor, such as one the developer starts in the Test Runner, counts as the last run. Set `VERIFY_TESTS_EVERY_SECONDS` to change the interval. The tests related to a change (`TEST-11`) run on every change: with the Editor open through `run_tests` with a filter, and with it closed through `VERIFY_TEST_FILTER="<names or regex>" scripts/verify.sh`, which passes the filter to Unity's `-testFilter`.
 
 | Editor | The hook runs | What it checks |
 |---|---|---|

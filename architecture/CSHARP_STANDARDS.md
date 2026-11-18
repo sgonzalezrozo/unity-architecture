@@ -165,5 +165,6 @@ With `addressables`, load large textures and audio through it, and always releas
 | `TEST-08` | A test for Model behavior MUST be written first, and MUST fail before the code exists. |
 | `TEST-09` | Test code follows these standards, including naming and no duplication. Only the lambda ban and size limits don't apply. |
 | `TEST-10` | A new screen MUST get a Play mode check: it opens, its main input works and the Console has no errors. Automate it when possible. Otherwise, report it as a manual step. |
+| `TEST-11` | Before finishing a change, the agent MUST run the tests directly related to it, existing and new: the tests of the classes it changed or added, and of the classes that use them. They MUST pass. The full suite runs in the Stop hook at most every two hours ([Automatic verification](EDITOR_TOOLS.md#automatic-verification)), and the agent SHOULD NOT run it on every change. |
 
 Use NUnit and Arrange-Act-Assert, with one concern per test. Mock Connectors with NSubstitute. Name tests `{Method}_{Condition}_{Result}`.

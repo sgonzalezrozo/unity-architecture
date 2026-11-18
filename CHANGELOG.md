@@ -16,7 +16,8 @@ All notable changes to this project are documented in this file.
 
 ### Changed
 
-- The Stop hook only compiles on most stops. It runs the tests at most every two hours, and only when something changed since they last passed, so verifying doesn't slow down every change. `VERIFY_TESTS_EVERY_SECONDS` changes the interval, and a passing test run in the open Editor counts as the last run. `verify.sh` and `verify-editor.sh` take `VERIFY_COMPILE_ONLY=1` to only compile. `EDIT-10` and the Definition of Done now ask for the tests when the hook does, not after every change.
+- The Stop hook only compiles on most stops. It runs the tests at most every two hours, and only when something changed since they last passed, so verifying doesn't slow down every change. `VERIFY_TESTS_EVERY_SECONDS` changes the interval, and a passing test run in the open Editor counts as the last run. `verify.sh` and `verify-editor.sh` take `VERIFY_COMPILE_ONLY=1` to only compile. The full suite runs only when the hook asks for it.
+- `TEST-11`: before finishing a change, the agent runs the tests directly related to it, existing and new, and they must pass. `EDIT-10` and the Definition of Done point to it. `verify.sh` takes `VERIFY_TEST_FILTER` to run only those tests with the Editor closed.
 - `install.sh` no longer creates `Assets/Client/Client.asmdef`: Unity warns about an assembly definition with no scripts, and the project's code may live in other folders. It installs the analyzers only when that file exists, and otherwise says how to add it.
 
 ## [0.4.1] - 2026-11-17

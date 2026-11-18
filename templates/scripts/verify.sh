@@ -3,6 +3,7 @@
 # Exit codes: 0 passed, 1 failed, 2 couldn't run.
 # Set UNITY_PATH to use a specific Unity executable. Close the project in the Editor first.
 # Set VERIFY_COMPILE_ONLY=1 to only compile, as the Stop hook does between test runs.
+# Set VERIFY_TEST_FILTER to run only some tests: names or a regex, separated by ";", as Unity's -testFilter takes them.
 # Writes Logs/verify/summary.json so agents and CI can read the result without parsing text.
 set -u
 
@@ -81,6 +82,12 @@ if [ ! -x "$UNITY" ]; then
     exit 2
 fi
 
+# The tests related to a change (TEST-11), when VERIFY_TEST_FILTER names them.
+FILTER_ARGS=()
+if [ -n "${VERIFY_TEST_FILTER:-}" ]; then
+    FILTER_ARGS=(-testFilter "$VERIFY_TEST_FILTER")
+fi
+
 START_MARKER="$OUT/.started"
 touch "$START_MARKER"
 
@@ -89,7 +96,7 @@ COMPILE_ONLY="${VERIFY_COMPILE_ONLY:-0}"
 if [ "$COMPILE_ONLY" != "1" ] && grep -qs '"com.unity.test-framework"' "$ROOT/Packages/manifest.json" "$ROOT/Packages/packages-lock.json"; then
     RUN_TESTS=true
     "$UNITY" -batchmode -nographics -projectPath "$ROOT" \
-        -runTests -testPlatform EditMode -testResults "$RESULTS" -logFile "$LOG"
+        -runTests -testPlatform EditMode -testResults "$RESULTS" "${FILTER_ARGS[@]+"${FILTER_ARGS[@]}"}" -logFile "$LOG"
 else
     RUN_TESTS=false
     "$UNITY" -batchmode -nographics -quit -projectPath "$ROOT" -logFile "$LOG"
