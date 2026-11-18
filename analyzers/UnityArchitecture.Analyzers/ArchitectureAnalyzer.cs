@@ -14,6 +14,7 @@ namespace UnityArchitecture.Analyzers
         private const string COMPONENT = "UnityEngine.Component";
         private const string SERIALIZE_FIELD = "UnityEngine.SerializeField";
         private const int MAX_VIEW_SERIALIZED_FIELDS = 5;
+        private const string CLIENT_ASSEMBLY = "Client";
         private const string EVENT_SYSTEMS = "UnityEngine.EventSystems";
         private const string LINQ = "System.Linq";
 
@@ -23,8 +24,17 @@ namespace UnityArchitecture.Analyzers
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
+            context.RegisterCompilationStartAction(RegisterForClientAssembly);
+        }
 
-            context.RegisterCompilationStartAction(ModelGraph.Register);
+        // Unity also applies an analyzer to every assembly that references the one it sits in: Assembly-CSharp
+        // references Client automatically, and so do test assemblies. Only the Client assembly follows the rules.
+        private static void RegisterForClientAssembly(CompilationStartAnalysisContext context)
+        {
+            if (context.Compilation.AssemblyName != CLIENT_ASSEMBLY)
+                return;
+
+            ModelGraph.Register(context);
             context.RegisterSymbolAction(AnalyzeType, SymbolKind.NamedType);
             context.RegisterSymbolAction(AnalyzeEvent, SymbolKind.Event);
             context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);

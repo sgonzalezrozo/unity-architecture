@@ -24,7 +24,11 @@ All notable changes to this project are documented in this file.
 - The prefab handoff (`HAND-01`) lists pivot, scale and runtime containers too, and the examples use `Action`.
 - The Stop hook only compiles on most stops. It runs the tests at most every two hours, and only when something changed since they last passed, so verifying doesn't slow down every change. `VERIFY_TESTS_EVERY_SECONDS` changes the interval, and a passing test run in the open Editor counts as the last run. `verify.sh` and `verify-editor.sh` take `VERIFY_COMPILE_ONLY=1` to only compile. The full suite runs only when the hook asks for it.
 - `TEST-11`: before finishing a change, the agent runs the tests directly related to it, existing and new, and they must pass. `EDIT-10` and the Definition of Done point to it. `verify.sh` takes `VERIFY_TEST_FILTER` to run only those tests with the Editor closed.
-- `install.sh` no longer creates `Assets/Client/Client.asmdef`: Unity warns about an assembly definition with no scripts, and the project's code may live in other folders. It installs the analyzers only when that file exists, and otherwise says how to add it.
+
+### Fixed
+
+- The analyzers checked every assembly that references Client, not just Client: Unity hands an analyzer to those too, and Assembly-CSharp references Client automatically. In a project with code outside `Assets/Client`, every rule failed there, in third-party code and in generated code. They now check only the assembly named `Client`, so tests and the rest of `Assets` stay out, as the README already said.
+- `install.sh` creates `Assets/Client/Client.asmdef` again in a new project, with a `Client.cs` note so Unity doesn't warn about an assembly definition with no scripts.
 
 ## [0.4.1] - 2026-11-17
 

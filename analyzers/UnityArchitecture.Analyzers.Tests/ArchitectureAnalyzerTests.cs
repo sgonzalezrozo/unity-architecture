@@ -86,5 +86,17 @@ using UnityEngine.UI;
 
             Assert.Empty(rules);
         }
+
+        [Theory]
+        [InlineData("Assembly-CSharp")]
+        [InlineData("Client.Tests")]
+        public async Task ChecksOnlyTheClientAssembly(string assemblyName)
+        {
+            string source = "public class Screen : MonoBehaviour { private Button button; private void Run() { var count = 1; } }";
+
+            string[] rules = await AnalyzerHarness.AnalyzeAsync(USINGS + source, assemblyName);
+
+            Assert.Empty(rules);
+        }
     }
 }

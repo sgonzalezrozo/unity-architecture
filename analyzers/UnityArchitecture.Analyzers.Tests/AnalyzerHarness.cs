@@ -45,10 +45,15 @@ namespace UIFoundations
 }
 ";
 
-        public static async Task<string[]> AnalyzeAsync(string source)
+        public static Task<string[]> AnalyzeAsync(string source)
+        {
+            return AnalyzeAsync(source, "Client");
+        }
+
+        public static async Task<string[]> AnalyzeAsync(string source, string assemblyName)
         {
             CSharpCompilation compilation = CSharpCompilation.Create(
-                "Client",
+                assemblyName,
                 new[] { CSharpSyntaxTree.ParseText(UNITY_STUBS), CSharpSyntaxTree.ParseText(source) },
                 GetReferences(),
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));

@@ -29,9 +29,9 @@ The [checklist](../architecture/AGENT_WORKFLOW.md#pre-response-checklist) also c
 
 ## Install
 
-`install.sh` installs them, from the prebuilt DLL in [`prebuilt/`](prebuilt), with no .NET SDK needed. See [Use it in a project](../README.md#use-it-in-a-project). It puts them in `Assets/Client/Analyzers`, with the `RoslynAnalyzer` label already set in the `.meta`, only when `Assets/Client/Client.asmdef` exists: the analyzers check that assembly. It doesn't create the `.asmdef`, since Unity warns about one with no scripts. `update.sh` keeps them current. Commit both files.
+`install.sh` installs them, from the prebuilt DLL in [`prebuilt/`](prebuilt), with no .NET SDK needed. See [Use it in a project](../README.md#use-it-in-a-project). It puts them in `Assets/Client/Analyzers`, with the `RoslynAnalyzer` label already set in the `.meta`. In a new project it also creates `Assets/Client/Client.asmdef`, with a `Client.cs` note so Unity doesn't warn about an assembly definition with no scripts. If `Assets/Client` already has code but no `.asmdef`, it skips the analyzers and says why. `update.sh` keeps them current. Commit both files.
 
-Unity applies an analyzer to the assembly it sits in, so the rules cover `Assets/Client` but not your tests, where lambdas are allowed, or third-party code in `Assets`.
+The analyzers check only the assembly named `Client`. Unity also hands an analyzer to every assembly that references the one it sits in, such as Assembly-CSharp and your test assemblies, but they skip those: the rules cover `Assets/Client`, not your tests, where lambdas are allowed, or third-party code in `Assets`.
 
 ### Building them yourself
 
