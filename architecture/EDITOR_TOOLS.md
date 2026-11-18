@@ -49,7 +49,7 @@ compile + analyzers → EditMode tests → generation status → Play mode check
 
 ## Automatic verification
 
-`verify.sh` and a Claude Code Stop hook stop an agent from finishing with a broken build. Copy them from [`templates/`](../templates) as the [README](../README.md#verify-every-change-automatically) shows. The hook runs only when `Assets`, `Packages` or `ProjectSettings` changed, sends failures back to the agent, and gives up after three attempts in a row.
+`verify.sh` and a Claude Code Stop hook stop an agent from finishing with a broken build. Copy them from [`templates/`](../templates) with `templates/scripts/install.sh`, as the [README](../README.md#use-it-in-a-project) shows. The hook runs only when `Assets`, `Packages` or `ProjectSettings` changed, sends failures back to the agent, and gives up after three attempts in a row.
 
 ## Reporting back
 

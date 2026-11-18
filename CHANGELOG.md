@@ -6,7 +6,13 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
-- `templates/scripts/install.sh` copies `AGENTS.md`, `CLAUDE.md`, `.editorconfig`, the Copilot, Rider and Cursor rules, `verify.sh` and the Claude Code hook into the project root in one command. It keeps files that already exist unless you pass `--force`.
+- `templates/scripts/install.sh` puts the entry files at the project root in one command: `AGENTS.md`, `CLAUDE.md`, `.editorconfig`, the Copilot, Rider and Cursor rules, `verify.sh` and the Claude Code hook. It keeps files that already exist; `--update` refreshes the copied templates, and never touches `AGENTS.md`, `CLAUDE.md` or `.claude/settings.json`.
+- `templates/scripts/update.sh` gets the latest `.ai` from GitHub and runs `install.sh --update`.
+
+### Changed
+
+- `CLAUDE.md` loads both `.ai/AGENTS.md` and the project's root `AGENTS.md`, so Claude Code also reads the project's own rules. The root `AGENTS.md` has a "Rules for this project only" section.
+- README: "Use it in a project" is now five numbered steps, from `git init` to the first commit, with a table of the files at the root, how to clone a project that uses the rules, and how to update.
 
 ## [0.4.0] - 2026-11-17
 

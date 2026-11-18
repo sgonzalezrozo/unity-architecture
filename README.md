@@ -22,7 +22,7 @@ Unity Architecture Agents is a free, open-source `AGENTS.md` and `CLAUDE.md` rul
 | [C# standards](architecture/CSHARP_STANDARDS.md) | Style, performance, async, logging and tests |
 | [Editor tools](architecture/EDITOR_TOOLS.md) | How an agent verifies its work with Unity MCP, the Unity CLI or `verify.sh` |
 | [Examples](architecture/examples) | Three complete features with invented names: a backend feature, custom input and a filtered list |
-| [Templates](templates) | `.editorconfig`, Copilot, Cursor and Rider rules, `verify.sh`, a Claude Code Stop hook, and `install.sh` to copy them into your project |
+| [Templates](templates) | `.editorconfig`, Copilot, Cursor and Rider rules, `verify.sh`, a Claude Code Stop hook, and `install.sh` and `update.sh` to put them in your project and keep them current |
 | [Analyzers](analyzers) | Roslyn analyzers that turn the mechanical rules into compile errors |
 
 ## How the process scales
@@ -37,23 +37,108 @@ Before returning code, the agent runs the [pre-response checklist](architecture/
 
 ## Use it in a project
 
-Add this repository as a Git submodule. Unity ignores a folder that starts with a dot, so `.ai/` is never imported and creates no `.meta` files.
+Five steps, about five minutes. You need Git, and a terminal open at your **project root**: the folder that holds `Assets`, `Packages` and `ProjectSettings`. On Windows, use Git Bash.
+
+### 1. Make sure the project is a Git repository
+
+If `git status` says "not a git repository", create one first:
+
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+```
+
+Add a Unity `.gitignore` before that first commit, so `Library` and `Temp` stay out.
+
+### 2. Add the rules
 
 ```bash
 git submodule add https://github.com/sgonzalezrozo/unity-architecture-agents.git .ai
 ```
 
-Assistants look for their instructions at the project root, and a submodule can only add a folder. From the project root, copy everything they need in one go:
+You now have a folder named `.ai` next to `Assets`, with `AGENTS.md`, `architecture`, `templates` and `analyzers` inside. Unity ignores folders that start with a dot, so it never imports `.ai` or creates `.meta` files for it.
+
+### 3. Put the entry files at the root
+
+Assistants only read instructions from fixed places in your project, and a submodule can only add its own folder. This script puts small entry files there, pointing to `.ai`:
 
 ```bash
 bash .ai/templates/scripts/install.sh
 ```
 
-It creates `AGENTS.md`, `CLAUDE.md`, `.editorconfig`, the Copilot, Rider and Cursor rules, `scripts/verify.sh` and the Claude Code hook, and lists what it did. Files that already exist are kept, so it's safe to run again; `--force` replaces them. If your project already has a `.claude/settings.json`, add the Stop hook from `.ai/templates/claude/settings.json` to it yourself.
+Run it from a terminal; double-clicking a `.sh` file opens it in an editor on most systems. Your project root now has:
 
-The sections below explain each file, for copying them by hand.
+| File | Read by | What it is |
+|---|---|---|
+| `AGENTS.md` | Codex, Cursor and most agents | Points to `.ai/AGENTS.md`, and holds rules for this project only |
+| `CLAUDE.md` | Claude Code | Loads `.ai/AGENTS.md` and your `AGENTS.md` |
+| `.github/copilot-instructions.md` | GitHub Copilot | Points to `.ai/AGENTS.md`, with the core rules in case nothing else loads |
+| `.aiassistant/rules/project.md` | Rider AI Assistant | The same, for Rider |
+| `.cursor/rules/unity-architecture.mdc` | Cursor | The same, for Cursor |
+| `.editorconfig` | Rider, Visual Studio | Formatting, `var`, braces and naming |
+| `scripts/verify.sh` | Agents, CI | Compiles in batch mode, runs EditMode tests, checks Fast IoC generation |
+| `.claude/hooks/verify-on-stop.sh`, `.claude/settings.json` | Claude Code | Runs `verify.sh` when the agent finishes, and sends failures back |
 
-At the root, two small files point to the rules.
+Files that already exist are kept, so running it again is safe. If your project already had a `.claude/settings.json`, the script says so: add the Stop hook from `.ai/templates/claude/settings.json` to it yourself.
+
+### 4. Commit
+
+```bash
+git add .
+git commit -m "Add Unity Architecture Agents"
+```
+
+This commits the files above and `.gitmodules`, which records the `.ai` version your project uses.
+
+### 5. Finish in your tools
+
+- **Rider:** open `.aiassistant/rules/project.md` and set the rule's type to **Always**.
+- **Analyzers (optional, recommended):** they turn the mechanical rules into compile errors. They need the .NET SDK; see [Analyzers](analyzers/README.md#install).
+- **Rules for this project only:** write them in your root `AGENTS.md`, under "Rules for this project only". Never edit files inside `.ai`: the next update would overwrite them.
+
+That's it: open the project with your assistant and ask for a change. It reads the rules from `.ai`.
+
+### Cloning a project that uses it
+
+`git clone` leaves `.ai` empty. Fill it with:
+
+```bash
+git submodule update --init
+```
+
+Or clone with `git clone --recurse-submodules <url>`.
+
+### Updating
+
+One command gets the latest rules and refreshes the files at the root:
+
+```bash
+bash .ai/templates/scripts/update.sh
+```
+
+It updates the `.ai` submodule from GitHub, then runs `install.sh --update`: the copies that came from `.ai/templates` (Copilot, Rider and Cursor rules, `.editorconfig`, `verify.sh` and the hook) are replaced when they changed, and listed. It never touches `AGENTS.md`, `CLAUDE.md` or `.claude/settings.json`, which are yours. If you edited a copied template, the update replaces your edit: keep project rules in `AGENTS.md` instead.
+
+Then commit, so everyone on the project gets the same version:
+
+```bash
+git add .
+git commit -m "Update Unity Architecture Agents"
+```
+
+What changed is in `.ai/CHANGELOG.md`. Teammates get it with `git pull` followed by `git submodule update --init`.
+
+The files are copies rather than symbolic links because links need extra setup on Windows, and Copilot and Rider don't always follow them.
+
+### How verification works
+
+`scripts/verify.sh` fails on compiler and analyzer errors, and writes `Logs/verify/summary.json` for agents and CI. Exit codes: `0` passed, `1` failed, `2` couldn't run. When Claude Code finishes, the hook runs it if `Assets`, `Packages` or `ProjectSettings` changed, and sends failures back to the agent. It gives up after three attempts in a row. Close the project in the Editor while the agent works, or the hook can't check anything.
+
+With a Unity MCP server, such as the Unity CLI's `unity mcp` mode or [MCP for Unity](https://github.com/CoplayDev/unity-mcp), the agent reads the Console, runs tests and builds prefabs through the open Editor instead. [Editor tools](architecture/EDITOR_TOOLS.md) says which tool checks what, and what an agent may do through a bridge.
+
+### Installing without the script
+
+Each file the script creates comes from `.ai/templates`, except `AGENTS.md` and `CLAUDE.md`. To do it by hand, copy the templates to the paths in the table above, make `scripts/verify.sh` and the hook executable, and write the two entry files:
 
 `AGENTS.md`:
 
@@ -63,58 +148,15 @@ At the root, two small files point to the rules.
 All rules live in the `.ai` submodule. Read `.ai/AGENTS.md` completely, then open only the document it points to.
 
 If `.ai/` is empty, run `git submodule update --init`.
+
+## Rules for this project only
 ```
 
 `CLAUDE.md`:
 
 ```text
 @.ai/AGENTS.md
-```
-
-Keep rules that only apply to one project in that project's root `AGENTS.md`.
-
-### Copilot, Rider and code style
-
-These tools only read files from fixed paths in your project, so copy the ones you use:
-
-```bash
-cp .ai/templates/.editorconfig .
-mkdir -p .github .aiassistant/rules
-cp .ai/templates/copilot-instructions.md .github/
-cp .ai/templates/rider-project-rule.md .aiassistant/rules/project.md
-mkdir -p .cursor/rules
-cp .ai/templates/cursor-rule.mdc .cursor/rules/unity-architecture.mdc
-```
-
-Commit these copies in your project. In Rider, set the rule's type to **Always**.
-
-`.editorconfig` covers formatting, `var`, braces and naming in Rider and Visual Studio. It doesn't stop Unity from compiling.
-
-### Verify every change automatically
-
-An agent that can't check its work reports guesses. Copy the verify script and, for Claude Code, the Stop hook:
-
-```bash
-mkdir -p scripts .claude/hooks
-cp .ai/templates/scripts/verify.sh scripts/
-cp .ai/templates/claude/hooks/verify-on-stop.sh .claude/hooks/
-cp .ai/templates/claude/settings.json .claude/
-```
-
-`scripts/verify.sh` compiles the project in batch mode, runs the EditMode tests and checks Fast IoC code generation. It fails on compiler and analyzer errors, and writes `Logs/verify/summary.json` for agents and CI. Exit codes: `0` passed, `1` failed, `2` couldn't run.
-
-When Claude Code finishes, the hook runs `verify.sh` if `Assets`, `Packages` or `ProjectSettings` changed, and sends failures back to the agent. It gives up after three attempts in a row. Close the project in the Editor while the agent works, or the hook can't check anything.
-
-### Unity MCP and the Unity CLI
-
-With a Unity MCP server, such as the Unity CLI's `unity mcp` mode or [MCP for Unity](https://github.com/CoplayDev/unity-mcp), the agent reads the Console, runs tests and builds prefabs through the open Editor instead. [Editor tools](architecture/EDITOR_TOOLS.md) says which tool checks what, and what an agent may do through a bridge.
-
-### Updating
-
-To get the latest version, run this and commit the result:
-
-```bash
-git submodule update --remote .ai
+@AGENTS.md
 ```
 
 ## Project status
@@ -125,7 +167,7 @@ This is version `0.4.0`. The architecture and the code style are mandatory. [Fas
 
 ### How do I make AI coding agents follow an architecture in Unity?
 
-Give them rules they can't miss, and checks they can't skip. Add this repository as `.ai/`, point `AGENTS.md` and `CLAUDE.md` at it, install the [analyzers](analyzers), and add the [verify loop](#verify-every-change-automatically). Instructions guide the agent, and the compiler enforces the mechanical rules.
+Give them rules they can't miss, and checks they can't skip. Add this repository as `.ai/`, run its install script, install the [analyzers](analyzers), and let the [verify loop](#how-verification-works) check every change. Instructions guide the agent, and the compiler enforces the mechanical rules.
 
 ### Does it work with Claude Code, Cursor, Copilot and Rider?
 
@@ -149,7 +191,7 @@ It's written and tested against Unity 6 (`6000.3`). The rules cover uGUI code, s
 
 ### How do I write an AGENTS.md or CLAUDE.md for a Unity project?
 
-Start from this repository instead of a blank file. Add it as the `.ai/` submodule, and keep a two-line root `AGENTS.md` and `CLAUDE.md` that point to it, as [Use it in a project](#use-it-in-a-project) shows. Put rules that only apply to one project in that project's root `AGENTS.md`.
+Start from this repository instead of a blank file. Add it as the `.ai/` submodule and run its install script, which creates a root `AGENTS.md` and `CLAUDE.md` that point to it, as [Use it in a project](#use-it-in-a-project) shows. Put rules that only apply to one project in that project's root `AGENTS.md`.
 
 ### Are there Cursor rules for Unity?
 
