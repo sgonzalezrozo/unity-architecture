@@ -11,6 +11,11 @@ ROOT="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
 STATE="$ROOT/Logs/verify"
 PASSED_FILE="$STATE/last-passed"
 ATTEMPTS_FILE="$STATE/attempts"
+# Compiling is quick and runs on every stop. The tests are slow, so they run at most every
+# VERIFY_TESTS_EVERY_SECONDS (2 hours by default), and only for changes that haven't passed them yet.
+TESTS_EVERY="${VERIFY_TESTS_EVERY_SECONDS:-7200}"
+LAST_TESTS_FILE="$STATE/last-tests"
+TESTS_PENDING_FILE="$STATE/tests-pending"
 PATHS="Assets Packages ProjectSettings"
 
 cat > /dev/null
@@ -42,14 +47,39 @@ fingerprint() {
     } 2>/dev/null | git hash-object --stdin
 }
 
+# Unix time of the last test run that passed: one this hook asked for, or one run in the open Editor.
+last_tests_time() {
+    local last editor
+    last="$(cat "$LAST_TESTS_FILE" 2>/dev/null)"
+    if grep -Eqs '"failed": *0,' "$STATE/editor-tests.json"; then
+        editor="$(sed -n 's/.*"startedAtUnixSeconds": *\([0-9][0-9]*\).*/\1/p' "$STATE/editor-tests.json" | head -1)"
+        [ "${editor:-0}" -gt "${last:-0}" ] && last="$editor"
+    fi
+    echo "${last:-0}"
+}
+
+seconds_until_tests() {
+    echo $(( $(last_tests_time) + TESTS_EVERY - $(date +%s) ))
+}
+
 # Nothing to check: no pending changes, or the same files already passed.
 if [ -z "$(git status --porcelain -- $PATHS 2>/dev/null)" ]; then
     exit 0
 fi
 
 CURRENT="$(fingerprint)"
+UNTIL_TESTS="$(seconds_until_tests)"
+if [ "$UNTIL_TESTS" -le 0 ]; then
+    MODE=tests
+else
+    MODE=compile
+fi
+
+# These files already passed. Check them again only for the tests they still owe, once those are due.
 if [ "$CURRENT" = "$(cat "$PASSED_FILE" 2>/dev/null)" ]; then
-    exit 0
+    if [ "$MODE" = compile ] || [ ! -f "$TESTS_PENDING_FILE" ]; then
+        exit 0
+    fi
 fi
 
 if editor_open && [ -x scripts/verify-editor.sh ]; then
@@ -58,6 +88,9 @@ else
     VERIFY="scripts/verify.sh"
 fi
 
+if [ "$MODE" = compile ]; then
+    export VERIFY_COMPILE_ONLY=1
+fi
 OUTPUT="$("$VERIFY" 2>&1)"
 CODE=$?
 
@@ -65,7 +98,14 @@ case "$CODE" in
     0)
         echo "$CURRENT" > "$PASSED_FILE"
         rm -f "$ATTEMPTS_FILE"
-        notify "$(echo "$OUTPUT" | tail -1)"
+        if [ "$MODE" = tests ]; then
+            date +%s > "$LAST_TESTS_FILE"
+            rm -f "$TESTS_PENDING_FILE"
+            notify "$(echo "$OUTPUT" | tail -1)"
+        else
+            touch "$TESTS_PENDING_FILE"
+            notify "$(echo "$OUTPUT" | tail -1) The tests run when they're due, in $(( (UNTIL_TESTS + 59) / 60 )) min."
+        fi
         exit 0
         ;;
     1)

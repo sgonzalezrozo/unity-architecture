@@ -2,6 +2,7 @@
 # Compiles the project, runs the EditMode tests in batch mode and checks Fast IoC code generation.
 # Exit codes: 0 passed, 1 failed, 2 couldn't run.
 # Set UNITY_PATH to use a specific Unity executable. Close the project in the Editor first.
+# Set VERIFY_COMPILE_ONLY=1 to only compile, as the Stop hook does between test runs.
 # Writes Logs/verify/summary.json so agents and CI can read the result without parsing text.
 set -u
 
@@ -84,7 +85,8 @@ START_MARKER="$OUT/.started"
 touch "$START_MARKER"
 
 # Without the Test Framework package, Unity ignores -runTests and never quits, so only compile.
-if grep -qs '"com.unity.test-framework"' "$ROOT/Packages/manifest.json" "$ROOT/Packages/packages-lock.json"; then
+COMPILE_ONLY="${VERIFY_COMPILE_ONLY:-0}"
+if [ "$COMPILE_ONLY" != "1" ] && grep -qs '"com.unity.test-framework"' "$ROOT/Packages/manifest.json" "$ROOT/Packages/packages-lock.json"; then
     RUN_TESTS=true
     "$UNITY" -batchmode -nographics -projectPath "$ROOT" \
         -runTests -testPlatform EditMode -testResults "$RESULTS" -logFile "$LOG"
@@ -149,7 +151,10 @@ if [ -f "$GENERATION_STATUS" ]; then
     fi
 fi
 
-if [ "$RUN_TESTS" = false ]; then
+if [ "$COMPILE_ONLY" = "1" ]; then
+    echo "Verify passed: compiled."
+    summary "passed" "Compiled; tests not run (VERIFY_COMPILE_ONLY)" "0" "0"
+elif [ "$RUN_TESTS" = false ]; then
     echo "Verify passed: compiled. No tests ran: add the Test Framework package (com.unity.test-framework) to run EditMode tests."
     summary "passed" "Compiled; no tests ran because the Test Framework package isn't installed" "0" "0"
 else

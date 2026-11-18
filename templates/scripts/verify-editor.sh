@@ -4,6 +4,7 @@
 # because batch mode can't open a project the Editor has open.
 # The agent compiles and runs tests through a Unity MCP server (refresh_unity, run_tests); this script only reads
 # the results. Exit codes: 0 passed, 1 failed or out of date, 2 couldn't check.
+# Set VERIFY_COMPILE_ONLY=1 to check only the compile, as the Stop hook does between test runs.
 set -u
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -77,7 +78,8 @@ if [ "${ERRORS:-0}" != "0" ]; then
     exit 1
 fi
 
-if grep -qs '"com.unity.test-framework"' "$ROOT/Packages/manifest.json" "$ROOT/Packages/packages-lock.json"; then
+COMPILE_ONLY="${VERIFY_COMPILE_ONLY:-0}"
+if [ "$COMPILE_ONLY" != "1" ] && grep -qs '"com.unity.test-framework"' "$ROOT/Packages/manifest.json" "$ROOT/Packages/packages-lock.json"; then
     # Compared with the newest script change, not the last compile: Unity also compiles after a test run, with no
     # script changed. A run that started after the change tested the code as it is.
     TESTED_AT="$(json_number startedAtUnixSeconds "$TESTS" 2>/dev/null)"
@@ -104,7 +106,9 @@ if [ -f "$GENERATION_STATUS" ] && grep -Eq '"status": *1' "$GENERATION_STATUS"; 
     exit 1
 fi
 
-if [ -n "${TOTAL:-}" ]; then
+if [ "$COMPILE_ONLY" = "1" ]; then
+    echo "Verify passed in the open Editor: compiled."
+elif [ -n "${TOTAL:-}" ]; then
     echo "Verify passed in the open Editor: compiled, ${TOTAL} tests."
 else
     echo "Verify passed in the open Editor: compiled. No tests ran: the Test Framework package isn't installed."
