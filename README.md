@@ -22,7 +22,7 @@ Unity Architecture Agents is a free, open-source `AGENTS.md` and `CLAUDE.md` rul
 | [C# standards](architecture/CSHARP_STANDARDS.md) | Style, performance, async, logging and tests |
 | [Editor tools](architecture/EDITOR_TOOLS.md) | How an agent verifies its work with Unity MCP, the Unity CLI or `verify.sh` |
 | [Examples](architecture/examples) | Three complete features with invented names: a backend feature, custom input and a filtered list |
-| [Templates](templates) | `.editorconfig`, Copilot, Cursor and Rider rules, `verify.sh` and a Claude Code Stop hook |
+| [Templates](templates) | `.editorconfig`, Copilot, Cursor and Rider rules, `verify.sh`, a Claude Code Stop hook, and `install.sh` to copy them into your project |
 | [Analyzers](analyzers) | Roslyn analyzers that turn the mechanical rules into compile errors |
 
 ## How the process scales
@@ -43,7 +43,17 @@ Add this repository as a Git submodule. Unity ignores a folder that starts with 
 git submodule add https://github.com/sgonzalezrozo/unity-architecture-agents.git .ai
 ```
 
-Assistants look for their instructions at the project root, and a submodule can only add a folder. Add these two small files at the root to point to it.
+Assistants look for their instructions at the project root, and a submodule can only add a folder. From the project root, copy everything they need in one go:
+
+```bash
+bash .ai/templates/scripts/install.sh
+```
+
+It creates `AGENTS.md`, `CLAUDE.md`, `.editorconfig`, the Copilot, Rider and Cursor rules, `scripts/verify.sh` and the Claude Code hook, and lists what it did. Files that already exist are kept, so it's safe to run again; `--force` replaces them. If your project already has a `.claude/settings.json`, add the Stop hook from `.ai/templates/claude/settings.json` to it yourself.
+
+The sections below explain each file, for copying them by hand.
+
+At the root, two small files point to the rules.
 
 `AGENTS.md`:
 

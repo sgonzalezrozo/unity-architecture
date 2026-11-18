@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- `templates/scripts/install.sh` copies `AGENTS.md`, `CLAUDE.md`, `.editorconfig`, the Copilot, Rider and Cursor rules, `verify.sh` and the Claude Code hook into the project root in one command. It keeps files that already exist unless you pass `--force`.
+
 ## [0.4.0] - 2026-11-17
 
 ### Added
