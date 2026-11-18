@@ -115,7 +115,7 @@ State what changed, which tool verified it, and what wasn't verified. If you cou
 
 - [ ] Follows `AGENTS.md` and the checklist above
 - [ ] Compiles with no new warnings or analyzer errors, checked by a tool (`EDIT-02`)
-- [ ] Existing tests pass, and everything that can be unit tested has tests
+- [ ] Everything that can be unit tested has tests. Existing tests pass when the Stop hook runs them, at most every two hours ([Automatic verification](EDITOR_TOOLS.md#automatic-verification)); between runs, report them as not verified
 - [ ] A bug fix includes a test that fails without the fix
 - [ ] No unused code, no debug logs
 
