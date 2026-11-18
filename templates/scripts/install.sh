@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Puts the files assistants and tools read from fixed paths at the project root, next to the .ai submodule:
 # AGENTS.md, CLAUDE.md, .editorconfig, Copilot, Rider and Cursor rules, scripts/verify.sh, scripts/verify-editor.sh,
-# the Claude Code hook, the Unity MCP config (.mcp.json) and the Editor reporters in Assets/Editor/UnityArchitecture.
+# the Claude Code hook, the Unity MCP config (.mcp.json), and the .ai/unity package (prefab validator, Editor reporters).
 #
 # Usage, from the project root (the folder that holds Assets and .ai):
 #   bash .ai/templates/scripts/install.sh            creates the files that are missing, keeps the rest
@@ -107,12 +107,25 @@ copy "scripts/verify.sh" "$TEMPLATES/scripts/verify.sh" executable
 copy "scripts/verify-editor.sh" "$TEMPLATES/scripts/verify-editor.sh" executable
 copy ".claude/hooks/verify-on-stop.sh" "$TEMPLATES/claude/hooks/verify-on-stop.sh" executable
 
-# Editor scripts that write compile and test results to Logs/verify/, so the hook can check the project while the
-# Editor is open, as it is when an agent works through a Unity MCP server.
-EDITOR_TOOLS="$TEMPLATES/unity/Editor/UnityArchitecture"
-while IFS= read -r source; do
-    copy "Assets/Editor/UnityArchitecture/${source#"$EDITOR_TOOLS"/}" "$source"
-done < <(find "$EDITOR_TOOLS" -type f \( -name '*.cs' -o -name '*.asmdef' \) | sort)
+# The Editor reporters, which write compile and test results to Logs/verify/ for the hook, used to be copied to
+# Assets/Editor/UnityArchitecture. They're in the .ai/unity package now. Remove the old copies nobody edited.
+OLD_EDITOR_TOOLS="Assets/Editor/UnityArchitecture"
+removed=()
+for old in EditorCompileReporter.cs UnityArchitecture.Editor.asmdef Tests/EditorTestReporter.cs Tests/UnityArchitecture.Editor.TestReporter.asmdef; do
+    path="$ROOT/$OLD_EDITOR_TOOLS/$old"
+    [ -e "$path" ] || continue
+    if is_unedited_copy "$path" "$AI_DIR/templates/unity/Editor/UnityArchitecture/$old"; then
+        rm -f "$path" "$path.meta"
+        removed+=("$OLD_EDITOR_TOOLS/$old")
+    else
+        customized+=("$OLD_EDITOR_TOOLS/$old (now in the .ai/unity package: delete this copy after merging your changes)")
+    fi
+done
+for folder in "$OLD_EDITOR_TOOLS/Tests" "$OLD_EDITOR_TOOLS"; do
+    if [ -d "$ROOT/$folder" ] && [ -z "$(ls -A "$ROOT/$folder")" ]; then
+        rmdir "$ROOT/$folder" && rm -f "$ROOT/$folder.meta"
+    fi
+done
 
 # Registers the Unity MCP server (MCP for Unity, by Coplay) for Claude Code, on its default local address.
 # It runs only on this machine and only while the Editor is open with the package installed.
@@ -204,6 +217,7 @@ print_list() {
 }
 print_list "Created:" ${created[@]+"${created[@]}"}
 print_list "Updated from .ai:" ${updated[@]+"${updated[@]}"}
+print_list "Removed (moved to the .ai/unity package):" ${removed[@]+"${removed[@]}"}
 print_list "Changed in this project, kept (compare with .ai/templates and merge what you want by hand):" ${customized[@]+"${customized[@]}"}
 if [ "$UPDATE" = true ]; then
     print_list "Already up to date, or yours to edit:" ${kept[@]+"${kept[@]}"}

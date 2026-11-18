@@ -80,12 +80,11 @@ Run it from a terminal; double-clicking a `.sh` file opens it in an editor on mo
 | `.editorconfig` | Rider, Visual Studio | Formatting, `var`, braces and naming |
 | `scripts/verify.sh` | Agents, CI | Compiles in batch mode, runs EditMode tests, checks Fast IoC generation |
 | `scripts/verify-editor.sh` | Agents, the hook | Checks the project while the Editor is open, from the results the Editor writes |
-| `Assets/Editor/UnityArchitecture/` | Unity | Writes each compile and test run in the open Editor to `Logs/verify/` |
 | `.mcp.json` | Claude Code | Registers a local Unity MCP server (MCP for Unity) on `localhost:8080`. Never replaced |
 | `.claude/hooks/verify-on-stop.sh`, `.claude/settings.json` | Claude Code | Runs `verify.sh` when the agent finishes and sends failures back. Also allows `verify.sh` and read-only `git` commands, so Claude doesn't ask for each one |
 | `Assets/Client/Analyzers/UnityArchitecture.Analyzers.dll` | Unity | The [analyzers](analyzers): the mechanical rules become compile errors. Prebuilt, so no .NET SDK needed |
 | `Assets/Client/Client.asmdef`, `Client.cs` | Unity | Only when `Assets/Client` doesn't exist yet: the assembly the analyzers check |
-| `Packages/manifest.json` | Unity | Adds `com.sgonzalezrozo.unity-architecture` from `.ai/unity`, the prefab validator, to `dependencies` and `testables` |
+| `Packages/manifest.json` | Unity | Adds `com.sgonzalezrozo.unity-architecture` from `.ai/unity` to `dependencies` and `testables`: the prefab validator, and the reporters that write each compile and test run in the open Editor to `Logs/verify/` |
 
 Files that already exist are kept, so running it again is safe. If your project already had a `.claude/settings.json`, the script says so: add the Stop hook and the allowed commands from `.ai/templates/claude/settings.json` to it yourself. The analyzers check only the `Client` assembly, not third-party code or tests. In a new project the script creates `Assets/Client/Client.asmdef`, with a `Client.cs` note so Unity doesn't warn about an empty assembly. If `Assets/Client` already has code but no `Client.asmdef`, the analyzers aren't installed, and the script says why.
 
@@ -146,7 +145,7 @@ An agent can also work while the project is open in Unity, through a local Unity
 2. `install.sh` already wrote `.mcp.json`, which registers the server for Claude Code as `unityMCP` on `http://localhost:8080/mcp`, MCP for Unity's default. Open Claude Code in the project and approve the server.
 3. Keep the Editor open while the agent works.
 
-With the Editor open, the Stop hook can't run `verify.sh`, because batch mode can't open a project the Editor has open. The Editor scripts that `install.sh` puts in `Assets/Editor/UnityArchitecture` write each compile and test run to `Logs/verify/`, and the hook reads them with `scripts/verify-editor.sh`. If a script changed after the last compile, the hook asks the agent to compile (`refresh_unity`) through the MCP server before finishing. When the tests are due, it also asks the agent to run them (`run_tests`).
+With the Editor open, the Stop hook can't run `verify.sh`, because batch mode can't open a project the Editor has open. The reporters in the `.ai/unity` package, which `install.sh` adds to the manifest, write each compile and test run to `Logs/verify/`, and the hook reads them with `scripts/verify-editor.sh`. If a script changed after the last compile, the hook asks the agent to compile (`refresh_unity`) through the MCP server before finishing. When the tests are due, it also asks the agent to run them (`run_tests`).
 
 ### How verification works
 

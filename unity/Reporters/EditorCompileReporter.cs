@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
 
-namespace UnityArchitecture.Editor
+namespace UnityArchitecture.Reporters
 {
     /// <summary>
     /// Writes the result of every script compile to Logs/verify/editor-compile.json, so the Claude Code Stop hook can

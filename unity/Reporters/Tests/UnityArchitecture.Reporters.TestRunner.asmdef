@@ -1,8 +1,8 @@
 {
-    "name": "UnityArchitecture.Editor.TestReporter",
+    "name": "UnityArchitecture.Reporters.TestRunner",
     "rootNamespace": "",
     "references": [
-        "UnityArchitecture.Editor",
+        "UnityArchitecture.Reporters.Editor",
         "UnityEditor.TestRunner",
         "UnityEngine.TestRunner"
     ],

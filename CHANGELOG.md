@@ -20,6 +20,7 @@ All notable changes to this project are documented in this file.
 
 ### Changed
 
+- The Editor reporters moved from `Assets/Editor/UnityArchitecture` to the `.ai/unity` package, so updating `.ai` updates them. `install.sh` removes the old copies nobody edited, and lists the edited ones to merge and delete by hand.
 - `VIEW-03`: each scope has one root View, on its root, and only it subscribes to the Model. It may tell inner Views what to show, and they set their own components without reading the Model or subscribing. No View reaches into a nested prefab, its root View included. `UA0001` now lets a View reference a View, and still fails when a View references a Controller. `VIEW-01` applies to root Views.
 - `INPUT-01`: the input object is always called `Action`, and its Controller class is named after what it does (`{Action}Controller`), whatever the hierarchy. `INPUT-03` allows a blocking `Background` with raycast on (`PREFAB-14`).
 - The prefab handoff (`HAND-01`) lists pivot, scale and runtime containers too, and the examples use `Action`.

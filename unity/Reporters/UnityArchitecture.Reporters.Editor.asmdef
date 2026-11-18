@@ -1,5 +1,5 @@
 {
-    "name": "UnityArchitecture.Editor",
+    "name": "UnityArchitecture.Reporters.Editor",
     "rootNamespace": "",
     "references": [],
     "includePlatforms": [

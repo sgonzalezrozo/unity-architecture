@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditor.TestTools.TestRunner.Api;
 using UnityEngine;
 
-namespace UnityArchitecture.Editor
+namespace UnityArchitecture.Reporters
 {
     /// <summary>
     /// Writes the result of every test run started in the open Editor (Test Runner window, or an MCP tool such as

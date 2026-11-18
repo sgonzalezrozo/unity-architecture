@@ -16,7 +16,7 @@ Run this with [package capability detection](OPTIONAL_PACKAGES.md#capability-det
 
 Unity's in-Editor MCP server in the AI Assistant package (`com.unity.ai.assistant`) is deprecated by Unity. Treat it as an `editorBridge`, but don't suggest it: the Unity CLI replaces it.
 
-A bridge and the verify script can't both own the project. `verify.sh` needs the Editor closed, and a bridge needs it open. While the Editor is open, the Editor itself writes its compile and test results to `Logs/verify/` (from `Assets/Editor/UnityArchitecture`, which `install.sh` installs), and `scripts/verify-editor.sh` reads them.
+A bridge and the verify script can't both own the project. `verify.sh` needs the Editor closed, and a bridge needs it open. While the Editor is open, the Editor itself writes its compile and test results to `Logs/verify/` (from the reporters in the `.ai/unity` package, which `install.sh` adds), and `scripts/verify-editor.sh` reads them.
 
 ## Rules
 

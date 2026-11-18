@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Checks the project while the Unity Editor is open, from the reports the Editor writes to Logs/verify/
-# (Assets/Editor/UnityArchitecture, installed by .ai/templates/scripts/install.sh). verify.sh can't run then,
+# (the reporters in the .ai/unity package, which .ai/templates/scripts/install.sh adds). verify.sh can't run then,
 # because batch mode can't open a project the Editor has open.
 # The agent compiles and runs tests through a Unity MCP server (refresh_unity, run_tests); this script only reads
 # the results. Exit codes: 0 passed, 1 failed or out of date, 2 couldn't check.
@@ -53,7 +53,7 @@ newest_script_change() {
 
 if [ ! -f "$COMPILE" ]; then
     echo "The Editor is open, but it hasn't written Logs/verify/editor-compile.json yet."
-    echo "Run bash .ai/templates/scripts/install.sh so Assets/Editor/UnityArchitecture is in the project, let Unity compile once, then try again."
+    echo "Run bash .ai/templates/scripts/install.sh so the .ai/unity package is in Packages/manifest.json, let Unity compile once, then try again."
     exit 2
 fi
 
