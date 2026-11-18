@@ -78,9 +78,13 @@ Run it from a terminal; double-clicking a `.sh` file opens it in an editor on mo
 | `.cursor/rules/unity-architecture.mdc` | Cursor | The same, for Cursor |
 | `.editorconfig` | Rider, Visual Studio | Formatting, `var`, braces and naming |
 | `scripts/verify.sh` | Agents, CI | Compiles in batch mode, runs EditMode tests, checks Fast IoC generation |
-| `.claude/hooks/verify-on-stop.sh`, `.claude/settings.json` | Claude Code | Runs `verify.sh` when the agent finishes, and sends failures back |
+| `.claude/hooks/verify-on-stop.sh`, `.claude/settings.json` | Claude Code | Runs `verify.sh` when the agent finishes and sends failures back. Also allows `verify.sh` and read-only `git` commands, so Claude doesn't ask for each one |
+| `Assets/Client/Analyzers/UnityArchitecture.Analyzers.dll` | Unity | The [analyzers](analyzers): the mechanical rules become compile errors. Prebuilt, so no .NET SDK needed |
+| `Assets/Client/Client.asmdef` | Unity | Only when `Assets/Client` doesn't exist yet. The analyzers check this assembly only, not third-party code |
 
-Files that already exist are kept, so running it again is safe. If your project already had a `.claude/settings.json`, the script says so: add the Stop hook from `.ai/templates/claude/settings.json` to it yourself.
+Files that already exist are kept, so running it again is safe. If your project already had a `.claude/settings.json`, the script says so: add the Stop hook and the allowed commands from `.ai/templates/claude/settings.json` to it yourself. If `Assets/Client` already has code but no `Client.asmdef`, the analyzers aren't installed, and the script says why.
+
+At the end it offers to run `scripts/verify.sh` once. Say yes, with the project closed in Unity: the first batch-mode run imports the whole project, which can take longer than the hook waits, and later runs are quick. `--verify` runs it without asking, `--no-verify` skips it.
 
 ### 4. Commit
 
@@ -94,10 +98,9 @@ This commits the files above and `.gitmodules`, which records the `.ai` version 
 ### 5. Finish in your tools
 
 - **Rider:** open `.aiassistant/rules/project.md` and set the rule's type to **Always**.
-- **Analyzers (optional, recommended):** they turn the mechanical rules into compile errors. They need the .NET SDK; see [Analyzers](analyzers/README.md#install).
 - **Rules for this project only:** write them in your root `AGENTS.md`, under "Rules for this project only". Never edit files inside `.ai`: the next update would overwrite them.
 
-That's it: open the project with your assistant and ask for a change. It reads the rules from `.ai`.
+That's it: open the project with Claude Code and ask for a feature. It reads the rules from `.ai`, the analyzers stop code that breaks the mechanical rules, and when it finishes the hook compiles and runs the tests, and sends any failure back for it to fix. Keep the project closed in Unity while it works: batch mode can't open a project the Editor has open, so the hook would skip the check and say so.
 
 ### Cloning a project that uses it
 
@@ -117,7 +120,7 @@ One command gets the latest rules and refreshes the files at the root:
 bash .ai/templates/scripts/update.sh
 ```
 
-It updates the `.ai` submodule from GitHub, then runs `install.sh --update`: the copies that came from `.ai/templates` (Copilot, Rider and Cursor rules, `.editorconfig`, `verify.sh` and the hook) are replaced when they changed, and listed. It never touches `AGENTS.md`, `CLAUDE.md` or `.claude/settings.json`, which are yours. If you edited a copied template, the update replaces your edit: keep project rules in `AGENTS.md` instead.
+It updates the `.ai` submodule from GitHub, then runs `install.sh --update`: the copies that came from `.ai` (Copilot, Rider and Cursor rules, `.editorconfig`, `verify.sh`, the hook and the analyzers) are replaced when they changed, and listed. It never touches `AGENTS.md`, `CLAUDE.md` or `.claude/settings.json`, which are yours. If you edited a copied template, the update replaces your edit: keep project rules in `AGENTS.md` instead.
 
 Then commit, so everyone on the project gets the same version:
 
@@ -132,13 +135,13 @@ The files are copies rather than symbolic links because links need extra setup o
 
 ### How verification works
 
-`scripts/verify.sh` fails on compiler and analyzer errors, and writes `Logs/verify/summary.json` for agents and CI. Exit codes: `0` passed, `1` failed, `2` couldn't run. When Claude Code finishes, the hook runs it if `Assets`, `Packages` or `ProjectSettings` changed, and sends failures back to the agent. It gives up after three attempts in a row. Close the project in the Editor while the agent works, or the hook can't check anything.
+`scripts/verify.sh` finds the Unity version in `ProjectSettings/ProjectVersion.txt` in Unity Hub's default folder, or in the folder set in **Hub > Preferences > Installs**; set `UNITY_PATH` to use another. It compiles the project and runs the EditMode tests; without the Test Framework package (`com.unity.test-framework`) it only compiles, and says so. It fails on compiler and analyzer errors, and writes `Logs/verify/summary.json` for agents and CI. Exit codes: `0` passed, `1` failed, `2` couldn't run. When Claude Code finishes, the hook runs it if `Assets`, `Packages` or `ProjectSettings` changed, and sends failures back to the agent. It gives up after three attempts in a row. Close the project in the Editor while the agent works, or the hook can't check anything.
 
 With a Unity MCP server, such as the Unity CLI's `unity mcp` mode or [MCP for Unity](https://github.com/CoplayDev/unity-mcp), the agent reads the Console, runs tests and builds prefabs through the open Editor instead. [Editor tools](architecture/EDITOR_TOOLS.md) says which tool checks what, and what an agent may do through a bridge.
 
 ### Installing without the script
 
-Each file the script creates comes from `.ai/templates`, except `AGENTS.md` and `CLAUDE.md`. To do it by hand, copy the templates to the paths in the table above, make `scripts/verify.sh` and the hook executable, and write the two entry files:
+Each file the script creates comes from `.ai/templates`, except `AGENTS.md`, `CLAUDE.md` and `Client.asmdef`, and the analyzers, which come from `.ai/analyzers/prebuilt` with `.ai/analyzers/dll.meta.template` as their `.meta`. To do it by hand, copy them to the paths in the table above, make `scripts/verify.sh` and the hook executable, and write the two entry files:
 
 `AGENTS.md`:
 
@@ -161,13 +164,13 @@ If `.ai/` is empty, run `git submodule update --init`.
 
 ## Project status
 
-This is version `0.4.0`. The architecture and the code style are mandatory. [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), [UI Scroller](https://github.com/sgonzalezrozo/unity-ui-scroller), [Screen System](https://github.com/sgonzalezrozo/unity-screen-system) and [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations) are optional: agents detect them, and use plain Unity forms when they're missing.
+This is version `0.4.1`. The architecture and the code style are mandatory. [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), [UI Scroller](https://github.com/sgonzalezrozo/unity-ui-scroller), [Screen System](https://github.com/sgonzalezrozo/unity-screen-system) and [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations) are optional: agents detect them, and use plain Unity forms when they're missing.
 
 ## FAQ
 
 ### How do I make AI coding agents follow an architecture in Unity?
 
-Give them rules they can't miss, and checks they can't skip. Add this repository as `.ai/`, run its install script, install the [analyzers](analyzers), and let the [verify loop](#how-verification-works) check every change. Instructions guide the agent, and the compiler enforces the mechanical rules.
+Give them rules they can't miss, and checks they can't skip. Add this repository as `.ai/` and run its install script: it sets up the rules, the [analyzers](analyzers) and the [verify loop](#how-verification-works) that checks every change. Instructions guide the agent, and the compiler enforces the mechanical rules.
 
 ### Does it work with Claude Code, Cursor, Copilot and Rider?
 
@@ -203,7 +206,7 @@ Yes. It's MIT licensed.
 
 ### Does anyone else use it?
 
-Not yet. It's version `0.4.0` by a single author, used only in my personal projects so far, and the rules still change. Feedback and issues are very welcome.
+Not yet. It's version `0.4.1` by a single author, used only in my personal projects so far, and the rules still change. Feedback and issues are very welcome.
 
 ### Is there a sample project?
 

@@ -1,4 +1,14 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(scripts/verify.sh)",
+      "Bash(bash scripts/verify.sh)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)"
+    ]
+  },
   "hooks": {
     "Stop": [
       {

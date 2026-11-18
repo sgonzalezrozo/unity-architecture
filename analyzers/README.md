@@ -27,12 +27,16 @@ The [checklist](../architecture/AGENT_WORKFLOW.md#pre-response-checklist) also c
 
 ## Install
 
+`install.sh` installs them, from the prebuilt DLL in [`prebuilt/`](prebuilt), with no .NET SDK needed. See [Use it in a project](../README.md#use-it-in-a-project). It puts them in `Assets/Client/Analyzers`, with the `RoslynAnalyzer` label already set in the `.meta`, and creates `Assets/Client/Client.asmdef` if `Assets/Client` doesn't exist yet. `update.sh` keeps them current. Commit both files.
+
+Unity applies an analyzer to the assembly it sits in, so the rules cover `Assets/Client` but not your tests, where lambdas are allowed, or third-party code in `Assets`.
+
+### Building them yourself
+
 You need the [.NET SDK](https://dotnet.microsoft.com/download). Close the project in Unity, then run:
 
 ```bash
 .ai/analyzers/build.sh .
 ```
 
-This runs the analyzer tests, builds the DLL and installs it in `Assets/Client/Analyzers`, with the `RoslynAnalyzer` label already set. Commit both files.
-
-Unity applies an analyzer to the assembly it sits in, so the rules cover `Assets/Client` but not your tests, where lambdas are allowed. To use another assembly, pass its folder as the second argument.
+This runs the analyzer tests, builds the DLL, updates `prebuilt/` and installs it in `Assets/Client/Analyzers`. To use another assembly, pass its folder as the second argument. When you change the analyzers in this repository, run `analyzers/build.sh` without arguments and commit `prebuilt/`: the build is deterministic, so the DLL only changes when the code does.

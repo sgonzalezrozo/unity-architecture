@@ -4,10 +4,22 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-17
+
 ### Added
 
 - `templates/scripts/install.sh` puts the entry files at the project root in one command: `AGENTS.md`, `CLAUDE.md`, `.editorconfig`, the Copilot, Rider and Cursor rules, `verify.sh` and the Claude Code hook. It keeps files that already exist; `--update` refreshes the copied templates, and never touches `AGENTS.md`, `CLAUDE.md` or `.claude/settings.json`.
 - `templates/scripts/update.sh` gets the latest `.ai` from GitHub and runs `install.sh --update`.
+- `install.sh` installs the analyzers from a prebuilt DLL in `analyzers/prebuilt`, with no .NET SDK needed, and creates `Assets/Client/Client.asmdef` when `Assets/Client` doesn't exist yet. It skips them, and says why, when `Assets/Client` has code but no `.asmdef`.
+- `install.sh` offers to run `verify.sh` once at the end, so the first, slow batch-mode import happens before the hook needs it. `--verify` and `--no-verify` answer for you.
+- The Claude Code settings template allows `verify.sh` and read-only `git` commands, so Claude doesn't ask for each one.
+- `verify.sh` also finds Unity in the folder set in **Unity Hub > Preferences > Installs**.
+- `analyzers/build.sh` updates `analyzers/prebuilt`, and the Unity project argument is optional.
+
+### Fixed
+
+- `verify.sh` never finished in a project without the Test Framework package, such as a new one: Unity ignores `-runTests` without it and stays open, so the hook waited until its 10-minute timeout. It now only compiles in that case, and says no tests ran.
+- `SCR-14`: the special screens are created by **Setup** or the `ScreenManager` Inspector; Screen System 0.4.2 has no **Create Special Screens** menu item.
 
 ### Changed
 
