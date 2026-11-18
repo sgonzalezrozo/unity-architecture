@@ -83,9 +83,8 @@ Run it from a terminal; double-clicking a `.sh` file opens it in an editor on mo
 | `.mcp.json` | Claude Code | Registers a local Unity MCP server (MCP for Unity) on `localhost:8080`. Never replaced |
 | `.claude/hooks/verify-on-stop.sh`, `.claude/settings.json` | Claude Code | Runs `verify.sh` when the agent finishes and sends failures back. Also allows `verify.sh` and read-only `git` commands, so Claude doesn't ask for each one |
 | `Assets/Client/Analyzers/UnityArchitecture.Analyzers.dll` | Unity | The [analyzers](analyzers): the mechanical rules become compile errors. Prebuilt, so no .NET SDK needed |
-| `Assets/Client/Client.asmdef` | Unity | Only when `Assets/Client` doesn't exist yet. The analyzers check this assembly only, not third-party code |
 
-Files that already exist are kept, so running it again is safe. If your project already had a `.claude/settings.json`, the script says so: add the Stop hook and the allowed commands from `.ai/templates/claude/settings.json` to it yourself. If `Assets/Client` already has code but no `Client.asmdef`, the analyzers aren't installed, and the script says why.
+Files that already exist are kept, so running it again is safe. If your project already had a `.claude/settings.json`, the script says so: add the Stop hook and the allowed commands from `.ai/templates/claude/settings.json` to it yourself. The analyzers are installed only when `Assets/Client/Client.asmdef` exists, because they check that assembly only, not third-party code. The script doesn't create it, since Unity warns about an assembly definition with no scripts: add it with your first scripts and run the script again.
 
 At the end it offers to run `scripts/verify.sh` once. Say yes, with the project closed in Unity: the first batch-mode run imports the whole project, which can take longer than the hook waits, and later runs are quick. `--verify` runs it without asking, `--no-verify` skips it.
 
@@ -154,7 +153,7 @@ With a Unity MCP server, such as the Unity CLI's `unity mcp` mode or [MCP for Un
 
 ### Installing without the script
 
-Each file the script creates comes from `.ai/templates`, except `AGENTS.md`, `CLAUDE.md` and `Client.asmdef`, and the analyzers, which come from `.ai/analyzers/prebuilt` with `.ai/analyzers/dll.meta.template` as their `.meta`. To do it by hand, copy them to the paths in the table above, make `scripts/verify.sh` and the hook executable, and write the two entry files:
+Each file the script creates comes from `.ai/templates`, except `AGENTS.md` and `CLAUDE.md`, and the analyzers, which come from `.ai/analyzers/prebuilt` with `.ai/analyzers/dll.meta.template` as their `.meta`. To do it by hand, copy them to the paths in the table above, make `scripts/verify.sh` and the hook executable, and write the two entry files:
 
 `AGENTS.md`:
 

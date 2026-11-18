@@ -8,8 +8,8 @@
 #   bash .ai/templates/scripts/install.sh --update   also refreshes copies nobody changed after updating .ai
 #   add --verify to run scripts/verify.sh at the end without asking, or --no-verify to skip it
 #
-# It also installs the prebuilt analyzers in Assets/Client/Analyzers, creating Assets/Client/Client.asmdef
-# when Assets/Client doesn't exist yet. AGENTS.md, CLAUDE.md, .claude/settings.json and .mcp.json are never replaced.
+# It also installs the prebuilt analyzers in Assets/Client/Analyzers when Assets/Client/Client.asmdef exists.
+# AGENTS.md, CLAUDE.md, .claude/settings.json and .mcp.json are never replaced.
 set -u
 
 UPDATE=false
@@ -138,34 +138,16 @@ else
 fi
 
 # The analyzers turn the mechanical rules into compile errors. Unity applies an analyzer to the assembly
-# whose folder holds it, so they need Assets/Client/Client.asmdef: without it they'd also check
-# third-party code in Assets.
+# whose folder holds it, so they need Assets/Client/Client.asmdef, an assembly with only the project's own code:
+# without it they'd also check third-party code. The script doesn't create it, because Unity warns about an
+# assembly definition with no scripts, and the project's code may live somewhere else.
 ANALYZER="UnityArchitecture.Analyzers"
 CLIENT="Assets/Client"
-if [ ! -e "$ROOT/$CLIENT/Client.asmdef" ] && [ -z "$(ls -A "$ROOT/$CLIENT" 2>/dev/null)" ]; then
-    own "$CLIENT/Client.asmdef" '{
-    "name": "Client",
-    "rootNamespace": "",
-    "references": [
-        "UnityEngine.UI",
-        "Unity.TextMeshPro"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
-}'
-fi
 if [ -e "$ROOT/$CLIENT/Client.asmdef" ]; then
     copy "$CLIENT/Analyzers/$ANALYZER.dll" "$AI_DIR/analyzers/prebuilt/$ANALYZER.dll"
     copy "$CLIENT/Analyzers/$ANALYZER.dll.meta" "$AI_DIR/analyzers/dll.meta.template"
 else
-    ANALYZER_NOTE="Analyzers not installed: $CLIENT has code but no Client.asmdef, so they would also check code that isn't yours. Add $CLIENT/Client.asmdef and run this again. See .ai/architecture/FEATURE_STRUCTURE.md."
+    ANALYZER_NOTE="Analyzers not installed: they need $CLIENT/Client.asmdef, an assembly definition for your own code. Put your code under $CLIENT, add Client.asmdef there and run this again. See .ai/architecture/FEATURE_STRUCTURE.md."
 fi
 
 echo "Project: $ROOT"

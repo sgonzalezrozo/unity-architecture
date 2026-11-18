@@ -13,6 +13,10 @@ All notable changes to this project are documented in this file.
 - `install.sh --update` keeps a copied template you changed in your project, such as a customized hook or `verify.sh`, and lists it to merge by hand. It updates a copy only when it matches an earlier version of the template in the `.ai` repository's history, so nobody edited it. Before, it replaced any copy that differed.
 - The Stop hook escapes its messages, so text with quotes or backslashes from the verify scripts stays valid JSON.
 
+### Changed
+
+- `install.sh` no longer creates `Assets/Client/Client.asmdef`: Unity warns about an assembly definition with no scripts, and the project's code may live in other folders. It installs the analyzers only when that file exists, and otherwise says how to add it.
+
 ## [0.4.1] - 2026-11-17
 
 ### Added
