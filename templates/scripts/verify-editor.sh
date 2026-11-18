@@ -63,7 +63,8 @@ fi
 
 COMPILED_AT="$(json_number finishedAtUnixSeconds "$COMPILE")"
 COMPILED_AT="${COMPILED_AT:-0}"
-if [ "$(newest_script_change)" -gt "$COMPILED_AT" ]; then
+NEWEST_CHANGE="$(newest_script_change)"
+if [ "$NEWEST_CHANGE" -gt "$COMPILED_AT" ]; then
     echo "Unity hasn't compiled the latest script changes: the Editor only refreshes when asked or focused."
     echo "Call refresh_unity through the Unity MCP, wait for the compile to finish, read_console, then check again."
     exit 1
@@ -77,9 +78,12 @@ if [ "${ERRORS:-0}" != "0" ]; then
 fi
 
 if grep -qs '"com.unity.test-framework"' "$ROOT/Packages/manifest.json" "$ROOT/Packages/packages-lock.json"; then
-    TESTED_AT="$(json_number finishedAtUnixSeconds "$TESTS" 2>/dev/null)"
-    if [ ! -f "$TESTS" ] || [ "${TESTED_AT:-0}" -lt "$COMPILED_AT" ]; then
-        echo "The EditMode tests haven't run since the last compile."
+    # Compared with the newest script change, not the last compile: Unity also compiles after a test run, with no
+    # script changed. A run that started after the change tested the code as it is.
+    TESTED_AT="$(json_number startedAtUnixSeconds "$TESTS" 2>/dev/null)"
+    [ -n "$TESTED_AT" ] || TESTED_AT="$(json_number finishedAtUnixSeconds "$TESTS" 2>/dev/null)"
+    if [ ! -f "$TESTS" ] || [ "${TESTED_AT:-0}" -lt "$NEWEST_CHANGE" ]; then
+        echo "The EditMode tests haven't run since the last script change."
         echo "Run them with run_tests through the Unity MCP (EditMode), poll get_test_job until it finishes, then check again."
         exit 1
     fi

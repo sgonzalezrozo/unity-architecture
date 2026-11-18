@@ -24,8 +24,11 @@ namespace UnityArchitecture.Editor
 
         private class Callbacks : ICallbacks
         {
+            private long _startedAtUnixSeconds;
+
             public void RunStarted(ITestAdaptor testsToRun)
             {
+                _startedAtUnixSeconds = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             }
 
             public void RunFinished(ITestResultAdaptor result)
@@ -33,9 +36,11 @@ namespace UnityArchitecture.Editor
                 List<string> failures = new();
                 CollectFailures(result, failures);
 
+                long finishedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 TestReport report = new()
                 {
-                    finishedAtUnixSeconds = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    startedAtUnixSeconds = _startedAtUnixSeconds > 0 ? _startedAtUnixSeconds : finishedAt,
+                    finishedAtUnixSeconds = finishedAt,
                     total = result.PassCount + result.FailCount + result.SkipCount + result.InconclusiveCount,
                     passed = result.PassCount,
                     failed = result.FailCount,
@@ -69,6 +74,7 @@ namespace UnityArchitecture.Editor
         [Serializable]
         private class TestReport
         {
+            public long startedAtUnixSeconds;
             public long finishedAtUnixSeconds;
             public int total;
             public int passed;
