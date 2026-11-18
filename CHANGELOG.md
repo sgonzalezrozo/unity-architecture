@@ -6,6 +6,7 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
+- The prefab validator (`TEST-12`): a local package in `.ai/unity`, `com.sgonzalezrozo.unity-architecture`, that `install.sh` adds to `Packages/manifest.json` and to `testables`. An EditMode test checks every prefab under `Assets/Client` for the prefab rules a tool can check, with the prefab, object and rule ID in each error. `PrefabValidator.ValidateAsset(path)` gives the same results for one prefab, through a Unity MCP server.
 - `architecture/PREFABS.md` with `PREFAB-01` to `PREFAB-14`: the root's transform, anchors, pivot, TextMeshPro, no `Animator`, no persistent `UnityEvent`, `RectMask2D`, empty runtime containers, the `Action` hitbox, screen and modal shape, nested Canvases, depth, and a `Background` with raycast on that blocks touches under an element with an `Action` or a screen. `AGENTS.md` routes prefab work to it.
 - `VIEW-07` and `UA0016`: a View has at most 5 serialized fields. With more, it delegates to inner Views placed near the components they set, and it serializes components and inner Views, not assets.
 - Deliberate decisions in the Developer overview: where the rules differ from *Clean Code* on purpose, linked from `AGENTS.md` so agents don't "fix" them.

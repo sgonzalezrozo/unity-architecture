@@ -49,4 +49,14 @@ Press and hover feedback, such as scaling a button while it's pressed, has no ru
 
 ## Checking a prefab
 
-A prefab validator is planned: an EditMode test that loads each prefab under `Assets/Client` and checks the rules a tool can check (`PREFAB-01`, `-04` for text, `-05` to `-09`, `-13`, `-14`, plus `INPUT-02`, `INPUT-03`, `SCOPE-02`, `SCOPE-04` and `VIEW-07`). Until it exists, check them by reading the hierarchy back (`EDIT-05`) and in review. `PREFAB-03` and `PREFAB-12` can't be checked from the prefab alone, so the handoff states them (`HAND-01`).
+The prefab validator (`TEST-12`) is an EditMode test in the rules' package, `com.sgonzalezrozo.unity-architecture`, which `install.sh` adds to `Packages/manifest.json` from `.ai/unity`. It loads every prefab under `Assets/Client` and fails with the prefab, the object and the rule ID of each error. It runs with the other tests: in `verify.sh`, and in the open Editor through `run_tests`.
+
+| Checked | Rules |
+|---|---|
+| Errors | `PREFAB-01`, `-04` (legacy `Text`), `-05`, `-06`, `-09`, `-14`, `ARCH-05` (`Selectable` components), `INPUT-01`, `INPUT-02`, `INPUT-03`, `SCOPE-02` (Models), `SCOPE-04` (references into a nested prefab) and `VIEW-03` (inner Views without a root View) |
+| Warnings, in the test output | `PREFAB-07` (`Mask`) and `PREFAB-13` (depth) |
+| Not checked | `PREFAB-02`, `-03`, `-08`, `-10`, `-11` and `-12`, which need intent the prefab doesn't record. The handoff states them (`HAND-01`), and review checks them |
+
+A nested prefab is another scope, so its insides are checked as its own asset, not from the prefab that nests it. Models, Views and Controllers are recognized by their class name in the `Client` assembly, like the analyzers. `VIEW-07` (5 serialized fields) is checked in code by `UA0016`.
+
+Through a Unity MCP server, `UnityArchitecture.Prefabs.PrefabValidator.ValidateAsset(path)` returns the same results for one prefab, so an agent can check a prefab right after building it.

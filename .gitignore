@@ -1,4 +1,4 @@
-# This repository holds Markdown only. It isn't a Unity package, so it needs no .meta files.
+# Only unity/, the Unity package, needs .meta files; the rest is Markdown and tools.
 *.meta
 
 # OS files
@@ -8,3 +8,7 @@ Thumbs.db
 # .NET build output
 bin/
 obj/
+
+# The Unity package keeps its .meta files, so its GUIDs are the same in every project.
+!unity/**/*.meta
+!unity/*.meta

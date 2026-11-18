@@ -126,6 +126,30 @@ else
     created+=(".mcp.json")
 fi
 
+# The rules' Editor tools (the prefab validator) are a local package in .ai/unity, so they stay on the same
+# version as the rules. It's listed in testables so Unity runs its tests, including the check of Assets/Client.
+MANIFEST="$ROOT/Packages/manifest.json"
+ARCHITECTURE_PACKAGE="com.sgonzalezrozo.unity-architecture"
+add_architecture_package() {
+    local temporary="$MANIFEST.tmp"
+    awk -v name="$ARCHITECTURE_PACKAGE" '
+        { print }
+        /"dependencies"[[:space:]]*:[[:space:]]*\{/ && !dependency { print "    \"" name "\": \"file:../.ai/unity\","; dependency = 1 }
+        /"testables"[[:space:]]*:[[:space:]]*\[/ && !testable { print "    \"" name "\","; testable = 1 }
+    ' "$MANIFEST" > "$temporary" || return 1
+    if ! grep -q '"testables"' "$temporary"; then
+        awk -v name="$ARCHITECTURE_PACKAGE" 'NR == 1 { print; print "  \"testables\": [\n    \"" name "\"\n  ],"; next } { print }' "$temporary" > "$temporary.2" && mv "$temporary.2" "$temporary"
+    fi
+    mv "$temporary" "$MANIFEST"
+}
+if [ -f "$MANIFEST" ] && ! grep -q "\"$ARCHITECTURE_PACKAGE\"" "$MANIFEST"; then
+    if add_architecture_package; then
+        updated+=("Packages/manifest.json (adds $ARCHITECTURE_PACKAGE from .ai/unity)")
+    else
+        MANIFEST_NOTE="Couldn't add $ARCHITECTURE_PACKAGE to Packages/manifest.json. Add \"$ARCHITECTURE_PACKAGE\": \"file:../.ai/unity\" to dependencies and to testables."
+    fi
+fi
+
 if [ -e "$ROOT/.claude/settings.json" ]; then
     kept+=(".claude/settings.json")
     if ! grep -q "verify-on-stop.sh" "$ROOT/.claude/settings.json"; then
@@ -186,7 +210,7 @@ if [ "$UPDATE" = true ]; then
 else
     print_list "Already there, kept (--update refreshes the copied templates):" ${kept[@]+"${kept[@]}"}
 fi
-for note in "${SETTINGS_NOTE:-}" "${MCP_NOTE:-}" "${ANALYZER_NOTE:-}"; do
+for note in "${SETTINGS_NOTE:-}" "${MCP_NOTE:-}" "${ANALYZER_NOTE:-}" "${MANIFEST_NOTE:-}"; do
     if [ -n "$note" ]; then
         echo
         echo "$note"

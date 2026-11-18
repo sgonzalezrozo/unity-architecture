@@ -85,6 +85,7 @@ Run it from a terminal; double-clicking a `.sh` file opens it in an editor on mo
 | `.claude/hooks/verify-on-stop.sh`, `.claude/settings.json` | Claude Code | Runs `verify.sh` when the agent finishes and sends failures back. Also allows `verify.sh` and read-only `git` commands, so Claude doesn't ask for each one |
 | `Assets/Client/Analyzers/UnityArchitecture.Analyzers.dll` | Unity | The [analyzers](analyzers): the mechanical rules become compile errors. Prebuilt, so no .NET SDK needed |
 | `Assets/Client/Client.asmdef`, `Client.cs` | Unity | Only when `Assets/Client` doesn't exist yet: the assembly the analyzers check |
+| `Packages/manifest.json` | Unity | Adds `com.sgonzalezrozo.unity-architecture` from `.ai/unity`, the prefab validator, to `dependencies` and `testables` |
 
 Files that already exist are kept, so running it again is safe. If your project already had a `.claude/settings.json`, the script says so: add the Stop hook and the allowed commands from `.ai/templates/claude/settings.json` to it yourself. The analyzers check only the `Client` assembly, not third-party code or tests. In a new project the script creates `Assets/Client/Client.asmdef`, with a `Client.cs` note so Unity doesn't warn about an empty assembly. If `Assets/Client` already has code but no `Client.asmdef`, the analyzers aren't installed, and the script says why.
 
