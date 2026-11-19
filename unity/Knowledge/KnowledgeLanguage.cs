@@ -45,6 +45,7 @@ namespace UnityArchitecture.Knowledge
             { "The author's other Unity packages. Install one from Window > Package Manager > + > Add package from git URL.", "Los otros packages de Unity del autor. Instala uno desde Window > Package Manager > + > Add package from git URL." },
             { "Installed", "Instalado" },
             { "Copy URL", "Copiar URL" },
+            { "Needs {0}: add it first, or Unity reports compile errors.", "Necesita {0}: añádelo antes, o Unity da errores de compilación." },
             { "Copied {0}", "Copiado {0}" },
             { "Open the repository", "Abrir el repositorio" },
             { "General", "General" },

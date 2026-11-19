@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.6.7] - 2026-11-19
+
+### Changed
+
+- In the Rules Guide's **Other tools**, the UI Tweens card shows LeoECS Core's git URL, with its own **Copy URL** button and a note to add it first, until UI Tweens is installed.
+
 ## [0.6.6] - 2026-11-19
 
 ### Fixed

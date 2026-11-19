@@ -997,6 +997,9 @@ namespace UnityArchitecture.Knowledge
             public string Repository;
             public string English;
             public string Spanish;
+            // A Git dependency Unity doesn't install on its own: its name and URL, added before this package.
+            public string DependencyName;
+            public string DependencyUrl;
         }
 
         private static readonly OtherTool[] OtherTools =
@@ -1017,11 +1020,28 @@ namespace UnityArchitecture.Knowledge
                 English = "Click Controllers, view states and group gradients for strict MVC.",
                 Spanish = "Click Controllers, estados de vista y gradientes de grupo para MVC estricto." },
             new OtherTool { Name = "UI Tweens", Package = "com.sgonzalezrozo.ui-tweens", Repository = "unity-ui-tweens",
-                English = "ECS-based tweens for Unity UI with a DOTween-style API. Needs LeoECS Core, added first: see Install packages.",
-                Spanish = "Tweens basados en ECS para la UI de Unity, con una API estilo DOTween. Necesita LeoECS Core, añadido antes: ver Instalar packages." },
+                English = "ECS-based tweens for Unity UI with a DOTween-style API.",
+                Spanish = "Tweens basados en ECS para la UI de Unity, con una API estilo DOTween.",
+                DependencyName = "LeoECS Core",
+                DependencyUrl = "https://github.com/LeoECSCommunity/ecs.git#91cc7e390fa0eb4fc88a5cf111df88b1f45af37e" },
         };
 
         private GUIStyle toolNameStyle, toolTextStyle, toolUrlStyle, installedStyle;
+
+        /// <summary>A Git dependency to add first, with its own Copy URL button. Unity doesn't install Git dependencies.</summary>
+        private void DrawDependency(OtherTool tool, float width)
+        {
+            GUILayout.BeginHorizontal(GUILayout.Width(width));
+            GUILayout.Label(KnowledgeLanguage.T("Needs {0}: add it first, or Unity reports compile errors.", tool.DependencyName), toolTextStyle);
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button(KnowledgeLanguage.T("Copy URL"), EditorStyles.miniButton, GUILayout.ExpandWidth(false)))
+            {
+                EditorGUIUtility.systemCopyBuffer = tool.DependencyUrl;
+                ShowNotification(new GUIContent(KnowledgeLanguage.T("Copied {0}", tool.DependencyUrl)));
+            }
+            GUILayout.EndHorizontal();
+            EditorGUILayout.SelectableLabel(tool.DependencyUrl, toolUrlStyle, GUILayout.Width(width), GUILayout.Height(14f));
+        }
 
         /// <summary>The author's other packages, each with its git URL, marked Installed when the project has it.</summary>
         private void DrawOtherTools(float width)
@@ -1075,6 +1095,9 @@ namespace UnityArchitecture.Knowledge
                 GUILayout.Space(CARD_PADDING);
                 GUILayout.BeginVertical(GUILayout.Width(innerWidth));
                 GUILayout.Label(text, toolTextStyle, GUILayout.Width(innerWidth));
+                // Once the package is installed, its dependency is already there.
+                if (!installed && !string.IsNullOrEmpty(tool.DependencyUrl))
+                    DrawDependency(tool, innerWidth);
                 EditorGUILayout.SelectableLabel(url, toolUrlStyle, GUILayout.Width(innerWidth), GUILayout.Height(14f));
                 GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
