@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-19
+
 ### Added
 
 - The Rules Guide window (**Tools > Unity Architecture > Rules Guide**) in the `.ai/unity` package: short, human-readable docs drawn from the rules, with search, shown only for the packages a project has. It no longer throws a `NullReferenceException` when it opens with the Editor, before `EditorStyles` is ready.
