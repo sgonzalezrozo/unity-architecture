@@ -36,7 +36,11 @@ https://github.com/sgonzalezrozo/unity-ui-scroller.git
 https://github.com/sgonzalezrozo/unity-ui-foundations.git
 ```
 
-**UI Tweens**: UI animation with no GC
+**UI Tweens**: UI animation with no GC. It needs **LeoECS Core**: add it first, with this exact URL (the last MIT release), or Unity reports `Leopotam` compile errors.
+
+```text
+https://github.com/LeoECSCommunity/ecs.git#91cc7e390fa0eb4fc88a5cf111df88b1f45af37e
+```
 
 ```text
 https://github.com/sgonzalezrozo/unity-ui-tweens.git

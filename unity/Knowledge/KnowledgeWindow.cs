@@ -1017,8 +1017,8 @@ namespace UnityArchitecture.Knowledge
                 English = "Click Controllers, view states and group gradients for strict MVC.",
                 Spanish = "Click Controllers, estados de vista y gradientes de grupo para MVC estricto." },
             new OtherTool { Name = "UI Tweens", Package = "com.sgonzalezrozo.ui-tweens", Repository = "unity-ui-tweens",
-                English = "ECS-based tweens for Unity UI with a DOTween-style API.",
-                Spanish = "Tweens basados en ECS para la UI de Unity, con una API estilo DOTween." },
+                English = "ECS-based tweens for Unity UI with a DOTween-style API. Needs LeoECS Core, added first: see Install packages.",
+                Spanish = "Tweens basados en ECS para la UI de Unity, con una API estilo DOTween. Necesita LeoECS Core, añadido antes: ver Instalar packages." },
         };
 
         private GUIStyle toolNameStyle, toolTextStyle, toolUrlStyle, installedStyle;

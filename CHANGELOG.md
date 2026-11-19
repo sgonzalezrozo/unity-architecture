@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.6.6] - 2026-11-19
+
+### Fixed
+
+- The Rules Guide's **Install packages** doc gave UI Tweens' URL without its LeoECS Core dependency, so installing it from there ended in `Leopotam` compile errors. It now gives the LeoECS URL to add first (the exact commit UI Tweens' README pins), in English and Spanish, and the **Other tools** entry for UI Tweens says it needs LeoECS.
+
 ## [0.6.5] - 2026-11-19
 
 ### Changed
