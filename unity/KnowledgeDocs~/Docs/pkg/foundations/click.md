@@ -1,6 +1,6 @@
 # UI Foundations: click Controller
 
-`BaseClickController` es un **raycast target invisible** con un override `OnClick()`. Al ser un `Graphic`, el `Action` no necesita `Image`.
+`BaseClickController` is an **invisible raycast target** with an `OnClick()` override. Since it's a `Graphic`, the `Action` needs no `Image`.
 
 ```csharp
 public class LoseLifeController : BaseClickController
@@ -20,8 +20,8 @@ public class LoseLifeController : BaseClickController
 ```
 
 > [!RULE] OPT-02
-> Con UI Foundations instalado, todo click Controller deriva de `BaseClickController`. Los de drag siguen con `IDrag*`.
+> With UI Foundations installed, every click Controller derives from `BaseClickController`. Drag Controllers keep `IDrag*`.
 
-- `Interactable = false` desactiva clicks y raycasts.
-- Si limpia en `OnDestroy`: `protected override void OnDestroy()` y llama `base.OnDestroy()`.
-- `Client.asmdef` referencia `UIFoundations`.
+- `Interactable = false` turns off clicks and raycasts.
+- If it cleans up in `OnDestroy`: `protected override void OnDestroy()` and call `base.OnDestroy()`.
+- `Client.asmdef` references `UIFoundations`.

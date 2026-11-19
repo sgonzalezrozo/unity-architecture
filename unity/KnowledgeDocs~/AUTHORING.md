@@ -1,129 +1,136 @@
-# Cómo escribir estas guías
+# Writing the Rules Guide docs
 
-Guía interna para mantener los docs del Rules Guide. **No aparece en la ventana**: los docs son fijos y se mantienen junto con las reglas de `.ai`, no por proyecto.
+Internal notes for maintaining the Rules Guide docs. **This file doesn't show in the window**: the docs are fixed and maintained together with the `.ai` rules, not per project.
 
-> [!TIP]
-> Cada entrada de `knowledge.json` lleva `source` (la regla original) y, si es de un package, `requires` con su nombre: solo se muestra si está instalado. `requiresMissing` hace lo contrario.
+## Where everything lives
 
-## Dónde vive todo
-
-| Archivo | Para qué |
+| File | For |
 |---|---|
-| `KnowledgeDocs~/knowledge.json` | El índice: título, resumen, categoría, color y palabras clave |
-| `KnowledgeDocs~/Docs/*.md` | Un documento por tema |
-| `KnowledgeDocs~/Images/` | Capturas y diagramas (`.png` o `.jpg`) |
+| `KnowledgeDocs~/knowledge.json` | The index: title, summary, category, color, keywords, source, requirements and home page |
+| `KnowledgeDocs~/Docs/<topic>/*.md` | One doc per topic, short (under about 50 lines) |
+| `KnowledgeDocs~/Images/` | Screenshots and diagrams (`.png` or `.jpg`) |
 
-La `~` del nombre hace que Unity **no importe** la carpeta: no crea `.meta` ni assets, pero la ventana la lee del disco.
+The `~` in the folder name keeps Unity from **importing** it: no `.meta` files or assets, but the window reads it from disk.
 
-## Texto
+## Catalog entry
 
-- **Negrita** con `**texto**`, *cursiva* con `*texto*`, ~~tachado~~ con `~~texto~~`.
-- ==Resaltado== con `==texto==`.
-- Código en línea con comillas invertidas: `GetComponentInParent<TModel>()`.
-- Color libre con la etiqueta de Unity `<color=#hex>texto</color>`: <color=#3FB950>verde</color>, <color=#F85149>rojo</color>.
-- Los [enlaces](https://example.com) se muestran en color, pero no se pueden pulsar.
+```json
+{
+  "id": "model.what_is_a_model",
+  "title": "What a Model is",
+  "summary": "What a Model does and how it looks",
+  "category": "Model",
+  "color": "blue",
+  "keywords": ["model", "state", "MODEL-08"],
+  "markdownPath": "Docs/model/what_is_a_model.md",
+  "source": "architecture/MVC.md",
+  "home": "Architecture",
+  "homeOrder": 0,
+  "requires": ["com.sgonzalezrozo.ui-scroller"]
+}
+```
 
-## Callouts de color
+- `source`: the original rule, relative to the `.ai` root, or `package:<name>/<file>` for a package file.
+- `keywords`: add synonyms and every rule ID the doc defines; rule links resolve through them.
+- `home` / `homeOrder`: shows the doc on the home page, in a section from `homeSections`.
+- `requires` / `requiresMissing`: the doc shows only when those packages are (or aren't) installed.
 
-Empieza una cita con `> [!TIPO]` y, si quieres, un título propio.
+## Text
+
+- **Bold** with `**text**`, *italic* with `*text*`, ~~strikethrough~~ with `~~text~~`, ==highlight== with `==text==`.
+- Inline code with backticks: `GetComponentInParent<TModel>()`.
+- Free color with Unity's tag `<color=#hex>text</color>`: <color=#3FB950>green</color>, <color=#F85149>red</color>.
+
+## Links
+
+- To another doc: `[Model](doc:model.what_is_a_model)` (the `id` from `knowledge.json`).
+- Rule IDs in code (`` `VIEW-03` ``, `` `UA0012` ``) link on their own to the doc with that ID in its keywords (preferring the one whose summary names it).
+- A `https://...` URL opens in the browser.
+
+## Callouts
+
+Start a quote with `> [!TYPE]` and, optionally, a title of your own.
 
 > [!NOTE]
-> Información útil que conviene saber.
+> Useful information.
 
-> [!TIP] Truco
-> Una forma más rápida de hacerlo.
+> [!TIP] A shortcut
+> A faster way to do it.
 
 > [!IMPORTANT]
-> Algo que no puedes pasar por alto.
+> Something you can't miss.
 
 > [!WARNING]
-> Puede romper algo si no tienes cuidado.
+> It can break something if you're not careful.
 
 > [!CAUTION]
-> Peligro: consecuencias graves.
+> Serious consequences.
 
 > [!DO]
-> Lo correcto. Úsalo junto a un `[!DONT]` para comparar.
+> The right way. Pair it with a `[!DONT]`.
 
 > [!DONT]
-> Lo incorrecto.
+> The wrong way.
 
 > [!RULE] ARCH-01
-> Una regla con su ID, para enlazarla con `AGENTS.md`.
+> A rule with its ID.
 
 > [!EXAMPLE]
-> Un ejemplo concreto.
+> A concrete example.
 
-También funcionan en español: `[!NOTA]`, `[!CONSEJO]`, `[!CUIDADO]`, `[!PELIGRO]`, `[!HACER]`, `[!EVITAR]`, `[!REGLA]`, `[!EJEMPLO]`.
+## Lists
 
-## Listas
+1. Numbered lists renumber themselves.
+1. You can write `1.` on every line.
+   - Nest with two or three spaces.
 
-1. Las listas numeradas se renumeran solas.
-1. Puedes escribir `1.` en todas las líneas.
-   - Y anidar con dos o tres espacios.
-     - Hasta varios niveles.
+- [x] A done checklist item
+- [ ] A pending one
 
-- [x] Checklist hecha
-- [ ] Checklist pendiente
+## Code
 
-## Código
-
-Indica el lenguaje después de las comillas para tener colores. Cada bloque tiene botón **Copiar**.
+Name the language after the backticks for highlighting. Every block gets a **Copy** button.
 
 ```csharp
 public class LivesModel : MonoBehaviour
 {
     public event Action OnLivesChanged;
-
-    private int remainingLives = 3; // estado inicial en el inicializador
 }
 ```
 
-## Diagramas de flujo
+## Flow diagrams
 
-Un bloque de código con lenguaje `flow` dibuja cajas con flechas. Separa los pasos con `->`. Las capas MVC se colorean solas; fuerza un color con `:verde`, `:rojo`, `:#FF00FF`...
+A code block with the `flow` language draws boxes with arrows. Separate steps with `->`. MVC layers get their color automatically; force one with `:green`, `:red`, `:#FF00FF`...
 
 ```flow
 Input -> Controller -> Model -> View
-Botón:gris -> Backend:teal -> Resultado:verde
+Button:gray -> Backend:teal -> Result:green
 ```
 
-Cada línea es una fila. Si no cabe, salta de línea sola.
+Each line is a row, and rows wrap when they don't fit.
 
-## Imágenes
+## Images
 
 ```text
-![Pie de foto](../Images/mi_captura.png "Título opcional")
+![Caption](../../Images/my_screenshot.png "Optional title")
 ```
 
-La ruta es relativa al `.md`. Si el nombre termina en `@2x` se dibuja a la mitad (capturas retina). Si la imagen no existe, verás un recuadro así:
+The path is relative to the `.md`. A name ending in `@2x` is drawn at half size (retina screenshots). A missing image shows a placeholder box.
 
-![Ejemplo de imagen que falta](../Images/ejemplo_que_no_existe.png)
+## Content that depends on a tool
 
-> [!NOTE]
-> La fuente del editor no tiene emojis: usa callouts y colores en lugar de iconos.
-
-## Contenido que depende de un tool
-
-- **Doc entero:** `"requires": ["com.x.package"]` en `knowledge.json` (o `requiresMissing` para lo contrario).
-- **Parte de un doc:** bloques condicionales, cada marcador en su propia línea:
+- **A whole doc:** `"requires"` in `knowledge.json`.
+- **Part of a doc:** conditional blocks, each marker on its own line:
 
 ```text
 <!-- if: com.sgonzalezrozo.screen-system -->
-Texto con Screen System
+Text with Screen System
 <!-- else -->
-Texto sin Screen System
+Text without Screen System
 <!-- endif -->
 ```
 
-También `<!-- if-not: ... -->`. Se pueden anidar.
+Also `<!-- if-not: ... -->`. They can nest.
 
-## Portada
-
-`homeSections` en `knowledge.json` define las secciones; una entrada aparece en la portada con `"home": "<sección>"` y `"homeOrder"`.
-
-## Enlaces
-
-- A otro doc: `[Model](doc:model.que_es)` (el `id` de `knowledge.json`).
-- Los IDs de regla en código (`` `VIEW-03` ``, `` `UA0012` ``) enlazan solos al doc que tiene ese ID en sus keywords (prefiere el que lo nombra en el resumen).
-- Una URL `https://...` se abre en el navegador.
+> [!NOTE]
+> The editor font has no emoji: use callouts and colors instead of icons.

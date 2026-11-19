@@ -1,6 +1,6 @@
-# Pestañas (tabs)
+# Tabs
 
-El contenido de las pestañas es **estático**: anidado en el prefab al editar, nunca instanciado en runtime.
+Tab content is **static**: nested in the prefab at edit time, never instantiated at runtime.
 
 ```text
 InventoryScreen
@@ -10,18 +10,18 @@ InventoryScreen
 │   │   │   ├── ActiveRoot
 │   │   │   └── InactiveRoot
 │   │   └── Action (Image: alpha 0) [SelectTabController]
-│   └── ArmorTab (mismos componentes, otro enum serializado)
+│   └── ArmorTab (same components, another serialized enum)
 └── Content [TabContentView]
     ├── WeaponsContent (CanvasGroup)
     └── ArmorContent (CanvasGroup)
 ```
 
-- **Un Model** guarda la pestaña seleccionada, mejor como enum.
-- Todas las pestañas comparten **una clase View y una clase Controller**; un enum serializado elige la pestaña.
-- Oculta con `CanvasGroup` (`alpha`, `interactable`, `blocksRaycasts`) para que sus Views sigan suscritas. `SetActive` solo si la pestaña oculta es cara.
-- Lo caro se carga al abrir su pestaña (`PERF-01`).
+- **One Model** holds the selected tab, preferably as an enum.
+- Every tab shares **one View class and one Controller class**; a serialized enum picks the tab.
+- Hide tabs with `CanvasGroup` (`alpha`, `interactable`, `blocksRaycasts`) so their Views stay subscribed. `SetActive` only when a hidden tab is expensive.
+- Expensive content loads when its tab opens (`PERF-01`).
 
 <!-- if: com.sgonzalezrozo.ui-scroller -->
 > [!TIP]
-> Si las pestañas solo **filtran una lista**, no necesitan prefabs propios: mira el ejemplo **Inventario**.
+> If the tabs only **filter one list**, they need no prefabs of their own: see the [Inventory example](doc:examples.inventory).
 <!-- endif -->

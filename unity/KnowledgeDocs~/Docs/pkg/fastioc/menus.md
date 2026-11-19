@@ -1,13 +1,13 @@
-# Menús de Fast IoC
+# Menus and shortcuts: Fast IoC
 
-| Menú | Para qué | ¿El agente? |
+| Menu | For | Agent? |
 |---|---|---|
-| **Assets > FastIoC > New MonoInstaller** | Crea un installer global en la carpeta seleccionada | No: escribe el `.cs` directamente |
-| **Tools > FastIoC > Setup** | Configuración inicial, una vez por proyecto | <color=#F85149>Nunca</color>: abre un diálogo modal |
-| **Tools > FastIoC > Regenerate Code** | Regenera el código | <color=#F85149>Nunca</color>: se regenera solo tras compilar |
+| **Assets > FastIoC > New MonoInstaller** | Creates a global installer in the selected folder | No: it writes the `.cs` directly |
+| **Tools > FastIoC > Setup** | First-time setup, once per project | <color=#F85149>Never</color>: opens a modal dialog |
+| **Tools > FastIoC > Regenerate Code** | Regenerates the code | <color=#F85149>Never</color>: it regenerates after each compile |
 
 > [!RULE] DI-09
-> Tras **New MonoInstaller**: ejecútalo sobre `Services/`, llámalo `{Feature}Installer`, añade el namespace `Client.{Feature}`, las escenas y la `Priority`.
+> After **New MonoInstaller**: run it on `Services/`, name it `{Feature}Installer`, and add the `Client.{Feature}` namespace, the scenes and the `Priority`.
 
-> [!TIP] Estado de la generación
-> `Assets/FastIoC/Generated/GenerationStatus.json` dice si faltan bindings o hay ciclos. Un cambio de installer está hecho cuando reporta `"status": 0` sin warnings nuevos (`EDIT-04`).
+> [!TIP] Generation status
+> `Assets/FastIoC/Generated/GenerationStatus.json` reports missing bindings and cycles. An installer change is done when it reports `"status": 0` with no new warnings (`EDIT-04`).

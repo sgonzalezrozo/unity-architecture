@@ -5,10 +5,10 @@ using System.Text.RegularExpressions;
 namespace UnityArchitecture.Knowledge
 {
     /// <summary>
-    /// Bloques condicionales dentro de un .md, para que una regla muestre solo la parte del tool instalado:
+    /// Conditional blocks inside a .md, so a rule shows only the part for the installed tool:
     /// <c>&lt;!-- if: com.x.package --&gt;</c>, <c>&lt;!-- if-not: com.x.package --&gt;</c>,
-    /// <c>&lt;!-- else --&gt;</c> y <c>&lt;!-- endif --&gt;</c>, cada uno en su propia línea. Se pueden anidar.
-    /// Con showAll se ven todas las ramas y solo se quitan los marcadores.
+    /// <c>&lt;!-- else --&gt;</c> and <c>&lt;!-- endif --&gt;</c>, each on its own line. They can nest.
+    /// With showAll every branch is shown and only the markers are removed.
     /// </summary>
     internal static class PackageConditions
     {

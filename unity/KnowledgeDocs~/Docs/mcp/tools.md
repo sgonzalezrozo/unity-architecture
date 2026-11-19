@@ -1,16 +1,16 @@
-# Tools que usan las reglas
+# Tools the rules use
 
-| Necesidad | Tool | Grupo |
+| Need | Tool | Group |
 |---|---|---|
-| Compilar, leer errores | `refresh_unity`, `read_console` | **Core Tools** (on por defecto) |
-| Correr tests | `run_tests`, `get_test_job` | **Testing** (<color=#D29922>off por defecto</color>) |
-| Construir y validar prefabs | `execute_code` | **Scripting Extensions** (<color=#D29922>off por defecto</color>) |
+| Compile, read errors | `refresh_unity`, `read_console` | **Core Tools** (on by default) |
+| Run tests | `run_tests`, `get_test_job` | **Testing** (<color=#D29922>off by default</color>) |
+| Build and check prefabs | `execute_code` | **Scripting Extensions** (<color=#D29922>off by default</color>) |
 | Play mode | `manage_editor` (`play`, `stop`) | Core Tools |
 
-Se activan en **Window > MCP for Unity > Tools**. Pulsa **Reconfigure** / **Rescan** si aparece.
+Turn them on in **Window > MCP for Unity > Tools**. Click **Reconfigure** / **Rescan** if offered.
 
-> [!WARNING] Sin Roslyn
-> `execute_code` compila C# 6: escribe `UnityEngine.Object` (no `Object`) y nada de sintaxis nueva.
+> [!WARNING] Without Roslyn
+> `execute_code` compiles C# 6: write `UnityEngine.Object` (not `Object`) and no newer syntax.
 
 > [!NOTE]
-> Claude Code pide permiso antes de cada `execute_code` porque ejecuta cualquier C# en tu Editor. Para quitarlo, añade `"mcp__unityMCP__execute_code"` a `permissions.allow` en `.claude/settings.json`, sabiéndolo.
+> Claude Code asks before each `execute_code`, because it runs any C# in your Editor. To stop the prompts, add `"mcp__unityMCP__execute_code"` to `permissions.allow` in `.claude/settings.json`, knowing that.

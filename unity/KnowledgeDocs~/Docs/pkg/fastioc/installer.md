@@ -1,6 +1,6 @@
-# Installer de una feature
+# A feature's installer
 
-Un `BindingRecorder` por feature, en `Services/`.
+One `BindingRecorder` per feature, in `Services/`.
 
 ```csharp
 using FastIoC.API;
@@ -20,12 +20,12 @@ namespace Client.TrophyRoom
 }
 ```
 
-| Prioridad | Uso |
+| Priority | Use |
 |---|---|
-| 400 | Configuración |
-| 300 | Servicios compartidos |
+| 400 | Configuration |
+| 300 | Shared services |
 | 200 | Features |
-| 100 o menos | Detalles de feature |
+| 100 and below | Feature details |
 
-> [!RULE] Qué se bindea
-> Models, Modules y Connectors. **Nunca** Views ni Controllers: son componentes de prefabs.
+> [!RULE] What to bind
+> Models, Modules and Connectors. **Never** Views or Controllers: they're components on prefabs.

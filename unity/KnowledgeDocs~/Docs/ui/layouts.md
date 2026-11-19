@@ -1,16 +1,16 @@
-# Layouts adaptables
+# Adaptive layouts
 
 ```text
-ScreenRoot (llena el padre, VerticalLayoutGroup)
-├── Header (alto fijo o preferido)
-├── Content (flexible, llena el resto)
-└── Footer (alto fijo o preferido)
+ScreenRoot (fills parent, VerticalLayoutGroup)
+├── Header (fixed or preferred height)
+├── Content (flexible, fills the rest)
+└── Footer (fixed or preferred height)
 ```
 
-- Los layouts **llenan el espacio** disponible y se adaptan a su contenedor.
-- `LayoutGroup` con tamaños preferidos y flexibles, no posiciones fijas.
-- Más de unos **5 niveles** de jerarquía es una señal de alarma.
-- Prueba con varios aspect ratios.
+- Layouts **fill the available space** and adapt to their container.
+- `LayoutGroup` with preferred and flexible sizes, not fixed positions.
+- More than about **5 hierarchy levels** is a warning sign.
+- Test at several aspect ratios.
 
 > [!NOTE]
-> Separa lo estático de lo dinámico. Lo dinámico es contenido de pestaña o una lista.
+> Keep static elements apart from dynamic ones. Dynamic content is tab content or a list.

@@ -1,14 +1,14 @@
 # Assembly definitions
 
 ```text
-Assets/Client/Client.asmdef        Todo el código cliente, Shared/ incluido
+Assets/Client/Client.asmdef        All client code, Shared/ included
 ```
 
 > [!RULE] ASM-01
-> Todo el código de features compila en `Client.asmdef`. Una feature **no** tiene su propio `.asmdef`: los analyzers, el validador de prefabs y los specs solo leen el assembly `Client`.
+> All feature code compiles in `Client.asmdef`. A feature **doesn't** get its own `.asmdef`: the analyzers, the prefab validator and the specs only read the assembly named `Client`.
 
 > [!RULE] ASM-02
-> Si una feature necesita un package que **ya está** en `Packages/manifest.json`, añade su assembly a las `references` de `Client.asmdef`. Eso no necesita aprobación; añadir el package sí.
+> When a feature needs a package that's **already** in `Packages/manifest.json`, add its assembly to the `references` of `Client.asmdef`. That needs no approval; adding the package does.
 
 > [!WARNING]
-> Un `.asmdef` directamente en `Assets/` captura todo el proyecto.
+> An `.asmdef` directly in `Assets/` captures the whole project.

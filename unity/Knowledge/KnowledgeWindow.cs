@@ -10,10 +10,10 @@ using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 namespace UnityArchitecture.Knowledge
 {
     /// <summary>
-    /// Ventana que muestra las reglas de arquitectura en versión para personas. Sin búsqueda enseña una
-    /// portada con los docs generales de cada sección; buscando, todos los docs ordenados por relevancia.
-    /// El contenido vive en KnowledgeDocs~ dentro del package y llega a cada proyecto con el submódulo .ai.
-    /// Los docs y bloques que dependen de un package solo aparecen si el proyecto lo tiene instalado.
+    /// A window that shows the architecture rules written for people. With no search it shows a
+    /// home page with each section's general docs; when searching, every doc ranked by relevance.
+    /// The content lives in KnowledgeDocs~ inside the package and reaches each project with the .ai submodule.
+    /// Docs and blocks that depend on a package only appear when the project has it installed.
     /// </summary>
     public class KnowledgeWindow : EditorWindow
     {
@@ -97,7 +97,7 @@ namespace UnityArchitecture.Knowledge
                 Reload();
         }
 
-        // ------------------------------------------------------------------ Carga
+        // ------------------------------------------------------------------ Loading
 
         internal void Reload()
         {
@@ -134,7 +134,7 @@ namespace UnityArchitecture.Knowledge
             string catalogPath = Path.Combine(knowledgeFolder, CATALOG_FILE);
             if (!File.Exists(catalogPath))
             {
-                loadError = $"No se encontró {CATALOG_FILE} en:\n{knowledgeFolder}";
+                loadError = $"{CATALOG_FILE} not found in:\n{knowledgeFolder}";
                 return null;
             }
 
@@ -144,7 +144,7 @@ namespace UnityArchitecture.Knowledge
             }
             catch (Exception exception)
             {
-                loadError = $"{CATALOG_FILE} no es un JSON válido:\n{exception.Message}";
+                loadError = $"{CATALOG_FILE} isn't valid JSON:\n{exception.Message}";
                 return null;
             }
         }
@@ -182,7 +182,7 @@ namespace UnityArchitecture.Knowledge
                 installedPackages[packages[i].name] = packages[i].resolvedPath;
         }
 
-        /// <summary>Un doc con requires solo se muestra si el proyecto tiene esos packages instalados.</summary>
+        /// <summary>A doc with requires only shows when the project has those packages installed.</summary>
         private bool MeetsRequirements(KnowledgeEntry entry)
         {
             for (int i = 0; entry.requires != null && i < entry.requires.Count; i++)
@@ -227,8 +227,8 @@ namespace UnityArchitecture.Knowledge
         }
 
         /// <summary>
-        /// La regla original (AGENTS.md, architecture/...) vive en la raíz del repo .ai, un nivel por encima
-        /// del package. "package:com.x/README.md" apunta a un archivo de otro package instalado.
+        /// The original rule (AGENTS.md, architecture/...) lives at the root of the .ai repo, one level above
+        /// the package. "package:com.x/README.md" points to a file in another installed package.
         /// </summary>
         private string ResolveSource(string source)
         {
@@ -260,7 +260,7 @@ namespace UnityArchitecture.Knowledge
             if (package != null && !string.IsNullOrEmpty(package.resolvedPath))
                 return Path.Combine(package.resolvedPath, DOCS_FOLDER);
 
-            // Fallback: el script está copiado dentro de Assets/. Busca la carpeta junto a él.
+            // Fallback: the script was copied into Assets/. Look for the folder next to it.
             string scriptPath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this));
             string scriptDir = Path.GetDirectoryName(Path.GetFullPath(FileUtil.GetPhysicalPath(scriptPath)));
             string sibling = Path.Combine(Path.GetDirectoryName(scriptDir) ?? scriptDir, DOCS_FOLDER);
@@ -303,7 +303,7 @@ namespace UnityArchitecture.Knowledge
                 SetOpen(filteredEntries[0], true);
         }
 
-        // ------------------------------------------------------------------ Estado de apertura
+        // ------------------------------------------------------------------ Open state
 
         private bool IsOpen(KnowledgeEntry entry)
         {
@@ -336,7 +336,7 @@ namespace UnityArchitecture.Knowledge
             SetState(new NavigationState(string.Empty, null, null));
         }
 
-        // ------------------------------------------------------------------ Navegación
+        // ------------------------------------------------------------------ Navigation
 
         private struct NavigationState
         {
@@ -377,7 +377,7 @@ namespace UnityArchitecture.Knowledge
             Repaint();
         }
 
-        /// <summary>"doc:id" abre ese doc, "rule:VIEW-03" el doc que define la regla y una URL el navegador.</summary>
+        /// <summary>"doc:id" opens that doc, "rule:VIEW-03" the doc that defines the rule, and a URL the browser.</summary>
         private void OnLinkClicked(string target)
         {
             if (target.StartsWith("http://") || target.StartsWith("https://"))
@@ -389,7 +389,7 @@ namespace UnityArchitecture.Knowledge
             KnowledgeEntry entry = ResolveLink(target);
             if (entry == null)
             {
-                ShowNotification(new GUIContent("Sin doc para " + target + " en este proyecto"));
+                ShowNotification(new GUIContent("No doc for " + target + " in this project"));
                 return;
             }
 
@@ -417,7 +417,7 @@ namespace UnityArchitecture.Knowledge
             return null;
         }
 
-        /// <summary>El doc que define una regla: el que la tiene en keywords y, si hay varios, la nombra en su resumen.</summary>
+        /// <summary>The doc that defines a rule: the one with it in its keywords and, if several, the one whose summary names it.</summary>
         private KnowledgeEntry FindRuleEntry(string ruleId)
         {
             KnowledgeEntry firstWithKeyword = null;
@@ -466,7 +466,7 @@ namespace UnityArchitecture.Knowledge
                 return;
             }
 
-            // Sin scroll horizontal: todo se dibuja con el ancho real medido dentro del scroll view.
+            // No horizontal scroll: everything is drawn with the real width measured inside the scroll view.
             scroll = EditorGUILayout.BeginScrollView(scroll, false, true,
                 GUIStyle.none, GUI.skin.verticalScrollbar, GUIStyle.none);
             MeasureAvailableWidth();
@@ -492,8 +492,8 @@ namespace UnityArchitecture.Knowledge
         }
 
         /// <summary>
-        /// El ancho visible solo se conoce en Repaint. Se guarda para el siguiente frame (Layout y Repaint
-        /// tienen que usar el mismo valor) y se repinta si cambió, al redimensionar o al aparecer la barra.
+        /// The visible width is only known in Repaint. It's kept for the next frame (Layout and Repaint
+        /// must use the same value), and the window repaints when it changes, on resize or when the scrollbar appears.
         /// </summary>
         private void MeasureAvailableWidth()
         {
@@ -541,14 +541,14 @@ namespace UnityArchitecture.Knowledge
 
             using (new EditorGUI.DisabledScope(history.Count == 0))
             {
-                if (GUILayout.Button(new GUIContent("Atrás", "Volver a donde estabas"), EditorStyles.toolbarButton, GUILayout.Width(46f)))
+                if (GUILayout.Button(new GUIContent("Back", "Go back to where you were"), EditorStyles.toolbarButton, GUILayout.Width(46f)))
                     GoBack();
             }
 
             bool onHome = !IsSearching && categoryFilter == null && focusedId == null;
             using (new EditorGUI.DisabledScope(onHome))
             {
-                if (GUILayout.Button(new GUIContent("Inicio", "Volver a la portada"), EditorStyles.toolbarButton, GUILayout.Width(46f)))
+                if (GUILayout.Button(new GUIContent("Home", "Go to the home page"), EditorStyles.toolbarButton, GUILayout.Width(46f)))
                     GoHome();
             }
 
@@ -565,18 +565,18 @@ namespace UnityArchitecture.Knowledge
             }
 
             if (IsSearching)
-                GUILayout.Label($"{filteredEntries.Count} resultados", EditorStyles.miniLabel, GUILayout.ExpandWidth(false));
+                GUILayout.Label($"{filteredEntries.Count} results", EditorStyles.miniLabel, GUILayout.ExpandWidth(false));
 
-            if (GUILayout.Button(new GUIContent("Colapsar", "Cerrar todos los documentos"), EditorStyles.toolbarButton, GUILayout.Width(60f)))
+            if (GUILayout.Button(new GUIContent("Collapse", "Close every doc"), EditorStyles.toolbarButton, GUILayout.Width(60f)))
                 CollapseAll();
 
             GUIContent refresh = EditorGUIUtility.IconContent("Refresh");
-            refresh.tooltip = "Recargar knowledge.json y los .md";
+            refresh.tooltip = "Reload knowledge.json and the .md files";
             if (GUILayout.Button(refresh, EditorStyles.toolbarButton, GUILayout.Width(28f)))
                 Reload();
 
             GUIContent gear = EditorGUIUtility.IconContent("_Popup");
-            gear.tooltip = "Ajustes";
+            gear.tooltip = "Settings";
             if (GUILayout.Button(gear, EditorStyles.toolbarButton, GUILayout.Width(28f)))
                 PopupWindow.Show(GUILayoutUtility.GetLastRect(), new KnowledgeSettingsPopup(this, knowledgeFolder));
 
@@ -588,14 +588,14 @@ namespace UnityArchitecture.Knowledge
             GUILayout.Space(10f);
             EditorGUILayout.HelpBox(loadError, MessageType.Warning);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Recargar"))
+            if (GUILayout.Button("Reload"))
                 Reload();
-            if (Directory.Exists(knowledgeFolder) && GUILayout.Button("Mostrar carpeta"))
+            if (Directory.Exists(knowledgeFolder) && GUILayout.Button("Show folder"))
                 EditorUtility.RevealInFinder(knowledgeFolder);
             GUILayout.EndHorizontal();
         }
 
-        // ------------------------------------------------------------------ Vistas
+        // ------------------------------------------------------------------ Views
 
         private void DrawHome(float width)
         {
@@ -610,7 +610,7 @@ namespace UnityArchitecture.Knowledge
                 GUILayout.Space(14f);
             }
 
-            DrawSectionHeader("Explorar por tema", $"Los {allEntries.Count} docs, agrupados. También puedes escribir arriba lo que buscas, en español o en inglés.", width);
+            DrawSectionHeader("Browse by topic", $"All {allEntries.Count} docs, grouped. You can also type what you're looking for above.", width);
             DrawCategoryChips(width);
         }
 
@@ -643,7 +643,7 @@ namespace UnityArchitecture.Knowledge
             DrawEntryList(sectionBuffer, width);
         }
 
-        /// <summary>Un doc abierto desde un enlace, y debajo los demás de su tema.</summary>
+        /// <summary>A doc opened from a link, with the rest of its topic below.</summary>
         private void DrawFocusedView(float width)
         {
             KnowledgeEntry focused = FindEntry(focusedId);
@@ -663,7 +663,7 @@ namespace UnityArchitecture.Knowledge
             if (sectionBuffer.Count == 0)
                 return;
 
-            DrawSectionHeader("Más de " + CategoryOf(focused), null, width);
+            DrawSectionHeader("More in " + CategoryOf(focused), null, width);
             DrawEntryList(sectionBuffer, width);
         }
 
@@ -672,7 +672,7 @@ namespace UnityArchitecture.Knowledge
             if (filteredEntries.Count == 0)
             {
                 GUILayout.Space(20f);
-                GUILayout.Label("No hay resultados. Prueba con otra palabra, en español o en inglés.", emptyStyle, GUILayout.Width(width));
+                GUILayout.Label("No results. Try another word.", emptyStyle, GUILayout.Width(width));
                 return;
             }
 
@@ -710,7 +710,7 @@ namespace UnityArchitecture.Knowledge
             GUILayout.Space(8f);
         }
 
-        /// <summary>Un chip por categoría, en filas que saltan de línea según el ancho.</summary>
+        /// <summary>One chip per category, in rows that wrap to the width.</summary>
         private void DrawCategoryChips(float width)
         {
             float x = 0f;
@@ -792,7 +792,7 @@ namespace UnityArchitecture.Knowledge
             return null;
         }
 
-        // ------------------------------------------------------------------ Tarjetas
+        // ------------------------------------------------------------------ Cards
 
         private void DrawEntry(KnowledgeEntry entry, float width)
         {
@@ -832,7 +832,7 @@ namespace UnityArchitecture.Knowledge
             EditorGUILayout.EndVertical();
         }
 
-        /// <summary>Dibuja la cabecera de una tarjeta. Devuelve true si se hizo click para abrir/cerrar.</summary>
+        /// <summary>Draws a card's header. Returns true when it was clicked to open or close.</summary>
         private bool DrawEntryHeader(KnowledgeEntry entry, Rect header, bool open)
         {
             Event current = Event.current;
@@ -845,7 +845,7 @@ namespace UnityArchitecture.Knowledge
             if (entry.sourceFullPath != null)
             {
                 GUIContent sourceIcon = EditorGUIUtility.IconContent("d_TextAsset Icon");
-                sourceIcon.tooltip = "Abrir el original: " + entry.source;
+                sourceIcon.tooltip = "Open the original: " + entry.source;
                 if (GUI.Button(sourceRect, sourceIcon, EditorStyles.iconButton))
                     EditorUtility.OpenWithDefaultApp(entry.sourceFullPath);
             }
@@ -885,7 +885,7 @@ namespace UnityArchitecture.Knowledge
             EditorGUI.DrawRect(new Rect(rect.xMax - 1f, rect.y, 1f, rect.height), color);
         }
 
-        // ------------------------------------------------------------------ Ajustes
+        // ------------------------------------------------------------------ Settings
 
         internal static bool GetShowAll()
         {
@@ -929,17 +929,17 @@ namespace UnityArchitecture.Knowledge
         {
             GUILayout.Label("Rules Guide", EditorStyles.boldLabel);
 
-            bool closeOthers = EditorGUILayout.ToggleLeft("Abrir un documento cierra los demás", KnowledgeWindow.GetCloseOthers());
+            bool closeOthers = EditorGUILayout.ToggleLeft("Opening a doc closes the others", KnowledgeWindow.GetCloseOthers());
             if (closeOthers != KnowledgeWindow.GetCloseOthers())
                 KnowledgeWindow.SetCloseOthers(closeOthers);
 
-            bool showAll = EditorGUILayout.ToggleLeft("Mostrar docs de packages no instalados", KnowledgeWindow.GetShowAll());
+            bool showAll = EditorGUILayout.ToggleLeft("Show docs of packages that aren't installed", KnowledgeWindow.GetShowAll());
             if (showAll != KnowledgeWindow.GetShowAll())
                 owner.SetShowAll(showAll);
 
             EditorGUILayout.Space(4f);
             EditorGUILayout.LabelField(resolvedFolder ?? string.Empty, EditorStyles.wordWrappedMiniLabel);
-            if (GUILayout.Button("Mostrar carpeta") && Directory.Exists(resolvedFolder))
+            if (GUILayout.Button("Show folder") && Directory.Exists(resolvedFolder))
                 EditorUtility.RevealInFinder(Path.Combine(resolvedFolder, "knowledge.json"));
         }
     }

@@ -1,20 +1,21 @@
-# Menús y atajos: Unity Architecture
+# Menus and shortcuts: Unity Architecture
 
-| Menú | Para qué |
+| Menu | For |
 |---|---|
-| **Tools > Unity Architecture > Rules Guide** | Esta ventana |
-| **Tools > Unity Architecture > Validate Client Prefabs** | Valida todos los prefabs de `Assets/Client` y lista cada error con su regla |
+| **Tools > Unity Architecture > Rules Guide** | This window |
+| **Tools > Unity Architecture > Validate Client Prefabs** | Validates every prefab under `Assets/Client` and lists each error with its rule |
+| **Assets > Unity Architecture > Build Prefab From Spec** | Builds, validates and compares a prefab from the selected JSON spec |
 
-## Desde código o línea de comandos
+## From code or the command line
 
-| Llamada | Para qué |
+| Call | For |
 |---|---|
-| `PrefabValidator.ValidateAsset(path)` | Valida un prefab |
-| `PrefabSpecs.BuildFromSpec(json, path)` | Construye un prefab desde un spec |
-| `PrefabSpecs.Compare(json, path)` | Diferencias entre spec y prefab |
-| `-executeMethod UnityArchitecture.Prefabs.PrefabValidatorCommands.ValidateFromCommandLine` | Validador en batch (exit `1` si hay errores) |
+| `PrefabValidator.ValidateAsset(path)` | Validate one prefab |
+| `PrefabSpecs.BuildFromSpec(json, path)` | Build a prefab from a spec |
+| `PrefabSpecs.Compare(json, path)` | Differences between spec and prefab |
+| `-executeMethod UnityArchitecture.Prefabs.PrefabValidatorCommands.ValidateFromCommandLine` | Validator in batch mode (exit `1` on errors) |
 
-## Scripts del proyecto
+## Project scripts
 
 ```bash
 scripts/verify.sh

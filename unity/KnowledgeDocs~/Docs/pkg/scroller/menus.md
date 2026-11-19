@@ -1,11 +1,11 @@
-# Menús y atajos: UI Scroller
+# Menus and shortcuts: UI Scroller
 
-| Menú | Para qué |
+| Menu | For |
 |---|---|
-| **Window > UI Scroller > Bento Layout Editor** | Dibujar un layout bento y exportarlo a JSON |
-| **Assets > UI Scroller > New Scroll List** | Asistente que genera scripts y prefabs de una lista |
+| **Window > UI Scroller > Bento Layout Editor** | Draw a bento layout and export it to JSON |
+| **Assets > UI Scroller > New Scroll List** | A wizard that generates a list's scripts and prefabs |
 
 > [!CAUTION] LIST-09
-> **New Scroll List no se usa en `Assets/Client`**: su código rompe las reglas (un `ItemController` que pinta, un `ItemModel` sin evento, datos empujados, sin namespace, un `Button`). Sirve para un prototipo **fuera** de `Assets/Client`.
+> **New Scroll List isn't used under `Assets/Client`**: its code breaks the rules (an `ItemController` that renders, an `ItemModel` with no event, pushed data, no namespace, a `Button`). It's fine for a prototype **outside** `Assets/Client`.
 
-Añadir el componente `Scroller` a un objeto UI vacío construye solo su `Viewport` y `Content`. El inspector muestra dirección, layout (List, Grid, Auto Grid, Bento), spacing, padding, snapping y loop.
+Adding the `Scroller` component to an empty UI object builds its `Viewport` and `Content`. The Inspector shows direction, layout (List, Grid, Auto Grid, Bento), spacing, padding, snapping and loop.

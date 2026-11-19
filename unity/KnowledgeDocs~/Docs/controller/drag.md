@@ -1,7 +1,7 @@
-# Drag y valores de input
+# Drag and input values
 
 > [!RULE] CTRL-04
-> Un Controller puede **convertir** input en un valor de dominio (una posición del puntero a 0–1). Limitar y detectar cambios es cosa del Model.
+> A Controller may **convert** input to a domain value (a pointer position to 0–1). Clamping and change detection belong to the Model.
 
 ```csharp
 public class DragVolumeController : MonoBehaviour, IPointerDownHandler, IDragHandler
@@ -38,4 +38,4 @@ public class DragVolumeController : MonoBehaviour, IPointerDownHandler, IDragHan
 }
 ```
 
-`SetNormalizedVolume` hace el `Clamp01` y no lanza evento si el valor no cambió.
+`SetNormalizedVolume` clamps with `Clamp01` and fires no event when the value didn't change.

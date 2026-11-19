@@ -3,7 +3,7 @@ using UnityEngine;
 namespace UnityArchitecture.Knowledge
 {
     /// <summary>
-    /// Paleta del visor de Markdown. Una para skin oscuro y otra para claro.
+    /// The Markdown viewer's palette. One for the dark skin and one for the light skin.
     /// </summary>
     internal sealed class MdTheme
     {
@@ -170,7 +170,7 @@ namespace UnityArchitecture.Knowledge
             return false;
         }
 
-        /// <summary>Colores por defecto para los pasos de un diagrama ```flow según la capa MVC.</summary>
+        /// <summary>Default colors for the steps of a ```flow diagram, by MVC layer.</summary>
         public Color GuessFlowColor(string label)
         {
             string l = label.ToLowerInvariant();

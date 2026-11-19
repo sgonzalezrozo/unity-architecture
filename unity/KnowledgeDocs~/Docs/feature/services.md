@@ -1,23 +1,23 @@
-# La carpeta Services
+# The Services folder
 
-| Archivo | Rol |
+| File | Role |
 |---|---|
-| `{Feature}Module.cs` | Model C# puro que envuelve el backend de la feature |
-| `I{Feature}Connector.cs`, `{Feature}Connector.cs` | Interfaz e implementación de las llamadas |
-| `{Feature}Data.cs` | Clases de datos del backend |
+| `{Feature}Module.cs` | Pure C# Model that wraps the feature's backend |
+| `I{Feature}Connector.cs`, `{Feature}Connector.cs` | The calls: interface and implementation |
+| `{Feature}Data.cs` | Backend data classes |
 <!-- if: com.sgonzalezrozo.fast-ioc -->
-| `{Feature}Installer.cs` | Bindings de Fast IoC |
+| `{Feature}Installer.cs` | Fast IoC bindings |
 <!-- endif -->
 <!-- if: com.sgonzalezrozo.screen-system -->
-| `ScreenDefinition` (`.asset`) | Una por pantalla, de Screen System |
+| `ScreenDefinition` (`.asset`) | One per screen, from Screen System |
 <!-- endif -->
 
 > [!RULE] FEAT-01
-> Una feature no referencia Views, Controllers ni internos de scope de otra feature. Sí puede leer un Model compartido o inyectado.
+> A feature doesn't reference another feature's Views, Controllers or scope internals. It may read a shared or injected Model.
 
 <!-- if: com.sgonzalezrozo.screen-system -->
 > [!NOTE]
-> Una pantalla que otras features abren deja su `ScreenDefinition` en la feature donde se creó. Nunca se mueve a `Shared/` ni se copia.
+> A screen that other features open keeps its `ScreenDefinition` in the feature where it was created. It never moves to `Shared/` and is never copied.
 <!-- endif -->
 
-**Ver también:** [Las piezas del backend](doc:backend.piezas) · [Carpetas](doc:feature.carpetas)
+**See also:** [The backend pieces](doc:backend.pieces) · [Folders](doc:feature.folders)

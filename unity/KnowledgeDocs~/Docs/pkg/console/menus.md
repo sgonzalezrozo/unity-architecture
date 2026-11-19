@@ -1,20 +1,20 @@
-# Menús y atajos: Enhanced Console
+# Menus and shortcuts: Enhanced Console
 
-| Menú | Para qué |
+| Menu | For |
 |---|---|
-| **Window > Enhanced Console** | Abre la consola (déjala anclada: no muestra logs anteriores a abrirla) |
-| **Tools > Enhanced Console > Setup** | Crea la configuración de secciones |
-| **Tools > Enhanced Console > Documentation** | Abre la documentación |
+| **Window > Enhanced Console** | Opens the console (keep it docked: it doesn't show logs from before it opened) |
+| **Tools > Enhanced Console > Setup** | Creates the section config |
+| **Tools > Enhanced Console > Documentation** | Opens the documentation |
 
-## Teclado y ratón
+## Keyboard and mouse
 
-| Atajo | Resultado |
+| Shortcut | Result |
 |---|---|
-| `Cmd/Ctrl + F` | Foco en la búsqueda |
-| `↑` / `↓`, `Page Up/Down`, `Home/End` | Mover la selección |
-| `Shift` + lo anterior, `Shift`-click | Extender la selección |
-| `Cmd/Ctrl`-click | Añadir o quitar de la selección |
-| `Cmd/Ctrl + A` | Seleccionar todo lo visible |
-| `Cmd/Ctrl + C` | Copiar (con stack trace si está activo) |
-| `Enter` o doble click | Abrir el archivo del log |
-| `Delete` / `Backspace` | Quitar los logs seleccionados |
+| `Cmd/Ctrl + F` | Focus the search field |
+| `↑` / `↓`, `Page Up/Down`, `Home/End` | Move the selection |
+| `Shift` + the above, `Shift`-click | Extend the selection |
+| `Cmd/Ctrl`-click | Add or remove from the selection |
+| `Cmd/Ctrl + A` | Select all visible logs |
+| `Cmd/Ctrl + C` | Copy (with stack trace while it's on) |
+| `Enter` or double-click | Open the log's source file |
+| `Delete` / `Backspace` | Remove the selected logs |

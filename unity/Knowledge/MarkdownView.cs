@@ -7,8 +7,8 @@ using UnityEngine;
 namespace UnityArchitecture.Knowledge
 {
     /// <summary>
-    /// Dibuja bloques de <see cref="MarkdownParser"/> con IMGUI. Todo se dibuja con un ancho explícito
-    /// para que el texto con salto de línea calcule su alto correctamente.
+    /// Draws <see cref="MarkdownParser"/> blocks with IMGUI. Everything is drawn with an explicit width
+    /// so wrapped text computes its height correctly.
     /// </summary>
     internal sealed class MarkdownView : IDisposable
     {
@@ -30,12 +30,12 @@ namespace UnityArchitecture.Knowledge
 
         private static int indexMode = -1;
 
-        /// <summary>Se lanza al pulsar un enlace: "doc:id", "rule:VIEW-03" o una URL.</summary>
+        /// <summary>Raised when a link is clicked: "doc:id", "rule:VIEW-03" or a URL.</summary>
         public event Action<string> LinkClicked;
 
         public MdTheme Theme => theme;
 
-        /// <summary>Devuelve true si el skin cambió y hay que volver a parsear (los colores van en el texto).</summary>
+        /// <summary>Returns true if the skin changed and the docs must be parsed again (colors are baked into the text).</summary>
         // The theme parsing needs. Safe in OnEnable: unlike the styles, it doesn't read EditorStyles, which isn't ready yet.
         public void EnsureTheme()
         {
@@ -74,8 +74,8 @@ namespace UnityArchitecture.Knowledge
 
         private void BuildStyles()
         {
-            // Fuente monoespaciada que trae el editor. Es un asset persistente: una fuente creada en runtime
-            // (CreateDynamicFontFromOSFont) deja referencias inválidas al recargar scripts.
+            // The monospace font that ships with the Editor. It's a persistent asset: a font created at runtime
+            // (CreateDynamicFontFromOSFont) leaves invalid references after a script reload.
             if (monoFont == null)
                 monoFont = EditorGUIUtility.Load(MONO_FONT_PATH) as Font;
 
@@ -144,7 +144,7 @@ namespace UnityArchitecture.Knowledge
             return style;
         }
 
-        // ------------------------------------------------------------------ Entrada
+        // ------------------------------------------------------------------ Entry point
 
         public void Draw(List<MdBlock> blocks, string docDir, float width)
         {
@@ -187,7 +187,7 @@ namespace UnityArchitecture.Knowledge
             }
         }
 
-        // ------------------------------------------------------------------ Bloques
+        // ------------------------------------------------------------------ Blocks
 
         private Rect WrappedLabel(string text, GUIStyle style, float width, List<MdLink> links = null)
         {
@@ -199,11 +199,11 @@ namespace UnityArchitecture.Knowledge
             return rect;
         }
 
-        // ------------------------------------------------------------------ Enlaces
+        // ------------------------------------------------------------------ Links
 
         /// <summary>
-        /// IMGUI no tiene enlaces dentro de un label: se averigua qué carácter hay bajo el ratón y si cae
-        /// dentro de un enlace. Pone el cursor de mano al pasar por encima y lanza LinkClicked al pulsar.
+        /// IMGUI has no links inside a label: find the character under the mouse and whether it falls
+        /// inside a link. Shows the hand cursor on hover and raises LinkClicked on click.
         /// </summary>
         private void HandleLinks(Rect rect, GUIContent content, GUIStyle style, List<MdLink> links)
         {
@@ -246,8 +246,8 @@ namespace UnityArchitecture.Knowledge
         }
 
         /// <summary>
-        /// Según la versión de Unity, el índice del cursor cuenta las etiquetas de rich text o no. Se comprueba
-        /// una vez: con índices "crudos", la posición 2 de "&lt;b&gt;ab&lt;/b&gt;cd" cae dentro de la etiqueta.
+        /// Depending on the Unity version, the cursor index counts rich text tags or not. Checked
+        /// once: with raw indices, position 2 of "&lt;b&gt;ab&lt;/b&gt;cd" falls inside the tag.
         /// </summary>
         private static bool UsesRawIndices(GUIStyle style)
         {
@@ -333,10 +333,10 @@ namespace UnityArchitecture.Knowledge
                 EditorGUI.DrawRect(Inset(bodyRect), theme.codeBackground);
             }
 
-            string language = string.IsNullOrEmpty(block.language) ? "texto" : block.language;
+            string language = string.IsNullOrEmpty(block.language) ? "text" : block.language;
             GUI.Label(header, language.ToUpperInvariant(), codeLang);
 
-            string copyLabel = lastCopied == block ? "Copiado" : "Copiar";
+            string copyLabel = lastCopied == block ? "Copied" : "Copy";
             Rect copyRect = new Rect(header.xMax - 64f, header.y + 2f, 60f, header.height - 4f);
             if (GUI.Button(copyRect, copyLabel, EditorStyles.miniButton))
             {
@@ -537,7 +537,7 @@ namespace UnityArchitecture.Knowledge
                     EditorGUI.DrawRect(missing, theme.tableRowAlt);
                     DrawBorder(missing, theme.tableBorder);
                 }
-                GUI.Label(missing, $"Imagen no encontrada\n<color=#{theme.InlineCodeHex}>{block.path}</color>", placeholder);
+                GUI.Label(missing, $"Image not found\n<color=#{theme.InlineCodeHex}>{block.path}</color>", placeholder);
                 return;
             }
 
@@ -601,7 +601,7 @@ namespace UnityArchitecture.Knowledge
 
         private void DrawFlowRow(List<FlowStep> steps, float width)
         {
-            // Primero calcula cuántas líneas ocupan las cajas para reservar el alto exacto.
+            // First count how many lines the boxes take, to reserve the exact height.
             float boxHeight = flowStep.CalcHeight(Temp("Ag"), 200f);
             int lines = 1;
             float x = 0f;
@@ -661,7 +661,7 @@ namespace UnityArchitecture.Knowledge
             GUI.Label(box, Temp(step.label), flowStep);
         }
 
-        // ------------------------------------------------------------------ Utilidades
+        // ------------------------------------------------------------------ Utilities
 
         private GUIContent Temp(string text)
         {

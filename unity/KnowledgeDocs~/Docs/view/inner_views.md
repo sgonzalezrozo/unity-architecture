@@ -1,16 +1,16 @@
-# View raíz e inner Views
+# Root View and inner Views
 
 > [!RULE] VIEW-03
-> Cada scope tiene **una View raíz**, en su raíz, y solo ella se suscribe al Model. Puede decir a sus inner Views qué mostrar. Una inner View no conoce el Model, no se suscribe y no conoce a otras Views.
+> Each scope has **one root View**, on its root, and only it subscribes to the Model. It may tell its inner Views what to show. An inner View doesn't know the Model, doesn't subscribe, and doesn't know other Views.
 
 > [!RULE] VIEW-07
-> Máximo **5 campos serializados** por View (`UA0016`). Con más, agrupa componentes en inner Views. Solo serializa componentes e inner Views, nunca assets.
+> At most **5 serialized fields** per View (`UA0016`). With more, group components into inner Views. Serialize only components and inner Views, never assets.
 
 ```text
-TrophyCard [TrophyCardModel, TrophyCardView]      raíz: se suscribe y lee el Model
+TrophyCard [TrophyCardModel, TrophyCardView]      root: subscribes, reads the Model
 ├── UI Content
 │   ├── Title (TextMeshProUGUI)
-│   └── Reward [TrophyRewardView]                  inner: sin Model, sin eventos
+│   └── Reward [TrophyRewardView]                  inner: no Model, no events
 │       ├── RewardIcon (Image)
 │       └── RewardAmount (TextMeshProUGUI)
 └── Action (Image: alpha 0) [ClaimTrophyController]
@@ -31,4 +31,4 @@ public class TrophyRewardView : MonoBehaviour
 ```
 
 > [!CAUTION]
-> Ninguna View toca nada **dentro de un prefab anidado**, ni su View raíz: es otro scope.
+> No View touches anything **inside a nested prefab**, not even its root View: it's another scope.

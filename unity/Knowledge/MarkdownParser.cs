@@ -38,7 +38,7 @@ namespace UnityArchitecture.Knowledge
         public Color color;
     }
 
-    /// <summary>Un enlace dentro de un texto: dónde está (en el texto con etiquetas y sin ellas) y a dónde lleva.</summary>
+    /// <summary>A link inside a text: where it is (with and without the tags) and where it goes.</summary>
     internal sealed class MdLink
     {
         public string target;
@@ -75,7 +75,7 @@ namespace UnityArchitecture.Knowledge
 
         public List<List<FlowStep>> flowRows;
 
-        // Cache de layout (tablas / flow) por ancho
+        // Layout cache (tables / flow) per width
         public float cachedWidth = -1f;
         public float[] cachedColumnWidths;
         public float[] cachedRowHeights;
@@ -83,10 +83,10 @@ namespace UnityArchitecture.Knowledge
     }
 
     /// <summary>
-    /// Convierte Markdown (subconjunto GitHub) en bloques listos para dibujar con IMGUI.
-    /// Soporta: encabezados, párrafos, listas (anidadas, numeradas, checklist), código con resaltado,
-    /// citas y callouts ([!NOTE], [!TIP], [!WARNING], [!DO], [!DONT]...), tablas, separadores,
-    /// imágenes y diagramas ```flow.
+    /// Converts Markdown (a GitHub subset) into blocks ready to draw with IMGUI.
+    /// Supports: headings, paragraphs, lists (nested, numbered, checklists), highlighted code,
+    /// quotes and callouts ([!NOTE], [!TIP], [!WARNING], [!DO], [!DONT]...), tables, rules,
+    /// images, links and ```flow diagrams.
     /// </summary>
     internal static class MarkdownParser
     {
@@ -456,7 +456,7 @@ namespace UnityArchitecture.Knowledge
             var text = new StringBuilder(match.Groups[4].Value.Trim());
             int i = start + 1;
 
-            // Líneas de continuación (indentadas, sin ser otro ítem ni otro bloque)
+            // Continuation lines (indented, and not another item or block)
             while (i < lines.Length)
             {
                 string next = lines[i];
@@ -614,15 +614,15 @@ namespace UnityArchitecture.Knowledge
         {
             switch (kind)
             {
-                case CalloutKind.Note: return "Nota";
-                case CalloutKind.Tip: return "Consejo";
-                case CalloutKind.Important: return "Importante";
-                case CalloutKind.Warning: return "Atención";
-                case CalloutKind.Caution: return "Peligro";
-                case CalloutKind.Do: return "Haz esto";
-                case CalloutKind.Dont: return "Evita esto";
-                case CalloutKind.Rule: return "Regla";
-                case CalloutKind.Example: return "Ejemplo";
+                case CalloutKind.Note: return "Note";
+                case CalloutKind.Tip: return "Tip";
+                case CalloutKind.Important: return "Important";
+                case CalloutKind.Warning: return "Warning";
+                case CalloutKind.Caution: return "Caution";
+                case CalloutKind.Do: return "Do this";
+                case CalloutKind.Dont: return "Avoid this";
+                case CalloutKind.Rule: return "Rule";
+                case CalloutKind.Example: return "Example";
                 default: return string.Empty;
             }
         }
@@ -635,8 +635,8 @@ namespace UnityArchitecture.Knowledge
         }
 
         /// <summary>
-        /// Convierte el Markdown en línea a rich text de IMGUI. Los enlaces (<c>[texto](doc:id)</c>, URLs y los
-        /// IDs de regla en código, como <c>`VIEW-03`</c>) se devuelven con su posición en el texto final.
+        /// Converts inline Markdown to IMGUI rich text. Links (<c>[text](doc:id)</c>, URLs and
+        /// rule IDs in code, such as <c>`VIEW-03`</c>) are returned with their position in the final text.
         /// </summary>
         public static string FormatInline(string text, MdTheme theme, out List<MdLink> links)
         {
@@ -658,7 +658,7 @@ namespace UnityArchitecture.Knowledge
             result = StrikeRx.Replace(result, $"<color=#{theme.MutedHex}>$1</color>");
             result = HighlightRx.Replace(result, $"<color=#{theme.HighlightHex}><b>$1</b></color>");
 
-            // Los tokens pueden contener otros tokens (link con código): restaurar hasta estabilizar.
+            // Tokens can hold other tokens (a link with code): restore until stable.
             for (int pass = 0; pass < 3 && result.IndexOf('\u0001') >= 0; pass++)
                 result = TokenRx.Replace(result, m => tokens[int.Parse(m.Groups[1].Value)]);
 
@@ -677,7 +677,7 @@ namespace UnityArchitecture.Knowledge
             return "\u0003" + (targets.Count - 1) + "\u0004" + content + "\u0005";
         }
 
-        /// <summary>Quita los marcadores de enlace y anota dónde empieza y acaba cada uno en el texto final.</summary>
+        /// <summary>Removes the link markers and records where each link starts and ends in the final text.</summary>
         private static string ExtractLinks(string marked, List<string> targets, out List<MdLink> links)
         {
             links = new List<MdLink>();
@@ -716,7 +716,7 @@ namespace UnityArchitecture.Knowledge
             return result;
         }
 
-        /// <summary>Posición contando solo caracteres visibles (sin las etiquetas de rich text).</summary>
+        /// <summary>Position counting only visible characters (without rich text tags).</summary>
         private static int VisibleIndex(string richText, int rawIndex)
         {
             int visible = 0;

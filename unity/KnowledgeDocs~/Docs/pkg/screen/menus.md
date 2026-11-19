@@ -1,22 +1,22 @@
-# Menús y atajos: Screen System
+# Menus and shortcuts: Screen System
 
-| Menú | Para qué |
+| Menu | For |
 |---|---|
-| **Tools > Screen System > Setup** | Crea los assets del proyecto, el backdrop de modales y las pantallas especiales. Repetirlo los repara |
-| **Tools > Screen System > Documentation** | Abre la documentación |
-| **Assets > Screen System > New Screen Feature** | Crea una feature con sus pantallas, lista para `GoTo` (clic derecho en `Assets/Client`) |
-| **Assets > Screen System > New Layer** | Crea un layer prefab en la carpeta seleccionada |
+| **Tools > Screen System > Setup** | Creates the project assets, the modal backdrop and the special screens. Running it again repairs them |
+| **Tools > Screen System > Documentation** | Opens the documentation |
+| **Assets > Screen System > New Screen Feature** | Creates a feature with its screens, ready for `GoTo` (right-click `Assets/Client`) |
+| **Assets > Screen System > New Layer** | Creates a layer prefab in the selected folder |
 
-## En el Inspector
+## In the Inspector
 
-| Dónde | Botón |
+| Where | Button |
 |---|---|
-| `ScreenManager` | **Create Special Screens**, **Open Screen Manager Window** (en Play: pila, qué se pinta, Back, Close All...) |
+| `ScreenManager` | **Create Special Screens**, **Open Screen Manager Window** (in Play mode: the stack, what's rendering, Back, Close All...) |
 | `ScreenRegistry` | **Rebuild Registry from Assets** |
 | `ScreenDefinition` | **Edit Prefab**, **Add Screen to Feature…** |
 
 > [!TIP]
-> Define `SCREEN_SYSTEM_VERBOSE` en los Scripting Define Symbols para ver logs informativos.
+> Define `SCREEN_SYSTEM_VERBOSE` in Scripting Define Symbols to see informational logs.
 
-> [!WARNING] Agente con MCP
-> En lugar de los menús, el agente llama `ScreenAuthoring.CreateScreen`, `ScreenAuthoring.CreateLayer` y `SpecialScreensCreator.Create()` (`SCR-13`, `SCR-15`, `EDIT-13`).
+> [!WARNING] Agents with MCP
+> Instead of the menus, the agent calls `ScreenAuthoring.CreateScreen`, `ScreenAuthoring.CreateLayer` and `SpecialScreensCreator.Create()` (`SCR-13`, `SCR-15`, `EDIT-13`).

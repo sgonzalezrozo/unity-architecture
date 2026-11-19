@@ -1,7 +1,7 @@
-# Singletons sin contenedor
+# Singletons without a container
 
 > [!RULE] ROOT-07
-> Sin contenedor de inyección, un Model de las filas 2 o 3 es un **singleton C# puro con constructor público**. Views y Controllers cachean `TModel.Instance` en `Awake`. Con contenedor, **no** se usan singletons.
+> Without a DI container, a row 2 or 3 Model is a **pure C# singleton with a public constructor**. Views and Controllers cache `TModel.Instance` in `Awake`. With a container, singletons **aren't** used.
 
 ```csharp
 public class CoinBalanceModel
@@ -11,4 +11,4 @@ public class CoinBalanceModel
 ```
 
 > [!RULE] ROOT-09
-> Un test crea **su propia instancia** y nunca usa `TModel.Instance`: el estado estático pasa de un test a otro.
+> A test creates **its own instance** and never uses `TModel.Instance`: static state carries over between tests.

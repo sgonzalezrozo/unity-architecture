@@ -1,15 +1,15 @@
 # UI Scroller: API
 
-| Miembro | Uso |
+| Member | Use |
 |---|---|
-| `SetSource(source)` | Da la fuente a la lista (la arranca) o la reemplaza |
-| `Refresh()` | Redibuja tras cambiar datos; una vez por lote |
-| `InvalidateSize(i)`, `InvalidateAllSizes()` | Volver a medir |
-| `Expand(i)`, `Collapse(i)`, `IsExpanded(i)` | Slots expandibles |
-| `ScrollToItem(i, align, duration, offset)` | Ir a un item (`ScrollAlign`: Start, Center, End, Nearest) |
-| `ScrollToStart(d)`, `ScrollToEnd(d)` | Ir al principio o al final |
+| `SetSource(source)` | Give the list its source (starts it), or replace it |
+| `Refresh()` | Redraw after data changes; once per batch |
+| `InvalidateSize(i)`, `InvalidateAllSizes()` | Measure again |
+| `Expand(i)`, `Collapse(i)`, `IsExpanded(i)` | Expandable slots |
+| `ScrollToItem(i, align, duration, offset)` | Go to an item (`ScrollAlign`: Start, Center, End, Nearest) |
+| `ScrollToStart(d)`, `ScrollToEnd(d)` | Go to the start or end |
 | `SetBentoLayout(layout)`, `GetTile(i)` | Bento |
-| `GetViewportPosition(i)`, `IViewportPositionListener` | Posición en el viewport, para efectos de carrusel |
-| `ForceStopScrolling()`, `Clear()` | Parar inercia, quitar slots |
+| `GetViewportPosition(i)`, `IViewportPositionListener` | Position in the viewport, for carousel effects |
+| `ForceStopScrolling()`, `Clear()` | Stop momentum, remove slots |
 
-Fuentes listas: `ListSource<T>`, `FilteredSource<T>`, `PagedSource<T>`, `SectionedSource<TItem, THeader>`.
+Ready-made sources: `ListSource<T>`, `FilteredSource<T>`, `PagedSource<T>`, `SectionedSource<TItem, THeader>`.

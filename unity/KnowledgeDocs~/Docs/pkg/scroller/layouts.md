@@ -1,18 +1,18 @@
-# UI Scroller: qué layout usar
+# UI Scroller: which layout
 
-| Necesitas | Ajustes |
+| You need | Settings |
 |---|---|
-| Lista en cualquier dirección | **Layout: List**, **Direction** |
-| Grid fijo o responsive | **Grid** (`slotsPerLine`) o **Auto Grid** (`targetSlotSize`) |
-| Tiles de distintos tamaños | **Bento** con un Layout JSON |
-| Secciones con cabecera | `SectionedScroller<TItem, THeader>` |
-| Carrusel | **Loop**, **Snap: Item**, **Snap Align: Center** |
-| Carrusel dentro de una lista vertical | Nada: los drags cruzados van al padre |
-| Paginador | **Snap: Page** |
-| Feed infinito | `PagedSource<T>` con un `IPageLoader<T>` |
+| A list in any direction | **Layout: List**, **Direction** |
+| A fixed or responsive grid | **Grid** (`slotsPerLine`) or **Auto Grid** (`targetSlotSize`) |
+| Tiles of different sizes | **Bento** with a Layout JSON |
+| Sections with headers | `SectionedScroller<TItem, THeader>` |
+| A carousel | **Loop**, **Snap: Item**, **Snap Align: Center** |
+| A carousel inside a vertical list | Nothing: cross-axis drags go to the parent |
+| A pager | **Snap: Page** |
+| An endless feed | `PagedSource<T>` with an `IPageLoader<T>` |
 
 > [!RULE] LIST-08
-> El tamaño de un tile bento sale del **layout** (JSON o `SetBentoLayout`), nunca del item ni del slot.
+> A bento tile's size comes from the **layout** (JSON or `SetBentoLayout`), never from the item or the slot.
 
 > [!NOTE]
-> Un loop no admite grid, secciones ni expandibles. Una lista con secciones no pagina.
+> A loop allows no grid, sections or expanding. A sectioned list doesn't page.

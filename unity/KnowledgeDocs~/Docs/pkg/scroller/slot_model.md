@@ -1,6 +1,6 @@
 # UI Scroller: Slot Model
 
-Un Model MonoBehaviour en el prefab del slot, que implementa `ISlot<T>`.
+A MonoBehaviour Model on the slot prefab, implementing `ISlot<T>`.
 
 ```csharp
 public class ItemSlotModel : MonoBehaviour, IInjectableForChildren, ISlot<ItemData>
@@ -27,10 +27,10 @@ public class ItemSlotModel : MonoBehaviour, IInjectableForChildren, ISlot<ItemDa
 }
 ```
 
-| ID | Regla |
+| ID | Rule |
 |---|---|
-| `LIST-02` | El setter de `Data` lanza un evento y la Slot View redibuja desde él (los slots reutilizados no pasan por `OnEnable`). Es el **único push aceptado** |
-| `LIST-03` | Slot Views y Controllers obtienen el Slot Model con `GetComponentInParent` en `Awake` |
-| `LIST-04` | Nunca se instancian slots a mano ni se llama `Initialize(data)` |
-| `LIST-05` | El Slot Model puede exponer valores derivados para su slot |
-| `LIST-07` | El estado del item (seleccionado, abierto) vive en el item o un Model, **nunca** en el slot |
+| `LIST-02` | The `Data` setter fires an event and the Slot View redraws from it (reused slots don't go through `OnEnable`). It's the **one accepted push** |
+| `LIST-03` | Slot Views and Controllers get the Slot Model with `GetComponentInParent` in `Awake` |
+| `LIST-04` | Slots are never instantiated by hand or given `Initialize(data)` |
+| `LIST-05` | A Slot Model may expose derived values for its slot |
+| `LIST-07` | Item state (selected, open) lives in the item or a Model, **never** in the slot |

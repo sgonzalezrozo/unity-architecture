@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-#pragma warning disable CS0649 // Campos asignados por JsonUtility
+#pragma warning disable CS0649 // Fields assigned by JsonUtility
 
 namespace UnityArchitecture.Knowledge
 {
-    /// <summary>Contenido de knowledge.json: el índice de documentos que muestra la ventana.</summary>
+    /// <summary>The contents of knowledge.json: the index of docs the window shows.</summary>
     [Serializable]
     internal class KnowledgeCatalog
     {
@@ -14,7 +14,7 @@ namespace UnityArchitecture.Knowledge
         public List<KnowledgeEntry> entries = new List<KnowledgeEntry>();
     }
 
-    /// <summary>Una sección de la portada: los docs generales que se ven sin buscar.</summary>
+    /// <summary>A home page section: the general docs shown when nothing is searched.</summary>
     [Serializable]
     internal class HomeSection
     {
@@ -47,7 +47,7 @@ namespace UnityArchitecture.Knowledge
         [NonSerialized] public SearchIndex search;
     }
 
-    /// <summary>Textos normalizados (minúsculas, sin tildes) para buscar rápido.</summary>
+    /// <summary>Normalized text (lowercase, no accents) for fast search.</summary>
     internal class SearchIndex
     {
         public string title;

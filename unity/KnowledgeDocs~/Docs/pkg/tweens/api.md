@@ -1,20 +1,20 @@
 # UI Tweens: API
 
-| Target | Métodos |
+| Target | Methods |
 |---|---|
 | `RectTransform` | `DOAnchorPos`, `DOAnchorPosX/Y`, `DOScale`, `DOScaleX/Y/Z`, `DORotate`, `DOSizeDelta`, `DOPivot` |
 | `Graphic` (Image, TMP...) | `DOFade`, `DOColor`, `DOColorFromTo` |
 | `Image` | `DOFillAmount` |
 | `CanvasGroup` | `DOFade`, `DOFadeFromTo` |
 
-| Opción | Para qué |
+| Option | For |
 |---|---|
-| `Delay(s)` | Esperar antes de empezar |
-| `Loop(n)`, `LoopInfinite()`, `LoopType.Yoyo` | Repetir |
-| `From()`, `Relative()` | Desde un valor / como offset |
-| `IgnoreTimeScale()` | Seguir con `timeScale = 0` |
-| `WhenDisabled(behaviour)` | Qué pasa al desactivar el GameObject |
-| `Then(handle)`, `Sequential()` | Encadenar |
-| `OnComplete(callback)` | Al terminar |
+| `Delay(s)` | Wait before starting |
+| `Loop(n)`, `LoopInfinite()`, `LoopType.Yoyo` | Repeat |
+| `From()`, `Relative()` | From a value / as an offset |
+| `IgnoreTimeScale()` | Keep playing at `timeScale = 0` |
+| `WhenDisabled(behaviour)` | What happens when the GameObject is disabled |
+| `Then(handle)`, `Sequential()` | Chain |
+| `OnComplete(callback)` | When it finishes |
 
 Easing: `Linear`, `Quad`, `Cubic`, `Quart`, `Quint`, `Sine`, `Expo`, `Circ`, `Back`, `Bounce`, `Elastic` (`In`/`Out`/`InOut`), `SpringOut`, `PunchOut`.

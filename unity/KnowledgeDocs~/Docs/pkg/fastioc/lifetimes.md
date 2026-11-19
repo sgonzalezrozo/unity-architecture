@@ -1,17 +1,17 @@
-# Tipos de binding
+# Binding lifetimes
 
-| Binding | Uso |
+| Binding | Use |
 |---|---|
-| `Bind<T>().AsSingle()` | Una instancia compartida, creada al primer uso. **Por defecto** |
-| `Bind<IT>().To<T>().AsSingle()` | Interfaz → implementación |
-| `Bind<T>().AsCached()` | Una instancia que se limpia al descargar la escena |
-| `Bind<T>().AsTransient()` | Una instancia nueva por inyección (también si no pones nada) |
-| `Bind<T>().FromInstance(x)` | Una instancia existente, como singleton |
-| `Bind<T>().FromInstance("Path").AsSingle()` | Un prefab o ScriptableObject por nombre o ruta |
+| `Bind<T>().AsSingle()` | One shared instance, created on first use. **The default** |
+| `Bind<IT>().To<T>().AsSingle()` | Interface to implementation |
+| `Bind<T>().AsCached()` | One instance, cleared when the scene unloads |
+| `Bind<T>().AsTransient()` | A new instance per injection (also when none is given) |
+| `Bind<T>().FromInstance(x)` | An existing instance, as a singleton |
+| `Bind<T>().FromInstance("Path").AsSingle()` | A prefab or ScriptableObject by name or path |
 
-- Lo que vive y muere con la feature, en la escena de la feature.
-- Lo que usan varias features, en un scope compartido con más prioridad.
-- Un `AsSingle()` de escena sigue cacheado tras descargarla: usa `AsCached()` para atarlo a la escena.
+- What lives and dies with the feature goes in the feature's scene.
+- What several features use goes in a shared scope with a higher priority.
+- A scene `AsSingle()` stays cached after the scene unloads: use `AsCached()` to tie it to the scene.
 
 > [!NOTE]
-> Fast IoC no tiene factory delegates: bindea una clase factory e inyéctala.
+> Fast IoC has no factory delegates: bind a factory class and inject it.

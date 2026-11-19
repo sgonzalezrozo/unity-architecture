@@ -1,16 +1,14 @@
 {
-  "version": 3,
+  "version": 4,
   "entries": [
     {
-      "id": "inicio.que_es",
-      "title": "Qué es esto",
-      "summary": "Qué cubren las reglas y qué es obligatorio",
-      "category": "Empieza aquí",
+      "id": "start.what_is_this",
+      "title": "What this is",
+      "summary": "What the rules cover and what is mandatory",
+      "category": "Getting started",
       "color": "gray",
       "keywords": [
         "intro",
-        "alcance",
-        "obligatorio",
         "ecs",
         "mandatory",
         "scope",
@@ -22,66 +20,58 @@
         "started",
         "guide"
       ],
-      "markdownPath": "Docs/inicio/que_es.md",
+      "markdownPath": "Docs/start/what_is_this.md",
       "source": "AGENTS.md",
-      "home": "Primeros pasos",
+      "home": "Getting started",
       "homeOrder": 0
     },
     {
-      "id": "inicio.instalar_reglas",
-      "title": "Instalar las reglas en un proyecto",
-      "summary": "Submódulo .ai, install.sh y verify.sh",
-      "category": "Empieza aquí",
+      "id": "start.install_rules",
+      "title": "Install the rules in a project",
+      "summary": "The .ai submodule, install.sh and verify.sh",
+      "category": "Getting started",
       "color": "gray",
       "keywords": [
-        "instalar",
         "install",
-        "instalacion",
         "installation",
         "setup",
-        "submodulo",
         "submodule",
         "install.sh",
         "verify",
         "getting",
-        "started",
-        "empezar",
-        "requisitos"
+        "started"
       ],
-      "markdownPath": "Docs/inicio/instalar_reglas.md",
+      "markdownPath": "Docs/start/install_rules.md",
       "source": "docs/INSTALLATION.md",
-      "home": "Primeros pasos",
+      "home": "Getting started",
       "homeOrder": 1
     },
     {
-      "id": "inicio.flujo",
-      "title": "El flujo en una línea",
-      "summary": "Input, Controller, Model, evento, View: siempre igual",
-      "category": "Empieza aquí",
+      "id": "start.flow",
+      "title": "The flow in one line",
+      "summary": "Input, Controller, Model, event, View: always the same",
+      "category": "Getting started",
       "color": "gray",
       "keywords": [
-        "flujo",
         "flow",
         "bug",
-        "capa",
         "pipeline",
         "data",
         "mvc"
       ],
-      "markdownPath": "Docs/inicio/flujo.md",
+      "markdownPath": "Docs/start/flow.md",
       "source": "architecture/DEVELOPER_OVERVIEW.md",
-      "home": "Primeros pasos",
+      "home": "Getting started",
       "homeOrder": 2
     },
     {
       "id": "pkg.rules.menus",
-      "title": "Menús y atajos: Unity Architecture",
-      "summary": "Menús, llamadas y scripts del package de reglas",
-      "category": "Empieza aquí",
+      "title": "Menus and shortcuts: Unity Architecture",
+      "summary": "Menus, calls and scripts of the rules package",
+      "category": "Getting started",
       "color": "gray",
       "keywords": [
         "menu",
-        "atajo",
         "shortcut",
         "tools",
         "validate",
@@ -89,70 +79,59 @@
         "update.sh",
         "menus",
         "shortcuts",
-        "atajos",
         "commands"
       ],
       "markdownPath": "Docs/pkg/rules/menus.md",
       "source": "unity/package.json",
-      "home": "Packages e instalación",
+      "home": "Packages and installation",
       "homeOrder": 2
     },
     {
-      "id": "arquitectura.mvc_resumen",
-      "title": "MVC en resumen",
-      "summary": "Las tres capas de un vistazo",
-      "category": "Arquitectura",
+      "id": "architecture.mvc_overview",
+      "title": "MVC at a glance",
+      "summary": "The three layers at a glance",
+      "category": "Architecture",
       "color": "purple",
       "keywords": [
         "mvc",
-        "capas",
         "model",
         "view",
         "controller",
-        "resumen",
         "overview",
-        "sufijo",
         "model-view-controller",
         "layers",
         "architecture"
       ],
-      "markdownPath": "Docs/arquitectura/mvc_resumen.md",
+      "markdownPath": "Docs/architecture/mvc_overview.md",
       "source": "architecture/MVC.md",
-      "home": "Arquitectura",
+      "home": "Architecture",
       "homeOrder": 0
     },
     {
-      "id": "arquitectura.invariantes",
-      "title": "Las 11 reglas de arquitectura",
-      "summary": "ARCH-01 a ARCH-11 en una frase cada una",
-      "category": "Arquitectura",
+      "id": "architecture.invariants",
+      "title": "The 11 architecture rules",
+      "summary": "ARCH-01 to ARCH-11, one sentence each",
+      "category": "Architecture",
       "color": "purple",
       "keywords": [
         "ARCH",
-        "invariantes",
         "invariants",
-        "reglas",
         "rules",
-        "arquitectura",
-        "architecture",
-        "resumen"
+        "architecture"
       ],
-      "markdownPath": "Docs/arquitectura/invariantes.md",
+      "markdownPath": "Docs/architecture/invariants.md",
       "source": "AGENTS.md",
-      "home": "Arquitectura",
+      "home": "Architecture",
       "homeOrder": 1
     },
     {
-      "id": "arquitectura.dependencias",
-      "title": "Quién conoce a quién",
-      "summary": "ARCH-01: qué puede referenciar cada capa",
-      "category": "Arquitectura",
+      "id": "architecture.dependencies",
+      "title": "Who knows whom",
+      "summary": "ARCH-01: what each layer may reference",
+      "category": "Architecture",
       "color": "purple",
       "keywords": [
         "ARCH-01",
-        "dependencias",
-        "referencias",
-        "matriz",
         "UA0001",
         "module",
         "connector",
@@ -162,40 +141,36 @@
         "who",
         "knows"
       ],
-      "markdownPath": "Docs/arquitectura/dependencias.md",
+      "markdownPath": "Docs/architecture/dependencies.md",
       "source": "AGENTS.md"
     },
     {
-      "id": "arquitectura.estado_en_models",
-      "title": "Los Models son la verdad",
-      "summary": "ARCH-02 y ARCH-03: estado en Models, Views pintan, Controllers reciben",
-      "category": "Arquitectura",
+      "id": "architecture.state_in_models",
+      "title": "Models own the truth",
+      "summary": "ARCH-02 and ARCH-03: state in Models, Views render, Controllers receive",
+      "category": "Architecture",
       "color": "purple",
       "keywords": [
         "ARCH-02",
         "ARCH-03",
-        "estado",
         "state",
-        "responsabilidad",
         "data",
         "truth"
       ],
-      "markdownPath": "Docs/arquitectura/estado_en_models.md",
+      "markdownPath": "Docs/architecture/state_in_models.md",
       "source": "AGENTS.md"
     },
     {
-      "id": "arquitectura.pull_no_push",
-      "title": "Pull, nunca push",
-      "summary": "ARCH-04: eventos sin parámetros, el que escucha lee",
-      "category": "Arquitectura",
+      "id": "architecture.pull_not_push",
+      "title": "Pull, never push",
+      "summary": "ARCH-04: parameterless events, the listener reads",
+      "category": "Architecture",
       "color": "purple",
       "keywords": [
         "ARCH-04",
         "pull",
         "push",
-        "evento",
         "event",
-        "parametros",
         "Action<T>",
         "UA0004",
         "events",
@@ -204,14 +179,14 @@
         "observer",
         "notify"
       ],
-      "markdownPath": "Docs/arquitectura/pull_no_push.md",
+      "markdownPath": "Docs/architecture/pull_not_push.md",
       "source": "AGENTS.md"
     },
     {
-      "id": "arquitectura.sin_button",
-      "title": "Nada de Button, Toggle ni Slider",
-      "summary": "ARCH-05: sin Selectables, qué usar en su lugar",
-      "category": "Arquitectura",
+      "id": "architecture.no_button",
+      "title": "No Button, Toggle or Slider",
+      "summary": "ARCH-05: no Selectables, and what to use instead",
+      "category": "Architecture",
       "color": "purple",
       "keywords": [
         "ARCH-05",
@@ -223,61 +198,52 @@
         "onClick",
         "UA0005",
         "TMP_InputField",
-        "replacement",
-        "reemplazo",
-        "boton",
-        "botones"
+        "replacement"
       ],
-      "markdownPath": "Docs/arquitectura/sin_button.md",
+      "markdownPath": "Docs/architecture/no_button.md",
       "source": "architecture/UI_PATTERNS.md"
     },
     {
-      "id": "arquitectura.sin_ciclos",
-      "title": "Los Models no forman ciclos",
-      "summary": "ARCH-09: si dos Models se necesitan, un tercero",
-      "category": "Arquitectura",
+      "id": "architecture.no_cycles",
+      "title": "Models never form a cycle",
+      "summary": "ARCH-09: if two Models need each other, add a third",
+      "category": "Architecture",
       "color": "purple",
       "keywords": [
         "ARCH-09",
-        "ciclo",
         "cycle",
-        "dependencia",
         "UA0014",
         "circular",
         "dependency",
         "cycles"
       ],
-      "markdownPath": "Docs/arquitectura/sin_ciclos.md",
+      "markdownPath": "Docs/architecture/no_cycles.md",
       "source": "AGENTS.md"
     },
     {
-      "id": "arquitectura.minimo",
-      "title": "Haz lo mínimo",
-      "summary": "ARCH-10 y ARCH-11: sin abstracciones ni carga anticipada",
-      "category": "Arquitectura",
+      "id": "architecture.minimum",
+      "title": "Do the minimum",
+      "summary": "ARCH-10 and ARCH-11: no abstractions, nothing loaded early",
+      "category": "Architecture",
       "color": "purple",
       "keywords": [
         "ARCH-10",
         "ARCH-11",
-        "minimo",
-        "interfaz",
-        "abstraccion",
         "yagni",
-        "rendimiento",
         "minimum",
         "abstraction",
         "interface",
         "lazy",
         "loading"
       ],
-      "markdownPath": "Docs/arquitectura/minimo.md",
+      "markdownPath": "Docs/architecture/minimum.md",
       "source": "AGENTS.md"
     },
     {
-      "id": "arquitectura.determinismo",
-      "title": "Determinismo y tests",
-      "summary": "ARCH-07, ARCH-08 y DET: reproducible y testeable",
-      "category": "Arquitectura",
+      "id": "architecture.determinism",
+      "title": "Determinism and tests",
+      "summary": "ARCH-07, ARCH-08 and DET: reproducible and testable",
+      "category": "Architecture",
       "color": "purple",
       "keywords": [
         "ARCH-07",
@@ -285,9 +251,7 @@
         "DET-05",
         "DET-06",
         "DET-07",
-        "determinismo",
         "IClock",
-        "tiempo",
         "random",
         "deterministic",
         "reproducible",
@@ -295,21 +259,19 @@
         "time",
         "testable"
       ],
-      "markdownPath": "Docs/arquitectura/determinismo.md",
+      "markdownPath": "Docs/architecture/determinism.md",
       "source": "architecture/AGENT_WORKFLOW.md"
     },
     {
-      "id": "model.que_es",
-      "title": "Qué es un Model",
-      "summary": "Qué hace un Model y cómo se ve",
+      "id": "model.what_is_a_model",
+      "title": "What a Model is",
+      "summary": "What a Model does and how it looks",
       "category": "Model",
       "color": "blue",
       "keywords": [
         "model",
-        "estado",
         "state",
         "LivesModel",
-        "inicializador",
         "ROOT-03",
         "ROOT-05",
         "MODEL-08",
@@ -318,37 +280,35 @@
         "business",
         "logic"
       ],
-      "markdownPath": "Docs/model/que_es.md",
+      "markdownPath": "Docs/model/what_is_a_model.md",
       "source": "architecture/MVC.md"
     },
     {
-      "id": "model.comandos_queries",
-      "title": "Comandos y queries",
-      "summary": "MODEL-02, 03 y 11: comandos que se validan solos",
+      "id": "model.commands_and_queries",
+      "title": "Commands and queries",
+      "summary": "MODEL-02, 03 and 11: commands that validate themselves",
       "category": "Model",
       "color": "blue",
       "keywords": [
         "MODEL-02",
         "MODEL-03",
         "MODEL-11",
-        "comando",
         "query",
         "command",
         "Try",
-        "validar",
         "throw",
         "commands",
         "queries",
         "validation",
         "validate"
       ],
-      "markdownPath": "Docs/model/comandos_queries.md",
+      "markdownPath": "Docs/model/commands_and_queries.md",
       "source": "architecture/MVC.md"
     },
     {
-      "id": "model.eventos",
-      "title": "Eventos de un Model",
-      "summary": "MODEL-04 a 07: cómo se declaran y lanzan eventos",
+      "id": "model.events",
+      "title": "Model events",
+      "summary": "MODEL-04 to 07: declaring and firing events",
       "category": "Model",
       "color": "blue",
       "keywords": [
@@ -356,9 +316,7 @@
         "MODEL-05",
         "MODEL-06",
         "MODEL-07",
-        "evento",
         "event",
-        "suscribir",
         "OnDestroy",
         "Dispose",
         "events",
@@ -366,36 +324,34 @@
         "subscribe",
         "unsubscribe"
       ],
-      "markdownPath": "Docs/model/eventos.md",
+      "markdownPath": "Docs/model/events.md",
       "source": "architecture/MVC.md"
     },
     {
-      "id": "model.configuracion",
-      "title": "Configuración de un Model",
-      "summary": "MODEL-09 y 10: sin SerializeField, config en assets",
+      "id": "model.configuration",
+      "title": "Model configuration",
+      "summary": "MODEL-09 and 10: no SerializeField, config in assets",
       "category": "Model",
       "color": "blue",
       "keywords": [
         "MODEL-09",
         "MODEL-10",
-        "configuracion",
         "ScriptableObject",
         "SerializeField",
         "UA0013",
-        "constante",
         "config",
         "configuration",
         "settings",
         "scriptable",
         "serialized"
       ],
-      "markdownPath": "Docs/model/configuracion.md",
+      "markdownPath": "Docs/model/configuration.md",
       "source": "architecture/MVC.md"
     },
     {
-      "id": "view.forma",
-      "title": "La forma de una View",
-      "summary": "VIEW-01: suscribir, pintar, desuscribir",
+      "id": "view.shape",
+      "title": "The shape of a View",
+      "summary": "VIEW-01: subscribe, render, unsubscribe",
       "category": "View",
       "color": "green",
       "keywords": [
@@ -404,19 +360,17 @@
         "OnEnable",
         "OnDisable",
         "Render",
-        "suscribir",
-        "patron",
         "pattern",
         "subscribe",
         "how"
       ],
-      "markdownPath": "Docs/view/forma.md",
+      "markdownPath": "Docs/view/shape.md",
       "source": "architecture/MVC.md"
     },
     {
-      "id": "view.que_puede",
-      "title": "Qué puede y qué no puede una View",
-      "summary": "VIEW-02, 04 y 05: lo permitido y lo prohibido",
+      "id": "view.allowed",
+      "title": "What a View can and can't do",
+      "summary": "VIEW-02, 04 and 05: what is allowed and what isn't",
       "category": "View",
       "color": "green",
       "keywords": [
@@ -424,20 +378,18 @@
         "VIEW-04",
         "VIEW-05",
         "view",
-        "comando",
         "input",
-        "formatear",
         "allowed",
         "forbidden",
         "rules"
       ],
-      "markdownPath": "Docs/view/que_puede.md",
+      "markdownPath": "Docs/view/allowed.md",
       "source": "architecture/MVC.md"
     },
     {
       "id": "view.inner_views",
-      "title": "View raíz e inner Views",
-      "summary": "VIEW-03 y 07: una View raíz, inner Views, 5 campos",
+      "title": "Root View and inner Views",
+      "summary": "VIEW-03 and 07: one root View, inner Views, 5 fields",
       "category": "View",
       "color": "green",
       "keywords": [
@@ -445,12 +397,9 @@
         "VIEW-07",
         "inner",
         "view",
-        "raiz",
         "root",
-        "serializados",
         "UA0016",
         "prefab",
-        "anidado",
         "child",
         "views",
         "nested",
@@ -464,16 +413,14 @@
     },
     {
       "id": "view.update",
-      "title": "Update en una View",
-      "summary": "VIEW-06: Update solo para tiempo, con throttling",
+      "title": "Update in a View",
+      "summary": "VIEW-06: Update only for time, throttled",
       "category": "View",
       "color": "green",
       "keywords": [
         "VIEW-06",
         "Update",
         "countdown",
-        "cuenta",
-        "atras",
         "throttle",
         "timer",
         "loop",
@@ -483,9 +430,9 @@
       "source": "architecture/MVC.md"
     },
     {
-      "id": "controller.forma",
-      "title": "La forma de un Controller",
-      "summary": "CTRL-01, 02 y 05: un input, un comando",
+      "id": "controller.shape",
+      "title": "The shape of a Controller",
+      "summary": "CTRL-01, 02 and 05: one input, one command",
       "category": "Controller",
       "color": "orange",
       "keywords": [
@@ -500,34 +447,31 @@
         "pointer",
         "tap"
       ],
-      "markdownPath": "Docs/controller/forma.md",
+      "markdownPath": "Docs/controller/shape.md",
       "source": "architecture/MVC.md"
     },
     {
-      "id": "controller.no_decide",
-      "title": "Un Controller no decide",
-      "summary": "CTRL-03 y 06: sin reglas ni comprobaciones",
+      "id": "controller.no_decisions",
+      "title": "A Controller doesn't decide",
+      "summary": "CTRL-03 and 06: no rules or state checks",
       "category": "Controller",
       "color": "orange",
       "keywords": [
         "CTRL-03",
         "CTRL-06",
         "controller",
-        "decidir",
-        "regla",
-        "estado",
         "lifecycle",
         "logic",
         "rules",
         "check"
       ],
-      "markdownPath": "Docs/controller/no_decide.md",
+      "markdownPath": "Docs/controller/no_decisions.md",
       "source": "architecture/MVC.md"
     },
     {
       "id": "controller.action",
-      "title": "El objeto Action",
-      "summary": "INPUT-01 a 05: el hijo Action y el raycast",
+      "title": "The Action object",
+      "summary": "INPUT-01 to 05: the Action child and raycasts",
       "category": "Controller",
       "color": "orange",
       "keywords": [
@@ -538,7 +482,6 @@
         "INPUT-05",
         "Action",
         "raycast",
-        "hijo",
         "child",
         "hitbox",
         "click",
@@ -547,13 +490,13 @@
       ],
       "markdownPath": "Docs/controller/action.md",
       "source": "architecture/UI_PATTERNS.md",
-      "home": "Creación de UI",
+      "home": "UI creation",
       "homeOrder": 2
     },
     {
       "id": "controller.drag",
-      "title": "Drag y valores de input",
-      "summary": "CTRL-04: convertir el puntero en un valor",
+      "title": "Drag and input values",
+      "summary": "CTRL-04: turning the pointer into a value",
       "category": "Controller",
       "color": "orange",
       "keywords": [
@@ -562,7 +505,6 @@
         "IDragHandler",
         "IPointerDownHandler",
         "slider",
-        "volumen",
         "swipe",
         "pointer",
         "position"
@@ -571,10 +513,10 @@
       "source": "architecture/examples/02_CUSTOM_INPUT_SETTINGS.md"
     },
     {
-      "id": "scopes.que_es",
-      "title": "Qué es un scope",
-      "summary": "SCOPE-01 a 05: partes de una feature con una raíz",
-      "category": "Scopes y referencias",
+      "id": "scopes.what_is_a_scope",
+      "title": "What a scope is",
+      "summary": "SCOPE-01 to 05: parts of a feature with one root",
+      "category": "Scopes and references",
       "color": "teal",
       "keywords": [
         "SCOPE-01",
@@ -583,49 +525,44 @@
         "SCOPE-04",
         "SCOPE-05",
         "scope",
-        "raiz",
         "prefab",
         "root",
         "nested"
       ],
-      "markdownPath": "Docs/scopes/que_es.md",
+      "markdownPath": "Docs/scopes/what_is_a_scope.md",
       "source": "architecture/MVC.md"
     },
     {
-      "id": "scopes.donde_vive_model",
-      "title": "Dónde vive cada Model",
-      "summary": "ROOT: padre común, inyectado o fuera de MVC",
-      "category": "Scopes y referencias",
+      "id": "scopes.where_a_model_lives",
+      "title": "Where a Model lives",
+      "summary": "ROOT: common parent, injected, or outside MVC",
+      "category": "Scopes and references",
       "color": "teal",
       "keywords": [
         "ROOT-01",
         "ROOT-02",
         "ROOT-06",
         "ROOT-08",
-        "donde",
-        "vive",
         "model",
         "GetComponentInParent",
-        "inyeccion",
         "where",
         "lives",
         "location",
         "parent",
         "injection"
       ],
-      "markdownPath": "Docs/scopes/donde_vive_model.md",
+      "markdownPath": "Docs/scopes/where_a_model_lives.md",
       "source": "architecture/MVC.md",
-      "home": "Arquitectura",
+      "home": "Architecture",
       "homeOrder": 2
     },
     {
-      "id": "scopes.referencias",
-      "title": "Cómo se obtienen las referencias",
-      "summary": "Serializado, inyectado, GetComponentInParent o constructor",
-      "category": "Scopes y referencias",
+      "id": "scopes.references",
+      "title": "Getting references",
+      "summary": "Serialized, injected, GetComponentInParent or constructor",
+      "category": "Scopes and references",
       "color": "teal",
       "keywords": [
-        "referencias",
         "internal",
         "private",
         "Initialize",
@@ -638,22 +575,20 @@
         "find",
         "model"
       ],
-      "markdownPath": "Docs/scopes/referencias.md",
+      "markdownPath": "Docs/scopes/references.md",
       "source": "architecture/MVC.md"
     },
     {
       "id": "scopes.singletons",
-      "title": "Singletons sin contenedor",
-      "summary": "ROOT-07 y 09: singleton sin contenedor",
-      "category": "Scopes y referencias",
+      "title": "Singletons without a container",
+      "summary": "ROOT-07 and 09: singletons without a container",
+      "category": "Scopes and references",
       "color": "teal",
       "keywords": [
         "ROOT-07",
         "ROOT-09",
         "singleton",
         "Instance",
-        "sin",
-        "contenedor",
         "test",
         "static"
       ],
@@ -661,15 +596,13 @@
       "source": "architecture/MVC.md"
     },
     {
-      "id": "di.cuando_inyectar",
-      "title": "Cuándo inyectar",
-      "summary": "Padre común primero; inyección solo si no hay",
-      "category": "Inyección",
+      "id": "di.when_to_inject",
+      "title": "When to inject",
+      "summary": "Common parent first; inject only when there is none",
+      "category": "Injection",
       "color": "teal",
       "keywords": [
-        "inyeccion",
         "injection",
-        "contenedor",
         "container",
         "service",
         "locator",
@@ -679,40 +612,33 @@
         "when",
         "inject"
       ],
-      "markdownPath": "Docs/di/cuando_inyectar.md",
+      "markdownPath": "Docs/di/when_to_inject.md",
       "source": "architecture/DEPENDENCY_INJECTION.md"
     },
     {
-      "id": "ui.crear_ui",
-      "title": "Crear un elemento de UI",
-      "summary": "Model, View, Controller, prefab y validar, paso a paso",
+      "id": "ui.create_ui",
+      "title": "Build a UI element",
+      "summary": "Model, View, Controller, prefab and validation, step by step",
       "category": "UI",
       "color": "pink",
       "keywords": [
-        "crear",
         "create",
         "ui",
-        "pantalla",
         "screen",
-        "boton",
         "button",
         "panel",
-        "elemento",
-        "paso",
-        "a",
-        "paso",
         "how",
         "to"
       ],
-      "markdownPath": "Docs/ui/crear_ui.md",
+      "markdownPath": "Docs/ui/create_ui.md",
       "source": "docs/USAGE.md",
-      "home": "Creación de UI",
+      "home": "UI creation",
       "homeOrder": 0
     },
     {
-      "id": "ui.estados_visuales",
-      "title": "Estados visuales",
-      "summary": "STATE-01 a 05: raíces por estado desde un enum",
+      "id": "ui.visual_states",
+      "title": "Visual states",
+      "summary": "STATE-01 to 05: roots per state from an enum",
       "category": "UI",
       "color": "pink",
       "keywords": [
@@ -721,7 +647,6 @@
         "STATE-03",
         "STATE-04",
         "STATE-05",
-        "estado",
         "visual",
         "root",
         "loading",
@@ -730,23 +655,20 @@
         "locked",
         "owned"
       ],
-      "markdownPath": "Docs/ui/estados_visuales.md",
+      "markdownPath": "Docs/ui/visual_states.md",
       "source": "architecture/UI_PATTERNS.md"
     },
     {
       "id": "ui.tabs",
-      "title": "Pestañas (tabs)",
-      "summary": "Pestañas estáticas, una clase, CanvasGroup",
+      "title": "Tabs",
+      "summary": "Static tabs, one class, CanvasGroup",
       "category": "UI",
       "color": "pink",
       "keywords": [
         "tabs",
-        "pestañas",
         "CanvasGroup",
         "enum",
         "tab",
-        "pestaña",
-        "pestanas",
         "navigation"
       ],
       "markdownPath": "Docs/ui/tabs.md",
@@ -754,8 +676,8 @@
     },
     {
       "id": "ui.layouts",
-      "title": "Layouts adaptables",
-      "summary": "Layouts que llenan y se adaptan",
+      "title": "Adaptive layouts",
+      "summary": "Layouts that fill and adapt",
       "category": "UI",
       "color": "pink",
       "keywords": [
@@ -772,58 +694,53 @@
       "source": "architecture/UI_PATTERNS.md"
     },
     {
-      "id": "ui.lista_sin_scroller",
-      "title": "Lista sin UI Scroller",
-      "summary": "Lista corta con celdas, sin package",
+      "id": "ui.list_without_scroller",
+      "title": "A list without UI Scroller",
+      "summary": "A short list with cells, no package",
       "category": "UI",
       "color": "pink",
       "keywords": [
-        "lista",
         "list",
         "ScrollRect",
-        "celdas",
         "cell",
-        "sin",
         "scroller",
         "simple",
         "cells",
         "package"
       ],
-      "markdownPath": "Docs/ui/lista_sin_scroller.md",
+      "markdownPath": "Docs/ui/list_without_scroller.md",
       "source": "architecture/OPTIONAL_PACKAGES.md",
       "requiresMissing": [
         "com.sgonzalezrozo.ui-scroller"
       ]
     },
     {
-      "id": "prefabs.forma",
-      "title": "La forma de un prefab",
-      "summary": "PREFAB-01 y 17: raíz limpia y UI Content",
+      "id": "prefabs.shape",
+      "title": "The shape of a prefab",
+      "summary": "PREFAB-01 and 17: a clean root and UI Content",
       "category": "Prefabs",
       "color": "yellow",
       "keywords": [
         "PREFAB-01",
         "PREFAB-17",
         "prefab",
-        "forma",
         "UI",
         "Content",
         "Visuals",
-        "escala",
         "shape",
         "structure",
         "hierarchy",
         "uicontent"
       ],
-      "markdownPath": "Docs/prefabs/forma.md",
+      "markdownPath": "Docs/prefabs/shape.md",
       "source": "architecture/PREFABS.md",
-      "home": "Creación de UI",
+      "home": "UI creation",
       "homeOrder": 1
     },
     {
-      "id": "prefabs.reglas_visuales",
-      "title": "Reglas visuales de prefabs",
-      "summary": "Anchors, pivot, TMP, tweens, máscaras, canvas",
+      "id": "prefabs.visual_rules",
+      "title": "Visual prefab rules",
+      "summary": "Anchors, pivot, TMP, tweens, masks, canvas",
       "category": "Prefabs",
       "color": "yellow",
       "keywords": [
@@ -845,13 +762,13 @@
         "mask",
         "canvas"
       ],
-      "markdownPath": "Docs/prefabs/reglas_visuales.md",
+      "markdownPath": "Docs/prefabs/visual_rules.md",
       "source": "architecture/PREFABS.md"
     },
     {
-      "id": "prefabs.input_y_raycast",
-      "title": "Input y raycast en prefabs",
-      "summary": "Action invisible, Background que bloquea, Ignore Layout",
+      "id": "prefabs.input_and_raycast",
+      "title": "Input and raycast in prefabs",
+      "summary": "Invisible Action, blocking Background, Ignore Layout",
       "category": "Prefabs",
       "color": "yellow",
       "keywords": [
@@ -872,19 +789,18 @@
         "image",
         "alpha"
       ],
-      "markdownPath": "Docs/prefabs/input_y_raycast.md",
+      "markdownPath": "Docs/prefabs/input_and_raycast.md",
       "source": "architecture/PREFABS.md"
     },
     {
-      "id": "prefabs.pantallas_y_modales",
-      "title": "Pantallas y modales",
-      "summary": "PREFAB-10 y 11: forma de pantallas y modales",
+      "id": "prefabs.screens_and_modals",
+      "title": "Screens and modals",
+      "summary": "PREFAB-10 and 11: the shape of screens and modals",
       "category": "Prefabs",
       "color": "yellow",
       "keywords": [
         "PREFAB-10",
         "PREFAB-11",
-        "pantalla",
         "screen",
         "modal",
         "popup",
@@ -893,41 +809,38 @@
         "window",
         "dialog"
       ],
-      "markdownPath": "Docs/prefabs/pantallas_y_modales.md",
+      "markdownPath": "Docs/prefabs/screens_and_modals.md",
       "source": "architecture/PREFABS.md"
     },
     {
-      "id": "prefabs.validador",
-      "title": "Validar prefabs",
-      "summary": "TEST-12: qué revisa el validador y cómo lanzarlo",
+      "id": "prefabs.validator",
+      "title": "Validate prefabs",
+      "summary": "TEST-12: what the validator checks and how to run it",
       "category": "Prefabs",
       "color": "yellow",
       "keywords": [
         "TEST-12",
-        "validador",
         "validator",
         "ClientPrefabsTests",
         "Validate",
         "Client",
         "Prefabs",
         "menu",
-        "atajo",
         "validation",
         "check",
         "errors"
       ],
-      "markdownPath": "Docs/prefabs/validador.md",
+      "markdownPath": "Docs/prefabs/validator.md",
       "source": "architecture/PREFABS.md"
     },
     {
-      "id": "prefabs.recetas",
-      "title": "Construir prefabs con recetas",
-      "summary": "PrefabRecipes y specs: prefabs por código",
+      "id": "prefabs.recipes",
+      "title": "Build prefabs with recipes",
+      "summary": "PrefabRecipes and specs: prefabs from code",
       "category": "Prefabs",
       "color": "yellow",
       "keywords": [
         "PrefabRecipes",
-        "recetas",
         "recipes",
         "PrefabSpecs",
         "spec",
@@ -937,39 +850,36 @@
         "prefab",
         "code"
       ],
-      "markdownPath": "Docs/prefabs/recetas.md",
+      "markdownPath": "Docs/prefabs/recipes.md",
       "source": "architecture/PREFABS.md"
     },
     {
-      "id": "feature.carpetas",
-      "title": "Carpetas de una feature",
-      "summary": "ARCH-06: código y prefabs juntos, arte aparte",
-      "category": "Features y carpetas",
+      "id": "feature.folders",
+      "title": "Feature folders",
+      "summary": "ARCH-06: code and prefabs together, art apart",
+      "category": "Features and folders",
       "color": "gray",
       "keywords": [
         "ARCH-06",
-        "carpetas",
         "folders",
         "Assets/Client",
         "Shared",
         "Art",
-        "estructura",
         "folder",
         "structure",
         "organization",
-        "organizacion",
         "directory"
       ],
-      "markdownPath": "Docs/feature/carpetas.md",
+      "markdownPath": "Docs/feature/folders.md",
       "source": "architecture/FEATURE_STRUCTURE.md",
-      "home": "Organización de carpetas",
+      "home": "Folder organization",
       "homeOrder": 0
     },
     {
       "id": "feature.services",
-      "title": "La carpeta Services",
+      "title": "The Services folder",
       "summary": "FEAT-01: Module, Connector, Data, Installer",
-      "category": "Features y carpetas",
+      "category": "Features and folders",
       "color": "gray",
       "keywords": [
         "FEAT-01",
@@ -982,75 +892,66 @@
       ],
       "markdownPath": "Docs/feature/services.md",
       "source": "architecture/FEATURE_STRUCTURE.md",
-      "home": "Organización de carpetas",
+      "home": "Folder organization",
       "homeOrder": 2
     },
     {
-      "id": "feature.nombres",
-      "title": "Nombres de tipos y objetos",
-      "summary": "Patrones de nombre de tipos, objetos y prefabs",
-      "category": "Features y carpetas",
+      "id": "feature.naming",
+      "title": "Naming types and objects",
+      "summary": "Name patterns for types, objects and prefabs",
+      "category": "Features and folders",
       "color": "gray",
       "keywords": [
-        "nombres",
         "naming",
         "namespace",
         "Client",
-        "sufijo",
         "Root",
         "Render",
         "names",
-        "conventions",
-        "convenciones"
+        "conventions"
       ],
-      "markdownPath": "Docs/feature/nombres.md",
+      "markdownPath": "Docs/feature/naming.md",
       "source": "architecture/FEATURE_STRUCTURE.md",
-      "home": "Organización de carpetas",
+      "home": "Folder organization",
       "homeOrder": 1
     },
     {
-      "id": "feature.notacion_jerarquia",
-      "title": "Cómo se describe una jerarquía",
-      "summary": "Cómo leer Name (Tipo) [Clase]",
-      "category": "Features y carpetas",
+      "id": "feature.hierarchy_notation",
+      "title": "How a hierarchy is described",
+      "summary": "How to read Name (Type) [Class]",
+      "category": "Features and folders",
       "color": "gray",
       "keywords": [
-        "notacion",
-        "jerarquia",
         "hierarchy",
         "handoff",
-        "composicion",
-        "pantalla",
         "notation"
       ],
-      "markdownPath": "Docs/feature/notacion_jerarquia.md",
+      "markdownPath": "Docs/feature/hierarchy_notation.md",
       "source": "architecture/FEATURE_STRUCTURE.md"
     },
     {
-      "id": "feature.navegacion",
-      "title": "Modales y navegación",
-      "summary": "Popups, parámetros y el scene loader",
-      "category": "Features y carpetas",
+      "id": "feature.navigation",
+      "title": "Modals and navigation",
+      "summary": "Popups, parameters and the scene loader",
+      "category": "Features and folders",
       "color": "gray",
       "keywords": [
-        "navegacion",
         "modal",
         "popup",
         "SceneManager",
-        "escena",
         "scene",
         "loader",
         "navigation",
         "scenes"
       ],
-      "markdownPath": "Docs/feature/navegacion.md",
+      "markdownPath": "Docs/feature/navigation.md",
       "source": "architecture/FEATURE_STRUCTURE.md"
     },
     {
       "id": "feature.asmdef",
       "title": "Assembly definitions",
-      "summary": "ASM-01 y 02: todo en Client.asmdef",
-      "category": "Features y carpetas",
+      "summary": "ASM-01 and 02: everything in Client.asmdef",
+      "category": "Features and folders",
       "color": "gray",
       "keywords": [
         "ASM-01",
@@ -1065,9 +966,9 @@
       "source": "architecture/FEATURE_STRUCTURE.md"
     },
     {
-      "id": "backend.piezas",
-      "title": "Las piezas del backend",
-      "summary": "Data, Connector y Module: qué hace cada uno",
+      "id": "backend.pieces",
+      "title": "The backend pieces",
+      "summary": "Data, Connector and Module: what each does",
       "category": "Backend",
       "color": "teal",
       "keywords": [
@@ -1075,19 +976,18 @@
         "module",
         "connector",
         "data",
-        "servidor",
         "api",
         "server",
         "http",
         "network"
       ],
-      "markdownPath": "Docs/backend/piezas.md",
+      "markdownPath": "Docs/backend/pieces.md",
       "source": "architecture/BACKEND_INTEGRATION.md"
     },
     {
-      "id": "backend.reglas",
-      "title": "Reglas de datos del backend",
-      "summary": "BE-01 a 05: datos inmutables y estados de carga",
+      "id": "backend.rules",
+      "title": "Backend data rules",
+      "summary": "BE-01 to 05: immutable data and load states",
       "category": "Backend",
       "color": "teal",
       "keywords": [
@@ -1097,7 +997,6 @@
         "BE-04",
         "BE-05",
         "backend",
-        "mutar",
         "timestamp",
         "unix",
         "loading",
@@ -1106,13 +1005,13 @@
         "immutable",
         "state"
       ],
-      "markdownPath": "Docs/backend/reglas.md",
+      "markdownPath": "Docs/backend/rules.md",
       "source": "architecture/BACKEND_INTEGRATION.md"
     },
     {
-      "id": "backend.async_y_red",
-      "title": "Llamadas async y red",
-      "summary": "BE-06 y 07: Controllers lanzan, timeouts, reintentos",
+      "id": "backend.async_and_network",
+      "title": "Async calls and network",
+      "summary": "BE-06 and 07: Controllers start, timeouts, retries",
       "category": "Backend",
       "color": "teal",
       "keywords": [
@@ -1123,69 +1022,56 @@
         "Forget",
         "timeout",
         "retry",
-        "red",
         "network",
         "OnScreenShown",
         "cancel"
       ],
-      "markdownPath": "Docs/backend/async_y_red.md",
+      "markdownPath": "Docs/backend/async_and_network.md",
       "source": "architecture/BACKEND_INTEGRATION.md"
     },
     {
-      "id": "codigo.limites",
-      "title": "Límites de tamaño",
-      "summary": "15 líneas por método, 200 por clase, 3 parámetros",
-      "category": "Código C#",
+      "id": "code.size_limits",
+      "title": "Size limits",
+      "summary": "15 lines per method, 200 per class, 3 parameters",
+      "category": "C# code",
       "color": "orange",
       "keywords": [
-        "limites",
         "size",
-        "lineas",
-        "metodo",
-        "clase",
-        "parametros",
         "120",
-        "caracteres",
         "limits",
         "lines",
         "length",
         "method",
         "class"
       ],
-      "markdownPath": "Docs/codigo/limites.md",
+      "markdownPath": "Docs/code/size_limits.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "codigo.orden_clase",
-      "title": "Orden dentro de una clase",
-      "summary": "Constantes, eventos, campos... en este orden",
-      "category": "Código C#",
+      "id": "code.class_layout",
+      "title": "Class layout",
+      "summary": "Constants, events, fields... in this order",
+      "category": "C# code",
       "color": "orange",
       "keywords": [
-        "orden",
         "layout",
-        "clase",
-        "campos",
-        "propiedades",
         "class",
         "order",
         "members"
       ],
-      "markdownPath": "Docs/codigo/orden_clase.md",
+      "markdownPath": "Docs/code/class_layout.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "codigo.nombres",
-      "title": "Nombres en C#",
-      "summary": "PascalCase, camelCase, ALL_CAPS y prefijos",
-      "category": "Código C#",
+      "id": "code.naming",
+      "title": "C# naming",
+      "summary": "PascalCase, camelCase, ALL_CAPS and prefixes",
+      "category": "C# code",
       "color": "orange",
       "keywords": [
         "naming",
-        "nombres",
         "PascalCase",
         "camelCase",
-        "prefijos",
         "Get",
         "Set",
         "Is",
@@ -1193,17 +1079,16 @@
         "conventions",
         "case"
       ],
-      "markdownPath": "Docs/codigo/nombres.md",
+      "markdownPath": "Docs/code/naming.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "codigo.forma",
-      "title": "Forma del código",
-      "summary": "Guard clauses, sin var, sin llaves de una línea",
-      "category": "Código C#",
+      "id": "code.style",
+      "title": "Code style",
+      "summary": "Guard clauses, no var, no braces on one-liners",
+      "category": "C# code",
       "color": "orange",
       "keywords": [
-        "estilo",
         "style",
         "guard",
         "var",
@@ -1214,38 +1099,34 @@
         "formatting",
         "code"
       ],
-      "markdownPath": "Docs/codigo/forma.md",
+      "markdownPath": "Docs/code/style.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "codigo.comentarios_texto",
-      "title": "Comentarios y textos",
-      "summary": "Sin /// en miembros, sin texto hardcodeado",
-      "category": "Código C#",
+      "id": "code.comments_and_text",
+      "title": "Comments and text",
+      "summary": "No /// on members, no hardcoded text",
+      "category": "C# code",
       "color": "orange",
       "keywords": [
-        "comentarios",
         "///",
         "UA0015",
-        "localizacion",
-        "texto",
         "hardcoded",
         "comments",
         "documentation",
         "localization",
         "strings"
       ],
-      "markdownPath": "Docs/codigo/comentarios_texto.md",
+      "markdownPath": "Docs/code/comments_and_text.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "codigo.prohibidos",
-      "title": "Prohibido en código cliente",
-      "summary": "Lambdas, LINQ, var, ?. en Unity y más",
-      "category": "Código C#",
+      "id": "code.forbidden",
+      "title": "Forbidden in client code",
+      "summary": "Lambdas, LINQ, var, ?. on Unity objects and more",
+      "category": "C# code",
       "color": "orange",
       "keywords": [
-        "prohibido",
         "lambda",
         "LINQ",
         "var",
@@ -1264,14 +1145,14 @@
         "allowed",
         "nullconditional"
       ],
-      "markdownPath": "Docs/codigo/prohibidos.md",
+      "markdownPath": "Docs/code/forbidden.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "codigo.async",
+      "id": "code.async",
       "title": "Async",
-      "summary": "async Task, Forget y CancellationToken",
-      "category": "Código C#",
+      "summary": "async Task, Forget and CancellationToken",
+      "category": "C# code",
       "color": "orange",
       "keywords": [
         "async",
@@ -1282,35 +1163,33 @@
         "ConfigureAwait",
         "tasks"
       ],
-      "markdownPath": "Docs/codigo/async.md",
+      "markdownPath": "Docs/code/async.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "codigo.errores_logs",
-      "title": "Errores y logs",
-      "summary": "throw vs Result<T>, prefijos de log",
-      "category": "Código C#",
+      "id": "code.errors_and_logs",
+      "title": "Errors and logs",
+      "summary": "throw vs Result<T>, log prefixes",
+      "category": "C# code",
       "color": "orange",
       "keywords": [
-        "errores",
         "exceptions",
         "Result",
         "throw",
         "log",
         "LogError",
-        "prefijo",
         "errors",
         "logging",
         "logs"
       ],
-      "markdownPath": "Docs/codigo/errores_logs.md",
+      "markdownPath": "Docs/code/errors_and_logs.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "codigo.unity",
-      "title": "Buenas prácticas de Unity",
-      "summary": "FormerlySerializedAs, cachear, limpiar",
-      "category": "Código C#",
+      "id": "code.unity",
+      "title": "Unity good practices",
+      "summary": "FormerlySerializedAs, caching, cleanup",
+      "category": "C# code",
       "color": "orange",
       "keywords": [
         "unity",
@@ -1318,25 +1197,23 @@
         "GetComponent",
         "SetActive",
         "OnDestroy",
-        "limpieza",
         "tips",
         "serialized",
         "cleanup"
       ],
-      "markdownPath": "Docs/codigo/unity.md",
+      "markdownPath": "Docs/code/unity.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "codigo.rendimiento",
-      "title": "Rendimiento y allocations",
-      "summary": "PERF-01 a 03 y allocations",
-      "category": "Código C#",
+      "id": "code.performance",
+      "title": "Performance and allocations",
+      "summary": "PERF-01 to 03 and allocations",
+      "category": "C# code",
       "color": "orange",
       "keywords": [
         "PERF-01",
         "PERF-02",
         "PERF-03",
-        "rendimiento",
         "performance",
         "allocations",
         "pool",
@@ -1345,31 +1222,27 @@
         "garbage",
         "memory"
       ],
-      "markdownPath": "Docs/codigo/rendimiento.md",
+      "markdownPath": "Docs/code/performance.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "codigo.solid",
-      "title": "SOLID y duplicación",
-      "summary": "Una responsabilidad, interfaces en los bordes",
-      "category": "Código C#",
+      "id": "code.solid",
+      "title": "SOLID and duplication",
+      "summary": "One responsibility, interfaces at boundaries",
+      "category": "C# code",
       "color": "orange",
       "keywords": [
         "SOLID",
-        "duplicacion",
-        "composicion",
-        "herencia",
-        "polimorfismo",
         "duplication",
         "inheritance"
       ],
-      "markdownPath": "Docs/codigo/solid.md",
+      "markdownPath": "Docs/code/solid.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "tests.que_testear",
-      "title": "Qué se testea",
-      "summary": "TEST-01 a 04, 06 y 08: qué lleva test",
+      "id": "tests.what_to_test",
+      "title": "What gets tested",
+      "summary": "TEST-01 to 04, 06 and 08: what gets tests",
       "category": "Tests",
       "color": "green",
       "keywords": [
@@ -1387,13 +1260,13 @@
         "test",
         "what"
       ],
-      "markdownPath": "Docs/tests/que_testear.md",
+      "markdownPath": "Docs/tests/what_to_test.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "tests.como_testear",
-      "title": "Cómo se escribe un test",
-      "summary": "NUnit, AAA, NSubstitute y nombres",
+      "id": "tests.how_to_test",
+      "title": "How to write a test",
+      "summary": "NUnit, AAA, NSubstitute and names",
       "category": "Tests",
       "color": "green",
       "keywords": [
@@ -1411,13 +1284,13 @@
         "test",
         "unit"
       ],
-      "markdownPath": "Docs/tests/como_testear.md",
+      "markdownPath": "Docs/tests/how_to_test.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "tests.cuando_correr",
-      "title": "Cuándo corren los tests",
-      "summary": "TEST-10 a 12: relacionados, Play mode, prefabs",
+      "id": "tests.when_to_run",
+      "title": "When tests run",
+      "summary": "TEST-10 to 12: related tests, Play mode, prefabs",
       "category": "Tests",
       "color": "green",
       "keywords": [
@@ -1427,20 +1300,19 @@
         "play",
         "mode",
         "suite",
-        "correr",
         "tests",
         "run",
         "when",
         "playmode"
       ],
-      "markdownPath": "Docs/tests/cuando_correr.md",
+      "markdownPath": "Docs/tests/when_to_run.md",
       "source": "architecture/CSHARP_STANDARDS.md"
     },
     {
-      "id": "opcional.capacidades",
-      "title": "Packages opcionales",
-      "summary": "OPT-01 a 05: detectar qué hay instalado",
-      "category": "Packages opcionales",
+      "id": "optional.capabilities",
+      "title": "Optional packages",
+      "summary": "OPT-01 to 05: detect what is installed",
+      "category": "Optional packages",
       "color": "purple",
       "keywords": [
         "OPT-01",
@@ -1448,7 +1320,6 @@
         "OPT-03",
         "OPT-04",
         "OPT-05",
-        "capacidades",
         "capability",
         "manifest",
         "packages",
@@ -1456,19 +1327,18 @@
         "capabilities",
         "detect"
       ],
-      "markdownPath": "Docs/opcional/capacidades.md",
+      "markdownPath": "Docs/optional/capabilities.md",
       "source": "architecture/OPTIONAL_PACKAGES.md",
-      "home": "Packages e instalación",
+      "home": "Packages and installation",
       "homeOrder": 1
     },
     {
-      "id": "opcional.instalar_packages",
-      "title": "Instalar packages",
-      "summary": "URLs Git, orden de instalación y para qué sirve cada uno",
-      "category": "Packages opcionales",
+      "id": "optional.install_packages",
+      "title": "Install packages",
+      "summary": "Git URLs, install order and what each one is for",
+      "category": "Optional packages",
       "color": "purple",
       "keywords": [
-        "instalar",
         "install",
         "packages",
         "package",
@@ -1476,24 +1346,21 @@
         "git",
         "url",
         "tools",
-        "core",
-        "dependencias"
+        "core"
       ],
-      "markdownPath": "Docs/opcional/instalar_packages.md",
+      "markdownPath": "Docs/optional/install_packages.md",
       "source": "docs/INSTALLATION.md",
-      "home": "Packages e instalación",
+      "home": "Packages and installation",
       "homeOrder": 0
     },
     {
-      "id": "opcional.equivalencias",
-      "title": "Con package o sin él",
-      "summary": "La forma con package y la forma Unity pura",
-      "category": "Packages opcionales",
+      "id": "optional.equivalents",
+      "title": "With or without a package",
+      "summary": "The package form and the plain Unity form",
+      "category": "Optional packages",
       "color": "purple",
       "keywords": [
         "mapping",
-        "equivalencias",
-        "sin",
         "package",
         "unity",
         "form",
@@ -1502,27 +1369,26 @@
         "equivalent",
         "alternative"
       ],
-      "markdownPath": "Docs/opcional/equivalencias.md",
+      "markdownPath": "Docs/optional/equivalents.md",
       "source": "architecture/OPTIONAL_PACKAGES.md"
     },
     {
-      "id": "pkg.fastioc.que_es",
-      "title": "Fast IoC: qué es",
-      "summary": "Inyección con código generado, sin reflexión",
+      "id": "pkg.fastioc.overview",
+      "title": "Fast IoC: overview",
+      "summary": "Injection with generated code, no reflection",
       "category": "Fast IoC",
       "color": "blue",
       "keywords": [
         "fast",
         "ioc",
         "fastioc",
-        "inyeccion",
         "di",
         "FAST_IoC",
         "dependency",
         "injection",
         "container"
       ],
-      "markdownPath": "Docs/pkg/fastioc/que_es.md",
+      "markdownPath": "Docs/pkg/fastioc/overview.md",
       "source": "package:com.sgonzalezrozo.fast-ioc/README.md",
       "requires": [
         "com.sgonzalezrozo.fast-ioc"
@@ -1530,13 +1396,12 @@
     },
     {
       "id": "pkg.fastioc.menus",
-      "title": "Menús de Fast IoC",
+      "title": "Menus and shortcuts: Fast IoC",
       "summary": "New MonoInstaller, Setup, Regenerate Code",
       "category": "Fast IoC",
       "color": "blue",
       "keywords": [
         "menu",
-        "atajo",
         "shortcut",
         "DI-09",
         "DI-10",
@@ -1546,7 +1411,6 @@
         "GenerationStatus",
         "menus",
         "shortcuts",
-        "atajos",
         "EDIT-04"
       ],
       "markdownPath": "Docs/pkg/fastioc/menus.md",
@@ -1556,9 +1420,9 @@
       ]
     },
     {
-      "id": "pkg.fastioc.reglas",
-      "title": "Reglas de Fast IoC",
-      "summary": "DI-01 a 08: internal sin atributo, sin locators",
+      "id": "pkg.fastioc.rules",
+      "title": "Fast IoC rules",
+      "summary": "DI-01 to 08: internal with no attribute, no locators",
       "category": "Fast IoC",
       "color": "blue",
       "keywords": [
@@ -1576,7 +1440,7 @@
         "injection",
         "rules"
       ],
-      "markdownPath": "Docs/pkg/fastioc/reglas.md",
+      "markdownPath": "Docs/pkg/fastioc/rules.md",
       "source": "architecture/DEPENDENCY_INJECTION.md",
       "requires": [
         "com.sgonzalezrozo.fast-ioc"
@@ -1584,8 +1448,8 @@
     },
     {
       "id": "pkg.fastioc.installer",
-      "title": "Installer de una feature",
-      "summary": "BindingRecorder, escenas y prioridades",
+      "title": "A feature's installer",
+      "summary": "BindingRecorder, scenes and priorities",
       "category": "Fast IoC",
       "color": "blue",
       "keywords": [
@@ -1605,7 +1469,7 @@
     },
     {
       "id": "pkg.fastioc.lifetimes",
-      "title": "Tipos de binding",
+      "title": "Binding lifetimes",
       "summary": "AsSingle, AsCached, AsTransient, FromInstance",
       "category": "Fast IoC",
       "color": "blue",
@@ -1628,13 +1492,12 @@
     },
     {
       "id": "pkg.screen.menus",
-      "title": "Menús y atajos: Screen System",
-      "summary": "Setup, New Screen Feature, New Layer e Inspector",
+      "title": "Menus and shortcuts: Screen System",
+      "summary": "Setup, New Screen Feature, New Layer and the Inspector",
       "category": "Screen System",
       "color": "purple",
       "keywords": [
         "menu",
-        "atajo",
         "shortcut",
         "New",
         "Screen",
@@ -1646,8 +1509,7 @@
         "SCR-13",
         "SCR-15",
         "menus",
-        "shortcuts",
-        "atajos"
+        "shortcuts"
       ],
       "markdownPath": "Docs/pkg/screen/menus.md",
       "source": "package:com.sgonzalezrozo.screen-system/Documentation~/editor-tools.md",
@@ -1656,9 +1518,9 @@
       ]
     },
     {
-      "id": "pkg.screen.conceptos",
-      "title": "Screen System: conceptos",
-      "summary": "Pantallas hechas de layers compartidos",
+      "id": "pkg.screen.concepts",
+      "title": "Screen System: concepts",
+      "summary": "Screens built from shared layers",
       "category": "Screen System",
       "color": "purple",
       "keywords": [
@@ -1672,20 +1534,18 @@
         "SCR-04",
         "screens",
         "ui",
-        "manager",
-        "pantallas",
-        "capas"
+        "manager"
       ],
-      "markdownPath": "Docs/pkg/screen/conceptos.md",
+      "markdownPath": "Docs/pkg/screen/concepts.md",
       "source": "package:com.sgonzalezrozo.screen-system/README.md",
       "requires": [
         "com.sgonzalezrozo.screen-system"
       ]
     },
     {
-      "id": "pkg.screen.navegacion",
-      "title": "Screen System: navegación",
-      "summary": "GoTo, GoBack, ScreenIds y parámetros",
+      "id": "pkg.screen.navigation",
+      "title": "Screen System: navigation",
+      "summary": "GoTo, GoBack, ScreenIds and parameters",
       "category": "Screen System",
       "color": "purple",
       "keywords": [
@@ -1693,7 +1553,6 @@
         "GoBack",
         "SetRoot",
         "ScreenIds",
-        "navegacion",
         "SCR-01",
         "SCR-06",
         "SCR-07",
@@ -1706,16 +1565,16 @@
         "screen",
         "back"
       ],
-      "markdownPath": "Docs/pkg/screen/navegacion.md",
+      "markdownPath": "Docs/pkg/screen/navigation.md",
       "source": "architecture/OPTIONAL_PACKAGES.md",
       "requires": [
         "com.sgonzalezrozo.screen-system"
       ]
     },
     {
-      "id": "pkg.screen.ciclo_vida",
-      "title": "Screen System: mostrar y ocultar",
-      "summary": "IScreenShow / IScreenHide en lugar de OnEnable",
+      "id": "pkg.screen.lifecycle",
+      "title": "Screen System: show and hide",
+      "summary": "IScreenShow / IScreenHide instead of OnEnable",
       "category": "Screen System",
       "color": "purple",
       "keywords": [
@@ -1727,22 +1586,21 @@
         "SCR-03",
         "SCR-05",
         "SCR-10",
-        "animacion",
         "shown",
         "hidden",
         "show",
         "hide"
       ],
-      "markdownPath": "Docs/pkg/screen/ciclo_vida.md",
+      "markdownPath": "Docs/pkg/screen/lifecycle.md",
       "source": "architecture/OPTIONAL_PACKAGES.md",
       "requires": [
         "com.sgonzalezrozo.screen-system"
       ]
     },
     {
-      "id": "pkg.screen.modales",
-      "title": "Screen System: modales y alerts",
-      "summary": "Un modal a la vez, alerts y GoToForResult",
+      "id": "pkg.screen.modals",
+      "title": "Screen System: modals and alerts",
+      "summary": "One modal at a time, alerts and GoToForResult",
       "category": "Screen System",
       "color": "purple",
       "keywords": [
@@ -1759,7 +1617,7 @@
         "confirm",
         "result"
       ],
-      "markdownPath": "Docs/pkg/screen/modales.md",
+      "markdownPath": "Docs/pkg/screen/modals.md",
       "source": "architecture/OPTIONAL_PACKAGES.md",
       "requires": [
         "com.sgonzalezrozo.screen-system"
@@ -1767,13 +1625,12 @@
     },
     {
       "id": "pkg.scroller.menus",
-      "title": "Menús y atajos: UI Scroller",
-      "summary": "Bento Layout Editor y por qué no New Scroll List",
+      "title": "Menus and shortcuts: UI Scroller",
+      "summary": "Bento Layout Editor, and why not New Scroll List",
       "category": "UI Scroller",
       "color": "pink",
       "keywords": [
         "menu",
-        "atajo",
         "shortcut",
         "Bento",
         "Layout",
@@ -1783,8 +1640,7 @@
         "List",
         "LIST-09",
         "menus",
-        "shortcuts",
-        "atajos"
+        "shortcuts"
       ],
       "markdownPath": "Docs/pkg/scroller/menus.md",
       "source": "architecture/UI_PATTERNS.md",
@@ -1793,9 +1649,9 @@
       ]
     },
     {
-      "id": "pkg.scroller.lista",
-      "title": "UI Scroller: una lista",
-      "summary": "Scroller<T>, IItemSource y SetSource",
+      "id": "pkg.scroller.list",
+      "title": "UI Scroller: a list",
+      "summary": "Scroller<T>, IItemSource and SetSource",
       "category": "UI Scroller",
       "color": "pink",
       "keywords": [
@@ -1803,22 +1659,16 @@
         "IItemSource",
         "SetSource",
         "Refresh",
-        "lista",
         "list",
-        "virtualizada",
         "recyclable",
         "recycling",
-        "reciclable",
-        "reciclada",
-        "reciclado",
-        "reutilizable",
         "virtualized",
         "pooled",
         "pool",
         "scroll",
         "scrollview"
       ],
-      "markdownPath": "Docs/pkg/scroller/lista.md",
+      "markdownPath": "Docs/pkg/scroller/list.md",
       "source": "architecture/UI_PATTERNS.md",
       "requires": [
         "com.sgonzalezrozo.ui-scroller"
@@ -1827,7 +1677,7 @@
     {
       "id": "pkg.scroller.slot_model",
       "title": "UI Scroller: Slot Model",
-      "summary": "LIST-02 a 07: el Model de cada slot",
+      "summary": "LIST-02 to 07: the Model of each slot",
       "category": "UI Scroller",
       "color": "pink",
       "keywords": [
@@ -1841,13 +1691,11 @@
         "IInjectableForChildren",
         "Data",
         "cell",
-        "celda",
         "item",
         "recyclable",
         "recycled",
         "reused",
-        "pooled",
-        "reciclable"
+        "pooled"
       ],
       "markdownPath": "Docs/pkg/scroller/slot_model.md",
       "source": "architecture/UI_PATTERNS.md",
@@ -1856,16 +1704,14 @@
       ]
     },
     {
-      "id": "pkg.scroller.tamanos",
-      "title": "UI Scroller: tamaños de slot",
-      "summary": "DefaultExtent fijo o medido, LIST-06",
+      "id": "pkg.scroller.sizes",
+      "title": "UI Scroller: slot sizes",
+      "summary": "Fixed or measured DefaultExtent, LIST-06",
       "category": "UI Scroller",
       "color": "pink",
       "keywords": [
         "DefaultExtent",
-        "tamaño",
         "size",
-        "medido",
         "LIST-06",
         "ContentSizeFitter",
         "layout",
@@ -1874,28 +1720,26 @@
         "dynamic",
         "measured"
       ],
-      "markdownPath": "Docs/pkg/scroller/tamanos.md",
+      "markdownPath": "Docs/pkg/scroller/sizes.md",
       "source": "architecture/UI_PATTERNS.md",
       "requires": [
         "com.sgonzalezrozo.ui-scroller"
       ]
     },
     {
-      "id": "pkg.scroller.expandibles",
-      "title": "UI Scroller: slots expandibles",
-      "summary": "IExpandableSlot: acordeón medido por la lista",
+      "id": "pkg.scroller.expandable",
+      "title": "UI Scroller: expandable slots",
+      "summary": "IExpandableSlot: an accordion the list measures",
       "category": "UI Scroller",
       "color": "pink",
       "keywords": [
-        "expandible",
         "IExpandableSlot",
         "Expand",
         "Collapse",
-        "acordeon",
         "accordion",
         "expandable"
       ],
-      "markdownPath": "Docs/pkg/scroller/expandibles.md",
+      "markdownPath": "Docs/pkg/scroller/expandable.md",
       "source": "architecture/UI_PATTERNS.md",
       "requires": [
         "com.sgonzalezrozo.ui-scroller"
@@ -1903,14 +1747,13 @@
     },
     {
       "id": "pkg.scroller.layouts",
-      "title": "UI Scroller: qué layout usar",
-      "summary": "List, Grid, Bento, secciones, carrusel, paginado",
+      "title": "UI Scroller: which layout",
+      "summary": "List, Grid, Bento, sections, carousel, paging",
       "category": "UI Scroller",
       "color": "pink",
       "keywords": [
         "grid",
         "bento",
-        "carrusel",
         "carousel",
         "loop",
         "snap",
@@ -1932,7 +1775,7 @@
     {
       "id": "pkg.scroller.api",
       "title": "UI Scroller: API",
-      "summary": "Métodos y fuentes del Scroller",
+      "summary": "Scroller methods and sources",
       "category": "UI Scroller",
       "color": "pink",
       "keywords": [
@@ -1958,7 +1801,7 @@
     {
       "id": "pkg.foundations.click",
       "title": "UI Foundations: click Controller",
-      "summary": "BaseClickController: el Action es el gráfico",
+      "summary": "BaseClickController: the Action is the graphic",
       "category": "UI Foundations",
       "color": "green",
       "keywords": [
@@ -1968,8 +1811,7 @@
         "click",
         "OPT-02",
         "button",
-        "replacement",
-        "boton"
+        "replacement"
       ],
       "markdownPath": "Docs/pkg/foundations/click.md",
       "source": "architecture/OPTIONAL_PACKAGES.md",
@@ -1978,55 +1820,52 @@
       ]
     },
     {
-      "id": "pkg.foundations.estados",
+      "id": "pkg.foundations.states",
       "title": "UI Foundations: ViewStateMachine",
-      "summary": "ViewStateMachine: un aspecto a la vez",
+      "summary": "ViewStateMachine: one look at a time",
       "category": "UI Foundations",
       "color": "green",
       "keywords": [
         "ViewStateMachine",
         "SetState",
-        "estados",
         "CanvasGroup",
         "states",
         "visual",
         "state",
         "machine"
       ],
-      "markdownPath": "Docs/pkg/foundations/estados.md",
+      "markdownPath": "Docs/pkg/foundations/states.md",
       "source": "architecture/OPTIONAL_PACKAGES.md",
       "requires": [
         "com.sgonzalezrozo.ui-foundations"
       ]
     },
     {
-      "id": "pkg.foundations.gradientes",
-      "title": "UI Foundations: gradientes de grupo",
-      "summary": "UIGradientGroup sobre varios gráficos",
+      "id": "pkg.foundations.gradients",
+      "title": "UI Foundations: group gradients",
+      "summary": "UIGradientGroup across several graphics",
       "category": "UI Foundations",
       "color": "green",
       "keywords": [
         "UIGradientGroup",
-        "gradiente",
         "gradient",
         "IgnoreGroupGradient",
         "gradients"
       ],
-      "markdownPath": "Docs/pkg/foundations/gradientes.md",
+      "markdownPath": "Docs/pkg/foundations/gradients.md",
       "source": "package:com.sgonzalezrozo.ui-foundations/README.md",
       "requires": [
         "com.sgonzalezrozo.ui-foundations"
       ]
     },
     {
-      "id": "pkg.tweens.uso",
-      "title": "UI Tweens en MVC",
-      "summary": "Tweens lanzados por la View tras un evento",
+      "id": "pkg.tweens.usage",
+      "title": "UI Tweens in MVC",
+      "summary": "Tweens started by the View after an event",
       "category": "UI Tweens",
       "color": "orange",
       "keywords": [
         "tween",
-        "animacion",
         "punch",
         "DOScale",
         "View",
@@ -2035,7 +1874,7 @@
         "animate",
         "dotween"
       ],
-      "markdownPath": "Docs/pkg/tweens/uso.md",
+      "markdownPath": "Docs/pkg/tweens/usage.md",
       "source": "package:com.sgonzalezrozo.ui-tweens/README.md",
       "requires": [
         "com.sgonzalezrozo.ui-tweens"
@@ -2044,7 +1883,7 @@
     {
       "id": "pkg.tweens.api",
       "title": "UI Tweens: API",
-      "summary": "Métodos DO*, opciones y easing",
+      "summary": "DO* methods, options and easing",
       "category": "UI Tweens",
       "color": "orange",
       "keywords": [
@@ -2066,20 +1905,16 @@
     },
     {
       "id": "pkg.console.menus",
-      "title": "Menús y atajos: Enhanced Console",
-      "summary": "Ventana, Setup y atajos de teclado",
+      "title": "Menus and shortcuts: Enhanced Console",
+      "summary": "Window, Setup and keyboard shortcuts",
       "category": "Enhanced Console",
       "color": "gray",
       "keywords": [
         "menu",
-        "atajo",
         "shortcut",
-        "teclado",
         "keyboard",
-        "consola",
         "console",
-        "shortcuts",
-        "atajos"
+        "shortcuts"
       ],
       "markdownPath": "Docs/pkg/console/menus.md",
       "source": "package:com.sgonzalezrozo.enhanced-console/Documentation~/toolbar-and-shortcuts.md",
@@ -2088,38 +1923,34 @@
       ]
     },
     {
-      "id": "pkg.console.secciones",
-      "title": "Enhanced Console: secciones",
-      "summary": "Filtrar logs por sistema con [Prefijo]",
+      "id": "pkg.console.sections",
+      "title": "Enhanced Console: sections",
+      "summary": "Filter logs by system with a [Prefix]",
       "category": "Enhanced Console",
       "color": "gray",
       "keywords": [
-        "secciones",
         "sections",
-        "filtro",
         "log",
-        "prefijo",
         "SL",
         "console",
         "filter",
         "logs"
       ],
-      "markdownPath": "Docs/pkg/console/secciones.md",
+      "markdownPath": "Docs/pkg/console/sections.md",
       "source": "package:com.sgonzalezrozo.enhanced-console/Documentation~/section-filtering.md",
       "requires": [
         "com.sgonzalezrozo.enhanced-console"
       ]
     },
     {
-      "id": "pkg.core.contenedores",
-      "title": "Tools Core: contenedores",
-      "summary": "Conectar Fast IoC, VContainer, Zenject o ninguno",
+      "id": "pkg.core.containers",
+      "title": "Tools Core: containers",
+      "summary": "Connect Fast IoC, VContainer, Zenject or none",
       "category": "Tools Core",
       "color": "gray",
       "keywords": [
         "tools",
         "core",
-        "contenedor",
         "container",
         "vcontainer",
         "zenject",
@@ -2127,16 +1958,16 @@
         "injection",
         "adapter"
       ],
-      "markdownPath": "Docs/pkg/core/contenedores.md",
+      "markdownPath": "Docs/pkg/core/containers.md",
       "source": "package:com.sgonzalezrozo.core/README.md",
       "requires": [
         "com.sgonzalezrozo.core"
       ]
     },
     {
-      "id": "pkg.atom.uso",
+      "id": "pkg.atom.usage",
       "title": "UI Atom",
-      "summary": "Formas horneadas, Shape Generator y máscaras",
+      "summary": "Baked shapes, Shape Generator and masks",
       "category": "UI Atom",
       "color": "yellow",
       "keywords": [
@@ -2144,38 +1975,33 @@
         "atom",
         "shape",
         "generator",
-        "mascara",
         "mask",
         "menu",
-        "atajo",
         "shapes"
       ],
-      "markdownPath": "Docs/pkg/atom/uso.md",
+      "markdownPath": "Docs/pkg/atom/usage.md",
       "source": "package:com.sgonzalezrozo.ui-atom/README.md",
       "requires": [
         "com.sgonzalezrozo.ui-atom"
       ]
     },
     {
-      "id": "mcp.configurar",
-      "title": "Configurar MCP for Unity",
-      "summary": "Ventana, servidor HTTP y atajo Cmd+Shift+M",
+      "id": "mcp.setup",
+      "title": "Set up MCP for Unity",
+      "summary": "Window, HTTP server and the Cmd+Shift+M shortcut",
       "category": "MCP for Unity",
       "color": "teal",
       "keywords": [
         "mcp",
         "unity",
-        "configurar",
         "setup",
-        "servidor",
         "server",
-        "atajo",
         "shortcut",
         "Cmd+Shift+M",
         "configure",
         "window"
       ],
-      "markdownPath": "Docs/mcp/configurar.md",
+      "markdownPath": "Docs/mcp/setup.md",
       "source": "docs/INSTALLATION.md",
       "requires": [
         "com.coplaydev.unity-mcp"
@@ -2183,8 +2009,8 @@
     },
     {
       "id": "mcp.tools",
-      "title": "Tools que usan las reglas",
-      "summary": "refresh_unity, run_tests, execute_code y sus grupos",
+      "title": "Tools the rules use",
+      "summary": "refresh_unity, run_tests, execute_code and their groups",
       "category": "MCP for Unity",
       "color": "teal",
       "keywords": [
@@ -2194,7 +2020,6 @@
         "read_console",
         "run_tests",
         "execute_code",
-        "grupos",
         "Roslyn",
         "groups"
       ],
@@ -2205,9 +2030,9 @@
       ]
     },
     {
-      "id": "mcp.armado_ui",
-      "title": "Reglas de armado de UI con MCP",
-      "summary": "EDIT-05, 11, 12, 13: cómo el agente arma prefabs",
+      "id": "mcp.ui_building",
+      "title": "Building UI with MCP",
+      "summary": "EDIT-05, 11, 12, 13: how the agent builds prefabs",
       "category": "MCP for Unity",
       "color": "teal",
       "keywords": [
@@ -2216,29 +2041,25 @@
         "EDIT-11",
         "EDIT-12",
         "EDIT-13",
-        "armado",
         "UI",
         "prefab",
         "mcp",
         "spec",
-        "recetas",
         "build",
-        "agent",
-        "armar",
-        "construir"
+        "agent"
       ],
-      "markdownPath": "Docs/mcp/armado_ui.md",
+      "markdownPath": "Docs/mcp/ui_building.md",
       "source": "architecture/EDITOR_TOOLS.md",
+      "home": "UI creation",
+      "homeOrder": 3,
       "requires": [
         "com.coplaydev.unity-mcp"
-      ],
-      "home": "Creación de UI",
-      "homeOrder": 3
+      ]
     },
     {
       "id": "mcp.execute_code",
-      "title": "Construir un prefab desde execute_code",
-      "summary": "BuildFromSpec, ValidateAsset y Compare desde código",
+      "title": "Build a prefab from execute_code",
+      "summary": "BuildFromSpec, ValidateAsset and Compare from code",
       "category": "MCP for Unity",
       "color": "teal",
       "keywords": [
@@ -2260,8 +2081,8 @@
     },
     {
       "id": "mcp.spec_json",
-      "title": "El spec JSON de un prefab",
-      "summary": "Campos del spec JSON de un prefab",
+      "title": "A prefab's JSON spec",
+      "summary": "The fields of a prefab JSON spec",
       "category": "MCP for Unity",
       "color": "teal",
       "keywords": [
@@ -2269,7 +2090,6 @@
         "json",
         "HAND-06",
         "prefab",
-        "campos",
         "type",
         "layout",
         "fields",
@@ -2282,57 +2102,53 @@
       ]
     },
     {
-      "id": "mcp.ejemplo_prompt_ui",
-      "title": "Ejemplo: pedir un prefab con el Editor abierto",
-      "summary": "Un prompt completo y lo que hace el agente",
+      "id": "mcp.example_prompt",
+      "title": "Example: ask for a prefab with the Editor open",
+      "summary": "A full prompt and what the agent does",
       "category": "MCP for Unity",
       "color": "teal",
       "keywords": [
         "prompt",
-        "ejemplo",
         "banner",
         "prefab",
         "play",
         "mode",
         "example"
       ],
-      "markdownPath": "Docs/mcp/ejemplo_prompt_ui.md",
+      "markdownPath": "Docs/mcp/example_prompt.md",
       "source": "docs/USAGE.md",
       "requires": [
         "com.coplaydev.unity-mcp"
       ]
     },
     {
-      "id": "mcp.abierto_vs_cerrado",
-      "title": "Editor abierto o cerrado",
-      "summary": "Qué cambia con el Editor abierto o cerrado",
+      "id": "mcp.open_vs_closed",
+      "title": "Editor open or closed",
+      "summary": "What changes with the Editor open or closed",
       "category": "MCP for Unity",
       "color": "teal",
       "keywords": [
         "editor",
-        "abierto",
-        "cerrado",
         "verify.sh",
         "EDIT-10",
         "refresh",
         "open",
         "closed"
       ],
-      "markdownPath": "Docs/mcp/abierto_vs_cerrado.md",
+      "markdownPath": "Docs/mcp/open_vs_closed.md",
       "source": "docs/USAGE.md",
       "requires": [
         "com.coplaydev.unity-mcp"
       ]
     },
     {
-      "id": "mcp.problemas",
-      "title": "Problemas frecuentes con MCP",
-      "summary": "Síntomas frecuentes y su arreglo",
+      "id": "mcp.troubleshooting",
+      "title": "MCP troubleshooting",
+      "summary": "Common symptoms and their fix",
       "category": "MCP for Unity",
       "color": "teal",
       "keywords": [
         "troubleshooting",
-        "problemas",
         "error",
         "mcp",
         "Roslyn",
@@ -2341,54 +2157,49 @@
         "problems",
         "fix"
       ],
-      "markdownPath": "Docs/mcp/problemas.md",
+      "markdownPath": "Docs/mcp/troubleshooting.md",
       "source": "docs/INSTALLATION.md",
       "requires": [
         "com.coplaydev.unity-mcp"
       ]
     },
     {
-      "id": "agente.tipos_tarea",
-      "title": "Cómo trabaja el agente",
-      "summary": "Responder, cambiar o planificar; PLAN-01",
-      "category": "Trabajar con el agente",
+      "id": "agent.task_types",
+      "title": "How the agent works",
+      "summary": "Answer, change or plan; PLAN-01",
+      "category": "Working with the agent",
       "color": "blue",
       "keywords": [
         "PLAN-01",
         "plan",
-        "tarea",
-        "aprobacion",
         "approval",
         "agent",
         "task"
       ],
-      "markdownPath": "Docs/agente/tipos_tarea.md",
+      "markdownPath": "Docs/agent/task_types.md",
       "source": "architecture/AGENT_WORKFLOW.md"
     },
     {
-      "id": "agente.cuando_pregunta",
-      "title": "Cuándo pregunta el agente",
-      "summary": "Cuándo debe preguntar y DATA-01",
-      "category": "Trabajar con el agente",
+      "id": "agent.when_to_ask",
+      "title": "When the agent asks",
+      "summary": "When it must ask, and DATA-01",
+      "category": "Working with the agent",
       "color": "blue",
       "keywords": [
         "DATA-01",
-        "preguntar",
         "ask",
-        "dependencia",
         "package",
-        "suposicion",
         "agent",
         "questions"
       ],
-      "markdownPath": "Docs/agente/cuando_pregunta.md",
+      "markdownPath": "Docs/agent/when_to_ask.md",
       "source": "architecture/AGENT_WORKFLOW.md"
     },
     {
-      "id": "agente.trabajar_en_unity",
-      "title": "Reglas al tocar Unity",
-      "summary": "EDIT-06: nada de YAML a mano, no inventar APIs",
-      "category": "Trabajar con el agente",
+      "id": "agent.working_in_unity",
+      "title": "Rules when touching Unity",
+      "summary": "EDIT-06: no hand-written YAML, no invented APIs",
+      "category": "Working with the agent",
       "color": "blue",
       "keywords": [
         "EDIT-06",
@@ -2397,18 +2208,17 @@
         "meta",
         "FormerlySerializedAs",
         "API",
-        "inventar",
         "agent",
         "unity"
       ],
-      "markdownPath": "Docs/agente/trabajar_en_unity.md",
+      "markdownPath": "Docs/agent/working_in_unity.md",
       "source": "architecture/AGENT_WORKFLOW.md"
     },
     {
-      "id": "agente.determinismo_agente",
-      "title": "Herramientas antes que criterio",
-      "summary": "DET-01 a 04 y EDIT-01: herramientas, no memoria",
-      "category": "Trabajar con el agente",
+      "id": "agent.tools_over_judgment",
+      "title": "Tools over judgment",
+      "summary": "DET-01 to 04 and EDIT-01: tools, not memory",
+      "category": "Working with the agent",
       "color": "blue",
       "keywords": [
         "DET-01",
@@ -2416,27 +2226,22 @@
         "DET-03",
         "DET-04",
         "EDIT-01",
-        "verificado",
-        "herramienta",
         "tools",
         "verify",
         "deterministic"
       ],
-      "markdownPath": "Docs/agente/determinismo_agente.md",
+      "markdownPath": "Docs/agent/tools_over_judgment.md",
       "source": "architecture/AGENT_WORKFLOW.md"
     },
     {
-      "id": "agente.verificacion",
-      "title": "Orden de verificación",
-      "summary": "Compilar, tests, generación, Play mode, reporte",
-      "category": "Trabajar con el agente",
+      "id": "agent.verification",
+      "title": "Verification order",
+      "summary": "Compile, tests, generation, Play mode, report",
+      "category": "Working with the agent",
       "color": "blue",
       "keywords": [
-        "verificacion",
         "verify",
         "EDIT-03",
-        "orden",
-        "reporte",
         "Verified",
         "Not",
         "verified",
@@ -2444,46 +2249,44 @@
         "compile",
         "EDIT-07"
       ],
-      "markdownPath": "Docs/agente/verificacion.md",
+      "markdownPath": "Docs/agent/verification.md",
       "source": "architecture/EDITOR_TOOLS.md"
     },
     {
-      "id": "agente.stop_hook",
-      "title": "El Stop hook",
-      "summary": "Los mensajes del hook y qué hace el agente",
-      "category": "Trabajar con el agente",
+      "id": "agent.stop_hook",
+      "title": "The Stop hook",
+      "summary": "The hook's messages and what the agent does",
+      "category": "Working with the agent",
       "color": "blue",
       "keywords": [
         "stop",
         "hook",
         "verify-editor",
         "verify.sh",
-        "mensajes",
         "verify"
       ],
-      "markdownPath": "Docs/agente/stop_hook.md",
+      "markdownPath": "Docs/agent/stop_hook.md",
       "source": "docs/USAGE.md"
     },
     {
-      "id": "agente.checklist",
-      "title": "Checklist antes de responder",
-      "summary": "Las 14 preguntas antes de devolver código",
-      "category": "Trabajar con el agente",
+      "id": "agent.checklist",
+      "title": "Pre-response checklist",
+      "summary": "The 14 questions before returning code",
+      "category": "Working with the agent",
       "color": "blue",
       "keywords": [
         "checklist",
         "pre-response",
-        "revision",
         "review"
       ],
-      "markdownPath": "Docs/agente/checklist.md",
+      "markdownPath": "Docs/agent/checklist.md",
       "source": "architecture/AGENT_WORKFLOW.md"
     },
     {
-      "id": "agente.definition_of_done",
+      "id": "agent.definition_of_done",
       "title": "Definition of Done",
-      "summary": "Todo cambio, cambios de UI y release",
-      "category": "Trabajar con el agente",
+      "summary": "Every change, UI changes and release",
+      "category": "Working with the agent",
       "color": "blue",
       "keywords": [
         "definition",
@@ -2492,18 +2295,17 @@
         "DoD",
         "release"
       ],
-      "markdownPath": "Docs/agente/definition_of_done.md",
+      "markdownPath": "Docs/agent/definition_of_done.md",
       "source": "architecture/AGENT_WORKFLOW.md"
     },
     {
-      "id": "agente.git",
-      "title": "Git y PRs",
-      "summary": "Ramas, commits y PRs",
-      "category": "Trabajar con el agente",
+      "id": "agent.git",
+      "title": "Git and PRs",
+      "summary": "Branches, commits and PRs",
+      "category": "Working with the agent",
       "color": "blue",
       "keywords": [
         "git",
-        "ramas",
         "branch",
         "PR",
         "commit",
@@ -2514,14 +2316,14 @@
         "pull",
         "request"
       ],
-      "markdownPath": "Docs/agente/git.md",
+      "markdownPath": "Docs/agent/git.md",
       "source": "architecture/AGENT_WORKFLOW.md"
     },
     {
-      "id": "agente.analyzers",
-      "title": "Analyzers: reglas que fallan el build",
-      "summary": "UA0001 a UA0016: lo que falla el build",
-      "category": "Trabajar con el agente",
+      "id": "agent.analyzers",
+      "title": "Analyzers: rules that fail the build",
+      "summary": "UA0001 to UA0016: what fails the build",
+      "category": "Working with the agent",
       "color": "blue",
       "keywords": [
         "analyzers",
@@ -2545,14 +2347,14 @@
         "compile",
         "errors"
       ],
-      "markdownPath": "Docs/agente/analyzers.md",
+      "markdownPath": "Docs/agent/analyzers.md",
       "source": "analyzers/README.md"
     },
     {
-      "id": "agente.handoff",
-      "title": "Handoff de un prefab",
-      "summary": "HAND-01 a 05: instrucciones de prefab sin huecos",
-      "category": "Trabajar con el agente",
+      "id": "agent.handoff",
+      "title": "Prefab handoff",
+      "summary": "HAND-01 to 05: prefab instructions with no gaps",
+      "category": "Working with the agent",
       "color": "blue",
       "keywords": [
         "HAND-01",
@@ -2561,61 +2363,54 @@
         "HAND-04",
         "HAND-05",
         "handoff",
-        "tabla",
         "prefab",
         "instructions"
       ],
-      "markdownPath": "Docs/agente/handoff.md",
+      "markdownPath": "Docs/agent/handoff.md",
       "source": "architecture/AGENT_WORKFLOW.md"
     },
     {
-      "id": "agente.prompts",
-      "title": "Prompts que funcionan",
-      "summary": "Peticiones que funcionan y consejos",
-      "category": "Trabajar con el agente",
+      "id": "agent.prompts",
+      "title": "Prompts that work",
+      "summary": "Requests that work, and tips",
+      "category": "Working with the agent",
       "color": "blue",
       "keywords": [
         "prompts",
-        "ejemplos",
-        "pedir",
         "review",
         "bug",
         "plan",
-        "consejos",
         "claude",
         "agent",
         "ask",
         "examples"
       ],
-      "markdownPath": "Docs/agente/prompts.md",
+      "markdownPath": "Docs/agent/prompts.md",
       "source": "docs/USAGE.md",
-      "home": "Primeros pasos",
+      "home": "Getting started",
       "homeOrder": 3
     },
     {
-      "id": "agente.actualizar",
-      "title": "Actualizar las reglas",
-      "summary": "update.sh y el CHANGELOG",
-      "category": "Trabajar con el agente",
+      "id": "agent.updating",
+      "title": "Update the rules",
+      "summary": "update.sh and the CHANGELOG",
+      "category": "Working with the agent",
       "color": "blue",
       "keywords": [
-        "actualizar",
         "update",
         "changelog",
-        "submodulo",
         "upgrade"
       ],
-      "markdownPath": "Docs/agente/actualizar.md",
+      "markdownPath": "Docs/agent/updating.md",
       "source": "docs/USAGE.md"
     },
     {
-      "id": "ejemplos.trophy_room",
-      "title": "Ejemplo: feature con backend (Trophy Room)",
-      "summary": "Dos pantallas, un Module, backend y timer",
-      "category": "Ejemplos",
+      "id": "examples.trophy_room",
+      "title": "Example: backend feature (Trophy Room)",
+      "summary": "Two screens, one Module, backend and timer",
+      "category": "Examples",
       "color": "pink",
       "keywords": [
-        "ejemplo",
         "example",
         "trophy",
         "room",
@@ -2625,7 +2420,7 @@
         "timer",
         "list"
       ],
-      "markdownPath": "Docs/ejemplos/trophy_room.md",
+      "markdownPath": "Docs/examples/trophy_room.md",
       "source": "architecture/examples/01_BACKEND_FEATURE_TROPHY_ROOM.md",
       "requires": [
         "com.sgonzalezrozo.fast-ioc",
@@ -2634,40 +2429,35 @@
       ]
     },
     {
-      "id": "ejemplos.settings",
-      "title": "Ejemplo: input propio (Settings)",
-      "summary": "Toggle y Slider hechos a mano",
-      "category": "Ejemplos",
+      "id": "examples.settings",
+      "title": "Example: custom input (Settings)",
+      "summary": "Toggle and Slider built by hand",
+      "category": "Examples",
       "color": "pink",
       "keywords": [
-        "ejemplo",
         "example",
         "settings",
         "toggle",
         "slider",
         "drag"
       ],
-      "markdownPath": "Docs/ejemplos/settings.md",
+      "markdownPath": "Docs/examples/settings.md",
       "source": "architecture/examples/02_CUSTOM_INPUT_SETTINGS.md"
     },
     {
-      "id": "ejemplos.inventario",
-      "title": "Ejemplo: lista filtrada (Inventario)",
-      "summary": "Pestañas que filtran una lista y un panel",
-      "category": "Ejemplos",
+      "id": "examples.inventory",
+      "title": "Example: filtered list (Inventory)",
+      "summary": "Tabs that filter one list, and a details panel",
+      "category": "Examples",
       "color": "pink",
       "keywords": [
-        "ejemplo",
         "example",
-        "inventario",
         "inventory",
         "tabs",
-        "filtro",
-        "seleccion",
         "filtered",
         "list"
       ],
-      "markdownPath": "Docs/ejemplos/inventario.md",
+      "markdownPath": "Docs/examples/inventory.md",
       "source": "architecture/examples/03_FILTERED_LIST_INVENTORY.md",
       "requires": [
         "com.sgonzalezrozo.fast-ioc",
@@ -2675,45 +2465,41 @@
       ]
     },
     {
-      "id": "decisiones.clean_code",
-      "title": "Decisiones deliberadas",
-      "summary": "Dónde nos apartamos de Clean Code y por qué",
-      "category": "Decisiones",
+      "id": "decisions.clean_code",
+      "title": "Deliberate decisions",
+      "summary": "Where we depart from Clean Code, and why",
+      "category": "Decisions",
       "color": "gray",
       "keywords": [
         "clean",
         "code",
-        "decisiones",
-        "deliberadas",
-        "por",
-        "que",
         "decisions",
         "why"
       ],
-      "markdownPath": "Docs/decisiones/clean_code.md",
+      "markdownPath": "Docs/decisions/clean_code.md",
       "source": "architecture/DEVELOPER_OVERVIEW.md"
     }
   ],
   "homeSections": [
     {
-      "name": "Primeros pasos",
-      "description": "Qué es esto, cómo se instala y cómo pedirle cosas al agente"
+      "name": "Getting started",
+      "description": "What this is, how to install it, and how to ask the agent for things"
     },
     {
-      "name": "Arquitectura",
-      "description": "MVC estricto: las capas y las reglas que no se rompen"
+      "name": "Architecture",
+      "description": "Strict MVC: the layers and the rules that don't bend"
     },
     {
-      "name": "Creación de UI",
-      "description": "Cómo se arma una pantalla, un botón o un prefab"
+      "name": "UI creation",
+      "description": "How a screen, a button or a prefab is built"
     },
     {
-      "name": "Organización de carpetas",
-      "description": "Dónde va cada archivo y cómo se llama"
+      "name": "Folder organization",
+      "description": "Where each file goes and what it's called"
     },
     {
-      "name": "Packages e instalación",
-      "description": "Los packages opcionales, sus menús y atajos"
+      "name": "Packages and installation",
+      "description": "The optional packages, their menus and shortcuts"
     }
   ]
 }

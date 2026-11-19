@@ -1,7 +1,7 @@
-# Construir un prefab desde execute_code
+# Build a prefab from execute_code
 
 ```csharp
-// execute_code no tiene usings: nombra los tipos completos.
+// execute_code has no using directives: name the types in full.
 string json = System.IO.File.ReadAllText("Assets/Client/Rewards/ClaimTrophyBanner/ClaimTrophyBanner.json");
 string prefab = "Assets/Client/Rewards/ClaimTrophyBanner/ClaimTrophyBanner.prefab";
 var built = UnityArchitecture.Prefabs.PrefabSpecs.BuildFromSpec(json, prefab);
@@ -9,13 +9,13 @@ var checkedAgain = UnityArchitecture.Prefabs.PrefabValidator.ValidateAsset(prefa
 var differences = UnityArchitecture.Prefabs.PrefabSpecs.Compare(json, prefab);
 ```
 
-| Llamada | Devuelve |
+| Call | Returns |
 |---|---|
-| `BuildFromSpec(json, path)` | `List<PrefabViolation>` del validador; vacía si pasa |
+| `BuildFromSpec(json, path)` | The validator's `List<PrefabViolation>`; empty when it passes |
 | `ValidateAsset(path)` | `List<PrefabViolation>` (`RuleId`, `ObjectPath`, `Message`, `IsWarning`) |
-| `Compare(json, path)` | `List<string>` de diferencias; vacía si coinciden |
+| `Compare(json, path)` | `List<string>` of differences; empty when they match |
 
-## Cambiar un prefab
+## Changing a prefab
 
-- **Con spec:** edita el JSON y reconstruye. Un cambio hecho a mano aparece como diferencia en `Compare`, así el spec sigue siendo la fuente de verdad.
-- **Sin spec:** `PrefabUtility.LoadPrefabContents`, cambia con `PrefabRecipes` y guarda.
+- **With a spec:** edit the JSON and rebuild. A change made by hand shows up as a difference in `Compare`, so the spec stays the source of truth.
+- **Without a spec:** `PrefabUtility.LoadPrefabContents`, change it with `PrefabRecipes`, and save.

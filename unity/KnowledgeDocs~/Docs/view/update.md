@@ -1,7 +1,7 @@
-# Update en una View
+# Update in a View
 
 > [!RULE] VIEW-06
-> Una View solo usa `Update()` para valores que cambian con el tiempo (una cuenta atrás), y **con throttling**.
+> A View uses `Update()` only for values that change with time (a countdown), and **throttled**.
 
 ```csharp
 private const float COUNTDOWN_RENDER_INTERVAL_SECONDS = 1f;
@@ -19,4 +19,4 @@ private void Update()
 ```
 
 > [!NOTE]
-> El tiempo restante lo calcula el Model desde un timestamp Unix y un `IClock` (`BE-02`, `DET-06`). La View solo lo pinta.
+> The Model computes the time left from a Unix timestamp and an `IClock` (`BE-02`, `DET-06`). The View only renders it.

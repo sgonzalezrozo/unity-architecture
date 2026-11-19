@@ -1,6 +1,6 @@
-# El spec JSON de un prefab
+# A prefab's JSON spec
 
-Lista la jerarquía **completa y en orden**: no se añade nada que no nombre.
+It lists the **whole hierarchy, in order**: nothing is added that it doesn't name.
 
 ```json
 {
@@ -21,15 +21,15 @@ Lista la jerarquía **completa y en orden**: no se añade nada que no nombre.
 }
 ```
 
-| Campo | Significa |
+| Field | Meaning |
 |---|---|
-| `type` | `container`, `background`, `visuals`, `uiContent`, `image`, `text`, `action` o `prefab` |
-| `components` | Clases del assembly `Client` y componentes de UI de Unity |
-| `fields` | Campos serializados y la ruta del objeto al que apuntan (`"."` = él mismo) |
-| `controller` | El Controller de un `action` |
-| `layout` | `"stretch"` (por defecto) o `anchor`, `size`, `position`, `pivot` |
-| `ignoreLayout` | `true` para overlays dentro de un layout group |
-| `prefab` | Ruta de un prefab anidado |
+| `type` | `container`, `background`, `visuals`, `uiContent`, `image`, `text`, `action` or `prefab` |
+| `components` | Classes in the `Client` assembly and Unity UI components |
+| `fields` | Serialized fields and the path of the object each points to (`"."` = itself) |
+| `controller` | An `action`'s Controller |
+| `layout` | `"stretch"` (default) or `anchor`, `size`, `position`, `pivot` |
+| `ignoreLayout` | `true` for overlays inside a layout group |
+| `prefab` | A nested prefab's path |
 
 > [!WARNING]
-> El spec aún no expresa gradientes, sprites, tamaño de fuente ni alineación: se reportan y se ajustan a mano después.
+> The spec can't express gradients, sprites, font size or alignment yet: they're reported and set by hand afterwards.

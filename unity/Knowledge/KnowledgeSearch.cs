@@ -6,8 +6,8 @@ using System.Text;
 namespace UnityArchitecture.Knowledge
 {
     /// <summary>
-    /// Búsqueda por relevancia. Todas las palabras deben aparecer. Ignora mayúsculas y tildes, y tolera
-    /// errores de escritura ("recycable" encuentra "recyclable") en títulos, resúmenes y keywords.
+    /// Relevance search. Every word must appear. It ignores case and accents, and tolerates
+    /// typos ("recycable" finds "recyclable") in titles, summaries and keywords.
     /// </summary>
     internal static class KnowledgeSearch
     {
@@ -152,7 +152,7 @@ namespace UnityArchitecture.Knowledge
             return false;
         }
 
-        /// <summary>Distancia de edición acotada, también contra el principio de la palabra (escritura a medias).</summary>
+        /// <summary>Bounded edit distance, also against the start of the word (half-typed words).</summary>
         private static bool IsClose(string term, string word, int maxDistance)
         {
             if (Math.Abs(word.Length - term.Length) <= maxDistance && Distance(term, word, maxDistance) <= maxDistance)
