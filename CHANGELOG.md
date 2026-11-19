@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-11-19
+
+### Changed
+
+- The Rules Guide's **Install packages** doc puts each package's git URL in its own code block, so every one has a **Copy** button, in English and Spanish. It also says Tools Core is needed only by Fast IoC, Screen System and UI Scroller.
+
 ## [0.6.2] - 2026-11-19
 
 ### Documentation

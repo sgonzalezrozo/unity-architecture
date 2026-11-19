@@ -8,7 +8,7 @@
 Architecture rules and a working process for AI coding agents on Unity 6: strict MVC for uGUI, a verify script, and a Claude Code hook that won't let an agent finish with a broken build.
 
 [![Unity](https://img.shields.io/badge/Unity-6000.3%20tested-black?style=for-the-badge&logo=unity)](docs/INSTALLATION.md#what-you-need)
-[![Version](https://img.shields.io/badge/version-0.6.2-blue?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.6.3-blue?style=for-the-badge)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [**Installation**](#installation) • [**Key Features**](#key-features) • [**Quickstart**](#quickstart) • [**Usage**](docs/USAGE.md) • [**Rules**](AGENTS.md) • [**Developer Overview**](architecture/DEVELOPER_OVERVIEW.md)
