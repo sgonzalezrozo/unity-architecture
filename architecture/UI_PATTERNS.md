@@ -18,9 +18,10 @@ Patterns are mandatory. The packages that implement them are optional: see [Opti
 
 ```
 CloseButton
-├── Visuals
-│   ├── Background (Image, raycastTarget on: blocks what's under it)
-│   └── Label (TextMeshProUGUI, raycastTarget off)
+├── UI Content (what the Action hits; a press tween punches it: PREFAB-17)
+│   └── Visuals
+│       ├── Background (Image, raycastTarget on: blocks what's under it)
+│       └── Label (TextMeshProUGUI, raycastTarget off)
 └── Action (Image: alpha 0, raycastTarget on) [CloseController]
 ```
 
@@ -39,7 +40,8 @@ Use for two or more mutually exclusive looks of one element, such as Loading, Lo
 ```
 PurchaseArea [PurchaseStateView]
 ├── AvailableRoot
-│   ├── PriceText (TextMeshProUGUI)
+│   ├── UI Content
+│   │   └── PriceText (TextMeshProUGUI)
 │   └── Action (Image: alpha 0) [BuyController]
 ├── LockedRoot
 │   └── LockIcon (Image)
@@ -63,8 +65,9 @@ Tab content is static: nested in the prefab at edit time, never instantiated at 
 InventoryScreen
 ├── Tabs
 │   ├── WeaponsTab [InventoryTabView]
-│   │   ├── ActiveRoot
-│   │   ├── InactiveRoot
+│   │   ├── UI Content
+│   │   │   ├── ActiveRoot
+│   │   │   └── InactiveRoot
 │   │   └── Action (Image: alpha 0) [SelectTabController]
 │   └── ArmorTab (same components, different serialized tab)
 └── Content [TabContentView]
@@ -98,9 +101,10 @@ ItemList [ItemListView]
     └── Viewport (RectMask2D, Canvas, GraphicRaycaster)
         └── Content (RectTransform)
 
-ItemSlot.prefab [ItemSlotModel, ItemSlotView, VerticalLayoutGroup when measured]
-├── ItemIcon (Image)
-├── ItemNameText (TextMeshProUGUI)
+ItemSlot.prefab [ItemSlotModel, ItemSlotView]
+├── UI Content [VerticalLayoutGroup when measured]
+│   ├── ItemIcon (Image)
+│   └── ItemNameText (TextMeshProUGUI)
 └── Action (Image: alpha 0) [SelectItemController]
 ```
 
@@ -249,6 +253,7 @@ Grids and bento don't expand. A looping list is a list or a bento layout (each r
 | `LIST-06` | Content MUST NOT have layout components (`ContentSizeFitter`, `LayoutGroup`, `LayoutElement`), and the slot's root MUST NOT have a `ContentSizeFitter`: the list sets those sizes itself. |
 | `LIST-07` | Item state (selected, expanded, unlocked) MUST live in the item or a Model, never in the slot: the slot shows another item later. |
 | `LIST-08` | A bento tile's size MUST come from the layout (Layout JSON or `SetBentoLayout`), never from the item or the slot. Bento layouts are data: write the JSON, don't compute tile positions in code. |
+| `LIST-09` | With `uiScroller`, **Assets > UI Scroller > New Scroll List** MUST NOT be used for code under `Assets/Client`. Its output breaks these rules: `{Name}ItemController` renders the item (`ARCH-03`; here a Slot Model and a Slot View do it), `{Name}ItemModel` is data with no event (`LIST-02`), `{Name}Instantiator` holds the list's source and gets items pushed to it (`ARCH-02`, `ARCH-04`; here the Model implements `IItemSource<T>`), the classes have no namespace, the list is `{Name}ScrollList` instead of `{Name}Scroller`, and the Expandable size adds a `Button` (`ARCH-05`). Build lists as this section describes. The wizard MAY be used for a prototype outside `Assets/Client`. A bento layout is drawn by a person in **Window > UI Scroller > Bento Layout Editor**, or written as JSON by the agent (`LIST-08`). |
 
 ### UI Scroller API
 

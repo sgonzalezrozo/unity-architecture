@@ -63,7 +63,8 @@ This applies to every project, with or without a container. Use the first row th
 
 ```
 LivesScreen.prefab [LivesModel, LivesView]
-├── RemainingLivesText (TextMeshProUGUI)
+├── UI Content
+│   └── RemainingLivesText (TextMeshProUGUI)
 └── Action (Image: alpha 0) [LoseLifeController]
 ```
 
@@ -186,11 +187,12 @@ All the Views of a scope are the V of MVC, so passing values from the root View 
 
 ```
 TrophyCard [TrophyCardModel, TrophyCardView]      root View: subscribes, reads the Model
-├── Background (Image)
-├── Title (TextMeshProUGUI)
-├── Reward [TrophyRewardView]                      inner View: no Model, no events
-│   ├── RewardIcon (Image)
-│   └── RewardAmount (TextMeshProUGUI)
+├── UI Content
+│   ├── Background (Image)
+│   ├── Title (TextMeshProUGUI)
+│   └── Reward [TrophyRewardView]                  inner View: no Model, no events
+│       ├── RewardIcon (Image)
+│       └── RewardAmount (TextMeshProUGUI)
 └── Action (Image: alpha 0) [ClaimTrophyController]
 ```
 

@@ -21,6 +21,9 @@ namespace UnityArchitecture.Prefabs
 
         private const string ACTION = "Action";
         private const string BACKGROUND = "Background";
+        private const string VISUALS = "Visuals";
+        private const string UI_CONTENT = "UI Content";
+        private const string WINDOW = "Window";
         private const string TMP_INPUT_FIELD = "TMPro.TMP_InputField";
         private const string BASE_CLICK_CONTROLLER = "UIFoundations.BaseClickController";
 
@@ -199,7 +202,35 @@ namespace UnityArchitecture.Prefabs
                     Error("INPUT-01", action, "Action has no Controller.");
 
                 CheckActionGraphic(action);
+                CheckWrappedContent(transform);
                 CheckBlockingBackground(transform);
+            }
+
+            // What the Action hits is one UI Content, so a punch moves it as one and the hit area stays still.
+            // A modal's close Action (PREFAB-11) hits the dimming Background, which nothing punches.
+            private void CheckWrappedContent(Transform action)
+            {
+                Transform parent = action.parent;
+                if (parent == null || parent.Find(WINDOW) != null)
+                    return;
+
+                bool hasUIContent = false;
+                foreach (Transform sibling in parent)
+                {
+                    if (sibling == action || sibling.name == ACTION)
+                        continue;
+
+                    if (sibling.name == UI_CONTENT && !hasUIContent)
+                    {
+                        hasUIContent = true;
+                        continue;
+                    }
+
+                    Error("PREFAB-17", sibling.gameObject, $"{sibling.name} is next to an Action. Everything the Action hits goes under one {UI_CONTENT} child, the Action's only sibling.");
+                }
+
+                if (!hasUIContent)
+                    Error("PREFAB-17", action.gameObject, $"Action has no {UI_CONTENT} sibling. Wrap what it hits (Background, Visuals, Content) in a child called {UI_CONTENT}.");
             }
 
             // A modal's close Action sits under its Window (PREFAB-11): what's above it must block touches itself.
@@ -209,6 +240,9 @@ namespace UnityArchitecture.Prefabs
                 for (int i = action.GetSiblingIndex() + 1; i < parent.childCount; i++)
                 {
                     Transform above = parent.GetChild(i);
+                    if (above.name == UI_CONTENT)
+                        return false;
+
                     Transform background = above.name == BACKGROUND ? above : above.Find(BACKGROUND);
                     Graphic graphic = background != null ? background.GetComponent<Graphic>() : null;
                     if (graphic == null || !graphic.raycastTarget)
@@ -252,7 +286,10 @@ namespace UnityArchitecture.Prefabs
                 if (action.parent == null)
                     return;
 
-                Transform background = action.parent.Find(BACKGROUND);
+                Transform parent = action.parent;
+                Transform background = parent.Find(BACKGROUND)
+                    ?? parent.Find(UI_CONTENT + "/" + BACKGROUND)
+                    ?? parent.Find(UI_CONTENT + "/" + VISUALS + "/" + BACKGROUND);
                 if (background == null)
                     return;
 

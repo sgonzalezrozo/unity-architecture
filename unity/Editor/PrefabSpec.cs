@@ -10,12 +10,13 @@ namespace UnityArchitecture.Prefabs
         public const string CONTAINER = "container";
         public const string BACKGROUND = "background";
         public const string VISUALS = "visuals";
+        public const string UI_CONTENT = "uiContent";
         public const string IMAGE = "image";
         public const string TEXT = "text";
         public const string ACTION = "action";
         public const string PREFAB = "prefab";
 
-        private static readonly string[] TYPES = { CONTAINER, BACKGROUND, VISUALS, IMAGE, TEXT, ACTION, PREFAB };
+        private static readonly string[] TYPES = { CONTAINER, BACKGROUND, VISUALS, UI_CONTENT, IMAGE, TEXT, ACTION, PREFAB };
 
         public string Name;
         public string Type;
@@ -76,6 +77,7 @@ namespace UnityArchitecture.Prefabs
             {
                 BACKGROUND => PrefabRecipes.BACKGROUND,
                 VISUALS => PrefabRecipes.VISUALS,
+                UI_CONTENT => PrefabRecipes.UI_CONTENT,
                 ACTION => PrefabRecipes.ACTION,
                 _ => null
             };

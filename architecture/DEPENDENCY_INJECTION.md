@@ -53,6 +53,8 @@ With `fastIoC`, injected fields are assigned before `Awake`, and these rules app
 | `DI-06` | Injected fields MUST NOT be null-checked. A failed injection should fail loudly. |
 | `DI-07` | Primitives MUST NOT be bound. Put configuration in a typed class and bind that. |
 | `DI-08` | A type MUST be bound once per scope. |
+| `DI-09` | With `fastIoC`, **Assets > FastIoC > New MonoInstaller** writes a global `[MonoInstaller]` with no namespace in the folder you right-click. Run it on the feature's `Services/` folder, name it `{Feature}Installer`, then add the `Client.{Feature}` namespace, the scene names and the `Priority` from the [table](#fast-ioc-installers). Leave it global only for bindings every scene needs. The agent writes the installer as a C# file in the same form instead (`EDIT-13`). With another container (`otherContainer`), use its installers. |
+| `DI-10` | With `fastIoC`, Fast IoC regenerates its code by itself after every compile. The agent MUST NOT run **Tools > FastIoC > Setup** or **Regenerate Code**: they end in a modal dialog (`EDIT-13`). Setup runs once per project, by a person. When generation must run again and `editorBridge` is `true`, the agent calls `FastIoC.Editor.Generation.GenerationCoordinator.GenerateAllRetryingFailedCode()` through the code tool, then reads `GenerationStatus.json` (`EDIT-04`); without a bridge, it reads the status `verify.sh` reports, or reports the step as not verified. |
 
 FastIoC matches by **type**. The field name doesn't matter and no attribute marks intent, so `internal` is the only signal that a field is injected.
 

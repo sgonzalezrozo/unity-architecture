@@ -29,13 +29,16 @@ namespace UnityArchitecture.Prefabs.Tests
         public void ABanner_FollowsTheRules()
         {
             GameObject banner = PrefabRecipes.CreateRoot("ClaimTrophyBanner", typeof(CardModel), typeof(CardView));
-            PrefabRecipes.AddBackground(banner);
-            PrefabRecipes.AddText(banner, "Label", "Claim your trophy");
-            PrefabRecipes.AddImage(banner, "Icon");
-            GameObject reward = PrefabRecipes.AddContainer(banner, "Reward");
+            GameObject content = PrefabRecipes.AddUIContent(banner);
+            PrefabRecipes.AddBackground(content);
+            PrefabRecipes.AddText(content, "Label", "Claim your trophy");
+            PrefabRecipes.AddImage(content, "Icon");
+            GameObject reward = PrefabRecipes.AddContainer(content, "Reward");
             reward.AddComponent<RewardView>();
             PrefabRecipes.AddAction(banner, typeof(ClaimController));
 
+            Assert.AreEqual(PrefabRecipes.UI_CONTENT, banner.transform.GetChild(0).name);
+            Assert.AreEqual(PrefabRecipes.ACTION, banner.transform.GetChild(1).name);
             AssertFollowsTheRules(banner);
         }
 
@@ -44,8 +47,9 @@ namespace UnityArchitecture.Prefabs.Tests
         {
             GameObject screen = PrefabRecipes.CreateScreenRoot("ShopScreen", typeof(CardModel), typeof(CardView));
             GameObject buy = PrefabRecipes.AddContainer(screen.transform.Find(PrefabRecipes.CONTENT).gameObject, "Buy");
-            PrefabRecipes.AddBackground(buy);
-            PrefabRecipes.AddText(buy, "Text", "Buy");
+            GameObject buyContent = PrefabRecipes.AddUIContent(buy);
+            PrefabRecipes.AddBackground(buyContent);
+            PrefabRecipes.AddText(buyContent, "Text", "Buy");
             PrefabRecipes.AddAction(buy, typeof(ClaimController));
 
             AssertFollowsTheRules(screen);
@@ -58,8 +62,9 @@ namespace UnityArchitecture.Prefabs.Tests
             GameObject window = alert.transform.Find(PrefabRecipes.WINDOW).gameObject;
             PrefabRecipes.AddText(window, "Title", "Quit?");
             GameObject cancel = PrefabRecipes.AddContainer(window, "Cancel");
-            PrefabRecipes.AddBackground(cancel);
-            PrefabRecipes.AddText(cancel, "Text", "Cancel");
+            GameObject cancelContent = PrefabRecipes.AddUIContent(cancel);
+            PrefabRecipes.AddBackground(cancelContent);
+            PrefabRecipes.AddText(cancelContent, "Text", "Cancel");
             PrefabRecipes.AddAction(cancel, typeof(ClaimController));
 
             AssertFollowsTheRules(alert);
@@ -69,9 +74,10 @@ namespace UnityArchitecture.Prefabs.Tests
         public void ASlot_FollowsTheRules()
         {
             GameObject slot = PrefabRecipes.CreateSlotRoot("ItemSlot", new Vector2(400f, 120f), typeof(CardModel), typeof(CardView));
-            PrefabRecipes.AddBackground(slot);
-            PrefabRecipes.AddImage(slot, "Icon");
-            PrefabRecipes.AddText(slot, "Name", "Sword");
+            GameObject content = PrefabRecipes.AddUIContent(slot);
+            PrefabRecipes.AddBackground(content);
+            PrefabRecipes.AddImage(content, "Icon");
+            PrefabRecipes.AddText(content, "Name", "Sword");
             PrefabRecipes.AddAction(slot, typeof(TapController));
 
             Assert.IsNull(slot.transform.Find(PrefabRecipes.ACTION).GetComponent<Image>(), "a Controller that is a Graphic needs no Image");
@@ -81,12 +87,14 @@ namespace UnityArchitecture.Prefabs.Tests
         [Test]
         public void AMeasuredSlot_KeepsItsBackgroundAndActionOutOfTheLayout()
         {
-            GameObject slot = PrefabRecipes.CreateSlotRoot("MeasuredSlot", new Vector2(400f, 120f), typeof(CardModel), typeof(CardView), typeof(VerticalLayoutGroup));
-            PrefabRecipes.AddBackground(slot);
-            PrefabRecipes.AddText(slot, "Name", "Sword");
+            GameObject slot = PrefabRecipes.CreateSlotRoot("MeasuredSlot", new Vector2(400f, 120f), typeof(CardModel), typeof(CardView));
+            GameObject content = PrefabRecipes.AddUIContent(slot);
+            content.AddComponent<VerticalLayoutGroup>();
+            PrefabRecipes.AddBackground(content);
+            PrefabRecipes.AddText(content, "Name", "Sword");
             PrefabRecipes.AddAction(slot, typeof(ClaimController));
 
-            Assert.IsTrue(slot.transform.Find("Background").GetComponent<LayoutElement>().ignoreLayout);
+            Assert.IsTrue(content.transform.Find("Background").GetComponent<LayoutElement>().ignoreLayout);
             AssertFollowsTheRules(slot);
         }
 
@@ -95,8 +103,9 @@ namespace UnityArchitecture.Prefabs.Tests
         {
             GameObject purchase = PrefabRecipes.CreateRoot("PurchaseArea", typeof(CardModel), typeof(CardView));
             List<GameObject> states = PrefabRecipes.AddStateRoots(purchase, "Available", "Locked", "Owned");
-            PrefabRecipes.AddBackground(states[0]);
-            PrefabRecipes.AddText(states[0], "Price", "100");
+            GameObject available = PrefabRecipes.AddUIContent(states[0]);
+            PrefabRecipes.AddBackground(available);
+            PrefabRecipes.AddText(available, "Price", "100");
             PrefabRecipes.AddAction(states[0], typeof(ClaimController));
             PrefabRecipes.AddImage(states[1], "LockIcon");
 

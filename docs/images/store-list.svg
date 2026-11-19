@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1400" viewBox="0 0 1400 1400">
+<rect width="1400" height="1400" fill="#0b0c1c"/>
+<clipPath id="c"><rect width="720" height="1280" rx="36"/></clipPath>
+<g transform="translate(40,60)"><g clip-path="url(#c)">
+<rect x="0" y="0" width="720" height="1280" rx="0" fill="#12132a" />
+<rect x="0" y="0" width="720" height="140" rx="0" fill="#1b1d3a" />
+<text x="40" y="92" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="44" font-weight="bold" fill="#fff" text-anchor="start">Store</text>
+<rect x="430" y="52" width="250" height="56" rx="28" fill="#2c2f5a" />
+<circle cx="462" cy="80" r="18" fill="#f5c542" stroke="#b8860b" stroke-width="3"/>
+<text x="495" y="91" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="28" font-weight="bold" fill="#fff" text-anchor="start">12,450</text>
+<text x="40" y="208" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" font-weight="bold" fill="#ffd54f" text-anchor="start">Daily Deals</text>
+<text x="680" y="208" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="22" font-weight="normal" fill="#9fa3d1" text-anchor="end">Resets in 05:42:10</text>
+<line x1="40" y1="226" x2="680" y2="226" stroke="#2f325e" stroke-width="2"/>
+<rect x="40" y="250" width="640" height="130" rx="16" fill="#23264a" />
+<rect x="60" y="265" width="100" height="100" rx="14" fill="#2f3363" />
+<circle cx="110" cy="315" r="34" fill="#f5c542" stroke="#b8860b" stroke-width="3"/>
+<text x="185" y="305" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="28" font-weight="bold" fill="#fff" text-anchor="start">Coin Pouch</text>
+<text x="185" y="345" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="24" font-weight="normal" fill="#b9bce6" text-anchor="start">5,000 coins</text>
+<rect x="185" y="236" width="110" height="30" rx="15" fill="#e53935" />
+<text x="240" y="258" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#fff" text-anchor="middle">-50%</text>
+<rect x="500" y="285" width="160" height="60" rx="30" fill="#43a047" />
+<text x="580" y="324" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" font-weight="bold" fill="#fff" text-anchor="middle">$0.99</text>
+<rect x="40" y="400" width="640" height="130" rx="16" fill="#23264a" />
+<rect x="60" y="415" width="100" height="100" rx="14" fill="#2f3363" />
+<polygon points="110,429 138.8,457.8 110,501 81.2,457.8" fill="#ba68c8" stroke="#0277bd" stroke-width="3"/>
+<text x="185" y="455" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="28" font-weight="bold" fill="#fff" text-anchor="start">Starter Pack</text>
+<text x="185" y="495" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="24" font-weight="normal" fill="#b9bce6" text-anchor="start">Gems + Booster</text>
+<rect x="500" y="435" width="160" height="60" rx="30" fill="#3a3d66" />
+<text x="580" y="474" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="24" font-weight="bold" fill="#9fa3d1" text-anchor="middle">Owned</text>
+<text x="40" y="608" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" font-weight="bold" fill="#ffd54f" text-anchor="start">Coins</text>
+<line x1="40" y1="626" x2="680" y2="626" stroke="#2f325e" stroke-width="2"/>
+<rect x="40" y="650" width="640" height="130" rx="16" fill="#23264a" />
+<rect x="60" y="665" width="100" height="100" rx="14" fill="#2f3363" />
+<circle cx="110" cy="715" r="30" fill="#f5c542" stroke="#b8860b" stroke-width="3"/>
+<text x="185" y="705" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="28" font-weight="bold" fill="#fff" text-anchor="start">Handful</text>
+<text x="185" y="745" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="24" font-weight="normal" fill="#b9bce6" text-anchor="start">1,000 coins</text>
+<rect x="500" y="685" width="160" height="60" rx="30" fill="#43a047" />
+<text x="580" y="724" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" font-weight="bold" fill="#fff" text-anchor="middle">100 gems</text>
+<rect x="40" y="800" width="640" height="130" rx="16" fill="#23264a" />
+<rect x="60" y="815" width="100" height="100" rx="14" fill="#2f3363" />
+<circle cx="110" cy="865" r="36" fill="#f5c542" stroke="#b8860b" stroke-width="3"/>
+<text x="185" y="855" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="28" font-weight="bold" fill="#fff" text-anchor="start">Chest</text>
+<text x="185" y="895" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="24" font-weight="normal" fill="#b9bce6" text-anchor="start">12,000 coins</text>
+<rect x="500" y="835" width="160" height="60" rx="30" fill="#43a047" />
+<text x="580" y="874" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" font-weight="bold" fill="#fff" text-anchor="middle">900 gems</text>
+<text x="40" y="1008" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" font-weight="bold" fill="#ffd54f" text-anchor="start">Gems</text>
+<line x1="40" y1="1026" x2="680" y2="1026" stroke="#2f325e" stroke-width="2"/>
+<rect x="40" y="1050" width="640" height="130" rx="16" fill="#23264a" />
+<rect x="60" y="1065" width="100" height="100" rx="14" fill="#2f3363" />
+<polygon points="110,1085 134.0,1109.0 110,1145 86.0,1109.0" fill="#4fc3f7" stroke="#0277bd" stroke-width="3"/>
+<text x="185" y="1105" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="28" font-weight="bold" fill="#fff" text-anchor="start">Gem Bag</text>
+<text x="185" y="1145" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="24" font-weight="normal" fill="#b9bce6" text-anchor="start">80 gems</text>
+<rect x="500" y="1085" width="160" height="60" rx="30" fill="#43a047" />
+<text x="580" y="1124" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" font-weight="bold" fill="#fff" text-anchor="middle">$1.99</text>
+</g></g>
+<rect x="40" y="60" width="720" height="1280" rx="36" fill="none" stroke="#3a3d6e" stroke-width="4"/>
+<text x="810" y="120" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="36" font-weight="bold" fill="#ffd54f" text-anchor="start">Store: sectioned list</text>
+<text x="810" y="180" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="start">One SectionedScroller</text>
+<text x="830" y="218" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="21" font-weight="normal" fill="#b9bce6" text-anchor="start">StoreScroller : SectionedScroller&lt;</text>
+<text x="830" y="249" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="21" font-weight="normal" fill="#b9bce6" text-anchor="start">  StoreItemData, StoreSectionData&gt;</text>
+<text x="830" y="280" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="21" font-weight="normal" fill="#b9bce6" text-anchor="start">StoreModel builds the SectionedSource</text>
+<text x="810" y="335" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="start">Header slot: ISlot&lt;StoreSectionData&gt;</text>
+<text x="830" y="373" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="21" font-weight="normal" fill="#b9bce6" text-anchor="start">Title, optional reset timer</text>
+<text x="830" y="404" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="21" font-weight="normal" fill="#b9bce6" text-anchor="start">The timer text comes from the Model</text>
+<text x="810" y="459" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="start">Item slot: ISlot&lt;StoreItemData&gt;</text>
+<text x="830" y="497" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="21" font-weight="normal" fill="#b9bce6" text-anchor="start">Icon, name, amount, optional tag</text>
+<text x="830" y="528" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="21" font-weight="normal" fill="#b9bce6" text-anchor="start">Price or Owned: two state roots</text>
+<text x="830" y="559" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="21" font-weight="normal" fill="#b9bce6" text-anchor="start">UI Content + Action (PREFAB-17)</text>
+<text x="810" y="614" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="start">Buy</text>
+<text x="830" y="652" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="21" font-weight="normal" fill="#b9bce6" text-anchor="start">BuyItemController → StoreModel.Buy</text>
+<text x="830" y="683" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="21" font-weight="normal" fill="#b9bce6" text-anchor="start">Owned: no Action in that state (INPUT-04)</text>
+<text x="810" y="738" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="start">Sections</text>
+<text x="830" y="776" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="21" font-weight="normal" fill="#b9bce6" text-anchor="start">Daily Deals, Coins, Gems</text>
+<text x="830" y="807" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="21" font-weight="normal" fill="#b9bce6" text-anchor="start">Order and contents come from the Model</text>
+</svg>

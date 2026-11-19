@@ -60,9 +60,9 @@ Build a ClaimTrophyBanner for a new Rewards feature in Assets/Client/Rewards/Cla
 
 What the agent does, in order:
 
-1. It writes the Model, View and Controller in `Assets/Client/Rewards/ClaimTrophyBanner/`, and the Model tests in `Assets/Tests/Rewards/`.
+1. It writes the Model, View and Controller in `Assets/Client/Rewards/ClaimTrophyBanner/`, and the Model tests in `Assets/Tests/Rewards/`. With UI Foundations installed, the Controller derives from `BaseClickController` (`OPT-02`).
 2. It compiles (`refresh_unity`) and runs the new tests.
-3. It writes `ClaimTrophyBanner.json`, the handoff as a [prefab spec](../architecture/PREFABS.md#prefab-spec) (`HAND-06`).
+3. It writes `ClaimTrophyBanner.json`, the handoff as a [prefab spec](../architecture/PREFABS.md#prefab-spec) (`HAND-06`): a `UI Content` with the background, title and icon, and the `Action` next to it (`PREFAB-17`).
 4. It builds the prefab through `execute_code`:
 
    ```csharp
@@ -98,11 +98,51 @@ The agent runs `ClientPrefabsTests` (or **Tools > Unity Architecture > Validate 
 
 ### 6. Add a list
 
+A list prompt works best when it says four things: the data each row shows, where that data comes from, what a tap does, and how it should look. An image of the screen settles the look: Claude Code reads a PNG path in the prompt, so attach a mockup or a screenshot from your designer. The two mockups below are in `.ai/docs/images/`. Each one is a phone screen, with notes on how the rules build it.
+
+#### A list with sections: a store
+
+![Store mockup: a sectioned list with Daily Deals, Coins and Gems](images/store-list.png)
+
+```text
+Create a Store list in Assets/Client/Store/StoreMain/ that looks like .ai/docs/images/store-list.png.
+It has three sections, each with a header: Daily Deals (with a reset timer), Coins and Gems. Each item shows an icon, a name, an amount, an optional discount tag, and its price, or "Owned" once bought. StoreModel owns the catalog and the coin balance, and decides which items are owned. Tapping the price buys the item through StoreModel.Buy, which can fail if the player can't afford it. Owned items can't be tapped. Use made-up catalog data in StoreModel for now, with tests for Buy.
+```
+
+What the agent does:
+
+1. Plans first (a new feature), with `uiScroller` checked: a `SectionedScroller<StoreItemData, StoreSectionData>` that `StoreModel` feeds with a `SectionedSource`. Without UI Scroller, it plans the [plain Unity list](../architecture/OPTIONAL_PACKAGES.md#list-without-ui-scroller) instead and says that it has no headers (`OPT-01`).
+2. Writes `StoreModel` with its tests first (`TEST-08`): the sections, `Buy`, what happens when the player can't afford an item, and an event when something changes.
+3. Writes two slots, each with a Slot Model that implements `ISlot<T>`: a header slot (title and timer) and an item slot. The item slot has Price and Owned state roots, and only the Price state has an `Action` (`INPUT-04`). Its `UI Content` wraps the visuals (`PREFAB-17`), and `BuyItemController` derives from `BaseClickController` when UI Foundations is installed.
+4. Builds both slot prefabs and the screen from specs, validates them, and runs the tests.
+5. Reports what the spec couldn't set, such as the icons' sprites and the fonts.
+
+#### A list with expandable items: events
+
+![Events mockup: closed cards and one open card with description, progress bar, reward count and a Continue button](images/event-list.png)
+
+```text
+Create an Events list in Assets/Client/Events/EventsMain/ that looks like .ai/docs/images/event-list.png.
+Each card shows the event's icon, title and time left. Tapping a card opens it to show the details: a description, a progress bar with "7 / 10", how many rewards were claimed out of the total, with one dot per reward, and a button. The button says Continue if the player has joined the event and Enter if they haven't; Enter joins the event through EventsModel, and Continue opens the event (log it for now). Only one card is open at a time. EventsModel owns the events and the player's progress, with tests.
+```
+
+What the agent does:
+
+1. Plans first: a `Scroller<EventData>` whose slot is expandable. The Slot Model implements `IExpandableSlot<EventData>`, and tapping the card's header calls `ToggleExpanded()`, so the list measures the open card and moves the cards below it ([Expandable slots](../architecture/UI_PATTERNS.md#expandable-slots)). One card at a time is the list's default (**Allow Multiple Expanded** off): opening a card closes the open one by itself.
+2. Writes `EventsModel` and its tests first: joining, progress, rewards claimed. Whether a card is open and whether the player joined live in the Model, never in the slot, which shows another event later (`LIST-07`).
+3. Builds the progress bar as an `Image` set to Filled, not a `Slider` (`ARCH-05`), and the button with Enter and Continue state roots, each with its own `Action` and Controller.
+4. Gives the slot a layout group so the list can measure it open (`DefaultExtent` is the closed height), and keeps `UI Content` around what each `Action` hits (`PREFAB-17`).
+5. Validates the prefabs, runs the tests, and in Play mode opens a card, checks that the one below moves, and taps Enter.
+
+#### A filtered list with a details panel
+
 ```text
 Add an inventory list to Assets/Client/Inventory/MainInventory/ with tabs for Weapons and Armor, a selected item, and a details panel.
 ```
 
 With `uiScroller` the agent uses a `Scroller<T>`, with a Slot Model on the slot prefab. Without it, it uses the [plain Unity list](../architecture/OPTIONAL_PACKAGES.md#list-without-ui-scroller). The closest example is [Filtered list](../architecture/examples/03_FILTERED_LIST_INVENTORY.md).
+
+Don't ask for **Assets > UI Scroller > New Scroll List** in a prompt: its generated code breaks the rules, so the agent builds lists itself (`LIST-09`).
 
 ### 7. Replace a Toggle or a Slider
 
@@ -175,6 +215,7 @@ The hook gives up after three failed attempts in a row and says so. Then read th
 
 - **Say where.** A path such as `Assets/Client/Rewards/ClaimTrophyBanner/` settles the feature, the folder and the namespace (`Client.Rewards`).
 - **Say what the Model owns.** "The Model counts claims" tells the agent where the state lives and what to test.
+- **Attach the look.** A PNG path in the prompt, such as `.ai/docs/images/event-list.png` or your designer's screenshot, settles colors, order and spacing that words leave open.
 - **Ask for a spec when you'll iterate on a prefab.** Changing a JSON file and rebuilding is repeatable; changing a prefab by hand isn't.
 - **Keep project-only rules in your `AGENTS.md`**, such as "scene transitions go through `BaseStartScene.LoadSceneAsync`". The agent reads them on every task.
 - **Read the last lines of each report.** "Verified" lists what a tool checked; "Not verified" lists what you still have to check.

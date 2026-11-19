@@ -6,7 +6,7 @@ One toggle prefab is reused for every on/off setting. Adding a setting takes one
 
 **Demonstrates:** reusable prefab driven by config values, visual state roots, drag input.
 
-Capability profile: `fastIoC`, `uiScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping).
+Capability profile: `fastIoC`, `uiScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping). With `uiFoundations`, each click Controller derives from `BaseClickController` and overrides `OnClick()` instead of implementing `IPointerClickHandler`, and its `Action` has no `Image` (`OPT-02`); drag Controllers keep the `IDrag*` interfaces. Every `Action` sits next to one `UI Content` that wraps what it hits ([`PREFAB-17`](../PREFABS.md#rules)).
 
 All Views and Controllers sit under one screen, so `SettingsModel` lives on the screen root (row 1 in [Where a Model lives](../MVC.md#where-a-model-lives)). No installer is needed.
 
@@ -19,22 +19,27 @@ SettingsScreen [SettingsModel]
 │   ├── SoundRow (SettingToggle.prefab: settingKey = Sound)
 │   ├── VibrationRow (SettingToggle.prefab: settingKey = Vibration)
 │   └── VolumeRow [VolumeBarView]
-│       ├── VolumeTrack (Image)
-│       ├── VolumeFill (Image: type Filled)
+│       ├── UI Content
+│       │   ├── VolumeTrack (Image)
+│       │   └── VolumeFill (Image: type Filled)
 │       └── Action (Image: alpha 0) [DragVolumeController]
 └── Footer [SaveAreaView]
     └── UnsavedChangesRoot
+        ├── UI Content
+        │   ├── Background (Image)
+        │   └── SaveLabel (TextMeshProUGUI)
         └── Action (Image: alpha 0) [SaveSettingsController]
 
 SettingToggle.prefab [SettingToggleView]
-├── EnabledRoot
-│   └── EnabledBackground (Image)
-├── DisabledRoot
-│   └── DisabledBackground (Image)
+├── UI Content
+│   ├── EnabledRoot
+│   │   └── EnabledBackground (Image)
+│   └── DisabledRoot
+│       └── DisabledBackground (Image)
 └── Action (Image: alpha 0) [ToggleSettingController]
 ```
 
-`ToggleSettingController` sits outside the state roots because both states accept clicks. `DragVolumeController` uses its own `RectTransform` as the bar.
+`ToggleSettingController` sits outside the state roots, next to the `UI Content` that holds them, because both states accept clicks. `DragVolumeController` uses its own `RectTransform` as the bar.
 
 ## Model
 

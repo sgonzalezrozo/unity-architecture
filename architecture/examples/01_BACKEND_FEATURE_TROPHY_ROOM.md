@@ -6,7 +6,7 @@ Two screens share one Module. `MainRoom` lists trophies. `DetailsTrophy` renders
 
 **Demonstrates:** folder layout, Module, Connector, load states, UI Scroller, async command, timer, tests.
 
-Capability profile: `fastIoC`, `uiScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping). Screen navigation is omitted because that API is [not specified yet](../FEATURE_STRUCTURE.md#modals-and-navigation).
+Capability profile: `fastIoC`, `uiScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping). With `uiFoundations`, each click Controller derives from `BaseClickController` and overrides `OnClick()` instead of implementing `IPointerClickHandler`, and its `Action` has no `Image` (`OPT-02`); drag Controllers keep the `IDrag*` interfaces. Every `Action` sits next to one `UI Content` that wraps what it hits ([`PREFAB-17`](../PREFABS.md#rules)). Screen navigation is omitted because that API is [not specified yet](../FEATURE_STRUCTURE.md#modals-and-navigation).
 
 `TrophyRoomModule` is injected because two screens share it, with no common parent (row 2 in [Where a Model lives](../MVC.md#where-a-model-lives)).
 
@@ -261,9 +261,10 @@ MainRoom [MainRoomStateView, MainRoomLoadController]
     └── FailureMessageText (TextMeshProUGUI)
 
 TrophySlot.prefab [TrophySlotModel, TrophySlotView]
-├── TrophyNameText (TextMeshProUGUI)
-├── ClaimedBadge (Image)
-├── SelectedHighlight (Image)
+├── UI Content
+│   ├── TrophyNameText (TextMeshProUGUI)
+│   ├── ClaimedBadge (Image)
+│   └── SelectedHighlight (Image)
 └── Action (Image: alpha 0) [SelectTrophyController]
 ```
 
@@ -456,6 +457,9 @@ DetailsTrophy [DetailsTrophyView]
 ├── SecondsRemainingText (TextMeshProUGUI)
 └── ClaimArea [ClaimAreaView]
     ├── ClaimableRoot
+    │   ├── UI Content
+    │   │   ├── Background (Image)
+    │   │   └── ClaimLabel (TextMeshProUGUI)
     │   └── Action (Image: alpha 0) [ClaimTrophyController]
     ├── ClaimingRoot
     │   └── ClaimingSpinner (Image)

@@ -105,6 +105,8 @@ namespace UnityArchitecture.Prefabs
                     return Colored(PrefabRecipes.AddBackground(parent), spec.Color);
                 case PrefabSpecNode.VISUALS:
                     return PrefabRecipes.AddVisuals(parent);
+                case PrefabSpecNode.UI_CONTENT:
+                    return PrefabRecipes.AddUIContent(parent);
                 case PrefabSpecNode.IMAGE:
                     return Colored(PrefabRecipes.AddImage(parent, spec.Name).gameObject, spec.Color);
                 case PrefabSpecNode.TEXT:

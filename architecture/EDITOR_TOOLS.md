@@ -6,7 +6,7 @@ An agent that can compile, test and inspect the project checks its own work. One
 
 ## Capability detection
 
-Run this with [package capability detection](OPTIONAL_PACKAGES.md#capability-detection), once per task.
+Run this with [package capability detection](OPTIONAL_PACKAGES.md#capability-detection), once per task. A step that needs one of these tools runs only when its capability is `true`; otherwise it's left out and reported as not verified (`OPT-01`, `EDIT-01`).
 
 | Capability | `true` when |
 |---|---|
@@ -46,6 +46,7 @@ If a tool the task needs isn't available, report which group to turn on in **Win
 | `EDIT-10` | With the Editor open, after changing scripts the agent MUST ask the Editor to compile (`refresh_unity` with MCP for Unity) before it finishes: an Editor without focus doesn't refresh on its own. It runs the tests related to the change (`TEST-11`) in the Editor, with `run_tests` filtered by `test_names`, `group_names` or `assembly_names`, then `get_test_job` until it finishes. It runs every EditMode test only when the Stop hook asks for them. |
 | `EDIT-11` | With `editorBridge` and `prefabTools`, the agent MUST build or change a prefab under `Assets/Client` only through `PrefabRecipes` or a spec (`PrefabSpecs.BuildFromSpec`), called with the bridge's code tool (`execute_code` with MCP for Unity), not object by object with the bridge's generic tools. To change a prefab, rebuild it from its spec, or open it with `PrefabUtility.LoadPrefabContents`, change it with the recipes and save it. What the recipes can't build is reported, not improvised. |
 | `EDIT-12` | After building or changing a prefab, the agent MUST run the prefab validator on it (`PrefabValidator.ValidateAsset`, or the `TEST-12` test with `run_tests`) and, when it came from a spec, `PrefabSpecs.Compare` MUST report no differences. It reports both results. |
+| `EDIT-13` | With `editorBridge`, the agent MUST NOT run a package menu item or wizard through the bridge (`execute_menu_item`, or calling its menu method): most open a window or a modal dialog that the agent can't answer and that blocks the Editor. It calls the code API the rules name for that menu instead (`ScreenAuthoring` and `SpecialScreensCreator` with `screenSystem`, `GenerationCoordinator` with `fastIoC`), and when there is none, it does the step by the rules or tells the person which menu to use. Which menu maps to which API: `SCR-13`, `SCR-15`, `DI-09`, `DI-10`, `LIST-09`. |
 
 ## Verification order
 

@@ -88,7 +88,9 @@ Only for things used by two or more features that belong to none of them: reusab
 TrophyRoomMain [MainRoomLoadController, MainRoomStateView]
 ├── Header
 │   ├── TitleText (TextMeshProUGUI)
-│   └── Action (Image: alpha 0) [CloseController]
+│   └── Close
+│       ├── UI Content
+│       └── Action (Image: alpha 0) [CloseController]
 ├── Content (static elements, tab content or a list)
 └── Footer
 ```

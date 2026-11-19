@@ -106,9 +106,40 @@ namespace UnityArchitecture.Prefabs.Tests
         public void ABackgroundWithoutRaycast_BreaksPrefab14()
         {
             GameObject card = BuildCard();
-            card.transform.Find("Background").GetComponent<Image>().raycastTarget = false;
+            card.transform.Find("UI Content/Background").GetComponent<Image>().raycastTarget = false;
 
             AssertRule(card, "PREFAB-14");
+        }
+
+        [Test]
+        public void AVisualNextToTheAction_BreaksPrefab17()
+        {
+            GameObject card = BuildCard();
+            AddChild(card, "Icon", typeof(Image)).GetComponent<Image>().raycastTarget = false;
+
+            AssertRule(card, "PREFAB-17");
+        }
+
+        [Test]
+        public void AnActionWithoutUIContent_BreaksPrefab17()
+        {
+            GameObject card = BuildCard();
+            card.transform.Find("UI Content").name = "Content";
+
+            AssertRule(card, "PREFAB-17");
+        }
+
+        [Test]
+        public void AModalCloseAction_NeedsNoUIContent()
+        {
+            GameObject modal = new("Modal", typeof(RectTransform), typeof(CardModel), typeof(CardView));
+            created.Add(modal);
+            AddChild(modal, "Background", typeof(Image));
+            AddAction(modal);
+            GameObject window = AddChild(modal, "Window");
+            AddChild(window, "Background", typeof(Image));
+
+            CollectionAssert.IsEmpty(Validate(modal));
         }
 
         [Test]
@@ -182,7 +213,7 @@ namespace UnityArchitecture.Prefabs.Tests
         {
             GameObject card = BuildCard();
             SerializedObject view = new(card.AddComponent<ShelfView>());
-            view.FindProperty("rewardView").objectReferenceValue = card.transform.Find("Reward").GetComponent<RewardView>();
+            view.FindProperty("rewardView").objectReferenceValue = card.transform.Find("UI Content/Reward").GetComponent<RewardView>();
             view.ApplyModifiedPropertiesWithoutUndo();
 
             CollectionAssert.IsEmpty(Validate(card));
@@ -206,13 +237,15 @@ namespace UnityArchitecture.Prefabs.Tests
             CollectionAssert.IsEmpty(Validate(card));
         }
 
-        // ClaimTrophyBanner-like card: root with Model and View, a blocking Background, an inner View, and Action last.
+        // ClaimTrophyBanner-like card: root with Model and View, a UI Content with a blocking Background and an inner
+        // View, and Action last.
         private GameObject BuildCard()
         {
             GameObject card = new("Card", typeof(RectTransform), typeof(CardModel), typeof(CardView));
             created.Add(card);
-            AddChild(card, "Background", typeof(Image));
-            GameObject reward = AddChild(card, "Reward", typeof(RewardView));
+            GameObject content = AddChild(card, "UI Content");
+            AddChild(content, "Background", typeof(Image));
+            GameObject reward = AddChild(content, "Reward", typeof(RewardView));
             AddChild(reward, "RewardIcon", typeof(Image)).GetComponent<Image>().raycastTarget = false;
             AddAction(card);
             return card;
@@ -234,7 +267,7 @@ namespace UnityArchitecture.Prefabs.Tests
             GameObject asset = PrefabUtility.SaveAsPrefabAsset(source, TEMP_FOLDER + "/Promo.prefab");
             Object.DestroyImmediate(source);
 
-            GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(asset, parent.transform);
+            GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(asset, parent.transform.Find("UI Content"));
             instance.transform.SetSiblingIndex(0);
             return instance;
         }

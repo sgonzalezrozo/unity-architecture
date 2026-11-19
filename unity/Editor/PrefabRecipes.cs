@@ -19,6 +19,7 @@ namespace UnityArchitecture.Prefabs
         public const string ACTION = "Action";
         public const string BACKGROUND = "Background";
         public const string VISUALS = "Visuals";
+        public const string UI_CONTENT = "UI Content";
         public const string CONTENT = "Content";
         public const string WINDOW = "Window";
 
@@ -84,6 +85,15 @@ namespace UnityArchitecture.Prefabs
         public static GameObject AddVisuals(GameObject parent)
         {
             return AddChild(parent, VISUALS);
+        }
+
+        /// <summary>
+        /// The UI Content child: everything an Action hits (its Background, Visuals and Content), wrapped so a press
+        /// tween punches it as one, while the Action, its only sibling, keeps its hit area still (PREFAB-17).
+        /// </summary>
+        public static GameObject AddUIContent(GameObject parent)
+        {
+            return AddChild(parent, UI_CONTENT);
         }
 
         /// <summary>An empty stretch child, such as a Container or a state root's parent.</summary>

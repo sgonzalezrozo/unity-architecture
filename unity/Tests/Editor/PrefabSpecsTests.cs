@@ -29,8 +29,13 @@ namespace UnityArchitecture.Prefabs.Tests
         {
           ""type"": ""container"", ""name"": ""Cancel"",
           ""children"": [
-            { ""type"": ""background"" },
-            { ""type"": ""text"", ""name"": ""Text"", ""text"": ""Cancel"" },
+            {
+              ""type"": ""uiContent"",
+              ""children"": [
+                { ""type"": ""background"" },
+                { ""type"": ""text"", ""name"": ""Text"", ""text"": ""Cancel"" }
+              ]
+            },
             { ""type"": ""action"", ""controller"": ""ClaimController"" }
           ]
         },
@@ -40,8 +45,13 @@ namespace UnityArchitecture.Prefabs.Tests
             {
               ""type"": ""container"", ""name"": ""Container"",
               ""children"": [
-                { ""type"": ""background"" },
-                { ""type"": ""text"", ""name"": ""Text"", ""text"": ""Quit"" },
+                {
+                  ""type"": ""uiContent"",
+                  ""children"": [
+                    { ""type"": ""background"" },
+                    { ""type"": ""text"", ""name"": ""Text"", ""text"": ""Quit"" }
+                  ]
+                },
                 { ""type"": ""action"", ""controller"": ""ClaimController"" }
               ]
             }
@@ -57,10 +67,15 @@ namespace UnityArchitecture.Prefabs.Tests
   ""components"": [""CardModel"", ""CardView""],
   ""layout"": { ""anchor"": [0, 1], ""size"": [400, 120] },
   ""children"": [
-    { ""type"": ""background"" },
-    { ""type"": ""image"", ""name"": ""Icon"", ""layout"": { ""anchor"": [0, 0.5], ""size"": [96, 96], ""position"": [12, 0], ""pivot"": [0, 0.5] } },
-    { ""type"": ""text"", ""name"": ""Name"", ""text"": ""Sword"" },
-    { ""type"": ""container"", ""name"": ""Reward"", ""components"": [""RewardView""] },
+    {
+      ""type"": ""uiContent"",
+      ""children"": [
+        { ""type"": ""background"" },
+        { ""type"": ""image"", ""name"": ""Icon"", ""layout"": { ""anchor"": [0, 0.5], ""size"": [96, 96], ""position"": [12, 0], ""pivot"": [0, 0.5] } },
+        { ""type"": ""text"", ""name"": ""Name"", ""text"": ""Sword"" },
+        { ""type"": ""container"", ""name"": ""Reward"", ""components"": [""RewardView""] }
+      ]
+    },
     { ""type"": ""action"", ""controller"": ""TapController"" }
   ]
 }";
@@ -92,7 +107,7 @@ namespace UnityArchitecture.Prefabs.Tests
 
             AssertMatches(ITEM_SLOT, path);
             GameObject slot = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            RectTransform icon = (RectTransform)slot.transform.Find("Icon");
+            RectTransform icon = (RectTransform)slot.transform.Find("UI Content/Icon");
             Assert.AreEqual(new Vector2(96f, 96f), icon.sizeDelta);
             Assert.AreEqual(new Vector2(12f, 0f), icon.anchoredPosition);
         }
@@ -132,7 +147,7 @@ namespace UnityArchitecture.Prefabs.Tests
 
             List<string> differences = PrefabSpecs.Compare(withBadge, path, LAYER_ASSEMBLY);
 
-            AssertContains(differences, "expected 6 children");
+            AssertContains(differences, "expected 5 children");
         }
 
         [Test]
@@ -173,6 +188,7 @@ namespace UnityArchitecture.Prefabs.Tests
         [TestCase("{ \"name\": \"Card\", \"children\": [ { \"type\": \"button\", \"name\": \"Buy\" } ] }", "unknown type 'button'")]
         [TestCase("{ \"name\": \"Card\", \"children\": [ { \"type\": \"action\" } ] }", "an action needs a controller")]
         [TestCase("{ \"name\": \"Card\", \"children\": [ { \"type\": \"background\", \"name\": \"Back\" } ] }", "always called Background")]
+        [TestCase("{ \"name\": \"Card\", \"children\": [ { \"type\": \"uiContent\", \"name\": \"Content\" } ] }", "always called UI Content")]
         [TestCase("{ \"name\": \"Card\", \"children\": [ { \"type\": \"text\" } ] }", "a text needs a name")]
         [TestCase("{ \"name\": \"Card\",\n  \"children\": [ } ", "line 2")]
         public void ABadSpec_SaysWhatToFix(string json, string expected)
