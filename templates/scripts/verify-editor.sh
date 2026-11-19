@@ -5,6 +5,9 @@
 # The agent compiles and runs tests through a Unity MCP server (refresh_unity, run_tests); this script only reads
 # the results. Exit codes: 0 passed, 1 failed or out of date, 2 couldn't check.
 # Set VERIFY_COMPILE_ONLY=1 to check only the compile, as the Stop hook does between test runs.
+# A Unity MCP is optional. Without one (no MCP for Unity or Unity CLI package in the manifest, or
+# VERIFY_EDITOR_BRIDGE=0), the agent can't compile or test in the Editor, so a result that's out of date is
+# "couldn't check" (2) instead of a failure the agent can't fix. Errors the Editor already reported still fail.
 set -u
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -14,6 +17,18 @@ TESTS="$OUT/editor-tests.json"
 PREFABS="$OUT/editor-prefabs.json"
 PREFAB_TEST="UnityArchitecture.Prefabs.Tests.ClientPrefabsTests.ClientPrefabsFollowThePrefabRules"
 GENERATION_STATUS="$ROOT/Assets/FastIoC/Generated/GenerationStatus.json"
+
+# True when the agent can drive the open Editor: MCP for Unity, or the Unity CLI's package. VERIFY_EDITOR_BRIDGE=1 or 0
+# overrides it, for another Unity MCP server.
+has_bridge() {
+    case "${VERIFY_EDITOR_BRIDGE:-}" in
+        1) return 0 ;;
+        0) return 1 ;;
+    esac
+    grep -Eqs '"(com\.coplaydev\.unity-mcp|com\.unity\.pipeline)"' "$ROOT/Packages/manifest.json"
+}
+
+NO_BRIDGE_HINT="Without a Unity MCP the agent can't do it for you. Or close the project in Unity, and the hook verifies in batch mode."
 
 json_number() {
     sed -n "s/.*\"$1\": *\\([0-9][0-9]*\\).*/\\1/p" "$2" | head -1
@@ -72,6 +87,10 @@ if [ ! -f "$COMPILE" ]; then
 fi
 
 if grep -Eq '"compiling": *true' "$COMPILE"; then
+    if ! has_bridge; then
+        echo "Unity is compiling; check again when it finishes. $NO_BRIDGE_HINT"
+        exit 2
+    fi
     echo "Unity is compiling. Wait until it finishes (read_console through the Unity MCP), then check again."
     exit 1
 fi
@@ -80,6 +99,10 @@ COMPILED_AT="$(json_number finishedAtUnixSeconds "$COMPILE")"
 COMPILED_AT="${COMPILED_AT:-0}"
 NEWEST_CHANGE="$(newest_script_change)"
 if [ "$NEWEST_CHANGE" -gt "$COMPILED_AT" ]; then
+    if ! has_bridge; then
+        echo "Unity hasn't compiled the latest script changes: switch to the Editor so it compiles. $NO_BRIDGE_HINT"
+        exit 2
+    fi
     echo "Unity hasn't compiled the latest script changes: the Editor only refreshes when asked or focused."
     echo "Call refresh_unity through the Unity MCP, wait for the compile to finish, read_console, then check again."
     exit 1
@@ -97,6 +120,10 @@ PREFAB_CHANGE="$(newest_prefab_change)"
 if [ "$PREFAB_CHANGE" -gt 0 ] && grep -qs '"com.sgonzalezrozo.unity-architecture"' "$ROOT/Packages/manifest.json"; then
     VALIDATED_AT="$(json_number startedAtUnixSeconds "$PREFABS" 2>/dev/null)"
     if [ ! -f "$PREFABS" ] || [ "${VALIDATED_AT:-0}" -lt "$PREFAB_CHANGE" ]; then
+        if ! has_bridge; then
+            echo "A prefab under Assets/Client changed after the prefab validator last ran: run ClientPrefabsTests in the Test Runner. $NO_BRIDGE_HINT"
+            exit 2
+        fi
         echo "A prefab under Assets/Client changed after the prefab validator last ran."
         echo "Run it with run_tests through the Unity MCP (EditMode, test_names: [\"$PREFAB_TEST\"]), poll get_test_job until it finishes, then check again."
         exit 1
@@ -117,6 +144,10 @@ if [ "$COMPILE_ONLY" != "1" ] && grep -qs '"com.unity.test-framework"' "$ROOT/Pa
     [ -n "$TESTED_AT" ] || TESTED_AT="$(json_number finishedAtUnixSeconds "$TESTS" 2>/dev/null)"
     # Only a full run counts: the related tests or the prefab validator alone (a filtered run) aren't the suite.
     if [ ! -f "$TESTS" ] || [ "${TESTED_AT:-0}" -lt "$NEWEST_CHANGE" ] || ! grep -Eq '"fullRun": *true' "$TESTS"; then
+        if ! has_bridge; then
+            echo "The full EditMode suite is due: run it in Window > General > Test Runner. $NO_BRIDGE_HINT"
+            exit 2
+        fi
         echo "The full EditMode suite is due, and it hasn't run since the last script change."
         echo "Run every EditMode test with run_tests through the Unity MCP (EditMode, no filter), poll get_test_job until it finishes, then check again."
         exit 1

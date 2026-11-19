@@ -23,7 +23,7 @@ Also set `otherContainer = true` if the project uses another dependency injectio
 | `OPT-01` | Nothing MUST use a package or tool whose capability is `false`: code, a prefab or asset, a menu item, a wizard or a code-tool call. A rule that names one applies only when its capability is `true`. Check the capability before the step; when it's `false`, use the Unity form from the [mapping](#mapping), or leave the step out and report it. |
 | `OPT-02` | If a capability is `true`, new code SHOULD use that package. |
 | `OPT-03` | An agent MUST NOT add a package without approval. See [When to ask](AGENT_WORKFLOW.md#when-to-ask). |
-| `OPT-04` | Match the code around the change. Don't mix both forms in one feature. |
+| `OPT-04` | Match the code around the change. Don't mix both forms in one feature. `OPT-02` wins: when a capability is `true`, new code uses the package even if older code around it doesn't. |
 | `OPT-05` | No configuration may break an `ARCH` rule or the C# standards. |
 
 ## Mapping

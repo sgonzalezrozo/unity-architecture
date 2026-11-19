@@ -10,11 +10,12 @@ You don't need to name the rules in your prompts. Claude Code loads `CLAUDE.md`,
 |---|---|---|
 | Compile | The agent calls `refresh_unity` and reads the Console | `scripts/verify.sh`, in batch mode |
 | Tests | `run_tests` with a filter, then `get_test_job` | `VERIFY_TEST_FILTER="..." scripts/verify.sh` |
-| Prefabs | Built and checked through `execute_code` (`EDIT-11`, `EDIT-12`) | Not built: the agent writes the handoff for you to build |
+| Prefabs | Built and checked through `execute_code` (`EDIT-11`, `EDIT-12`) | The agent writes the spec; you build it with **Assets > Unity Architecture > Build Prefab From Spec**, which validates it and compares it with the spec |
 | Play mode check | Automated: enter Play mode, try the input, read the Console, exit (`EDIT-07`) | A manual step it reports for you |
 | Stop hook | `scripts/verify-editor.sh` reads the results the Editor writes to `Logs/verify/` | `scripts/verify.sh` compiles, and runs the tests when they're due |
+| Needs | MCP for Unity (optional) | Nothing beyond the install |
 
-Work with the Editor open for anything with UI. The closed mode suits pure C# changes, CI, and machines without Unity open.
+MCP for Unity is optional. Without it, work with the Editor closed: everything in the rules applies, and only the steps that need the open Editor (building a prefab, the Play mode check) become yours. If you keep the Editor open without MCP, the hook can't ask the agent to compile or test there, so it reports that it couldn't check instead of blocking; close Unity for a full check. With MCP, work with the Editor open for anything with UI.
 
 ## What happens on every task
 
@@ -176,7 +177,7 @@ Close Unity, then:
 Add a ClaimTrophy command to TrophyRoomModule that rejects a trophy already claimed, with tests.
 ```
 
-The agent verifies with `VERIFY_TEST_FILTER="TrophyRoomModuleTests" scripts/verify.sh`, and the hook compiles with `verify.sh` when it stops. If the change needs a prefab, it writes the handoff table for you to build, and reports the Play mode check as a manual step.
+The agent verifies with `VERIFY_TEST_FILTER="TrophyRoomModuleTests" scripts/verify.sh`, and the hook compiles with `verify.sh` when it stops. If the change needs a prefab, it writes the spec for you to build with **Build Prefab From Spec** (or the handoff table, without the rules' package), and reports the Play mode check as a manual step.
 
 ### 11. Explain a rule
 

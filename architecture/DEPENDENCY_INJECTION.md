@@ -41,7 +41,7 @@ public class TrophyRoomModule
 }
 ```
 
-With `fastIoC`, injected fields are assigned before `Awake`, and these rules apply:
+With `fastIoC`, injected fields are assigned before `Awake`, in the first scene, in scenes loaded later and in prefabs created with `IPrefabInstantiator`, so a View or Controller MAY use them in `Awake` and `OnEnable`. A scene with no baked manifest is injected after `Awake`: the package's `injection.md` lists those cases. These rules apply:
 
 | ID | Rule |
 |---|---|

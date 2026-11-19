@@ -2,7 +2,8 @@
 # Stop hook: an agent can't finish with a broken build.
 # When Unity files changed, it checks the project and sends failures back to the agent:
 # with the Editor closed it runs scripts/verify.sh (batch mode); with the Editor open, scripts/verify-editor.sh,
-# which reads the compile and test results the Editor writes (the agent compiles and tests through a Unity MCP).
+# which reads the compile and test results the Editor writes (with a Unity MCP, the agent compiles and tests there;
+# without one, an out-of-date result is reported, not sent back as a failure).
 set -u
 
 MAX_ATTEMPTS=3

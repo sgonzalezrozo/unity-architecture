@@ -49,7 +49,7 @@ Method lines count the body, without blank lines and lines holding only a brace.
 - No `#region`.
 - No `///` summaries on members (methods, properties, fields, events, enum members); `UA0015` fails the build. A short `///` summary on a class or other type is allowed. No other comments unless explaining something the code cannot, such as an engine bug or an order dependency.
 - No magic numbers (0, 1 and -1 in obvious contexts are fine). Name timeouts, retries, delays and thresholds.
-- No hardcoded user-facing text. Use the localization system.
+- No hardcoded user-facing text. Use the localization system. A project without one uses English text until it has one (`DATA-01`).
 - No boolean flag parameters that select a code path; make two methods. `SetVisible(bool)` is fine, since the value is the state being set.
 - Command-query separation. `Try*` is the accepted exception.
 - `out` and `ref` parameters only in `Try*` methods.

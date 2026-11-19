@@ -144,17 +144,17 @@ The files are copies rather than symbolic links because links need extra setup o
 
 ### Work with the Editor open (MCP for Unity)
 
-An agent can also work while the project is open in Unity, through a local Unity MCP server, such as [MCP for Unity](https://github.com/CoplayDev/unity-mcp) (by Coplay). Everything runs on your machine: Claude Code talks to the server on `localhost`, and the server talks to the open Editor. There's no other server or pipeline to set up.
+This is optional: without it, the agent works with the Editor closed and everything else in the rules still applies. An agent can also work while the project is open in Unity, through a local Unity MCP server, such as [MCP for Unity](https://github.com/CoplayDev/unity-mcp) (by Coplay). Everything runs on your machine: Claude Code talks to the server on `localhost`, and the server talks to the open Editor. There's no other server or pipeline to set up.
 
 1. In Unity, **Window > Package Manager > + > Add package from git URL**: `https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity` (needs Python 3.10+ and `uv`).
 2. In **Window > MCP for Unity**, choose the **HTTP Local** transport and click **Start Server**.
 3. In the window's **Tools** section, turn on **Testing** (`run_tests`, `get_test_job`) and **Scripting Extensions** (`execute_code`). They're off by default, and the agent needs them to run tests and to build and validate prefabs.
-4. `install.sh` already wrote `.mcp.json`, which registers the server for Claude Code as `unityMCP` on `http://localhost:8080/mcp`, MCP for Unity's default. Don't also register it from the window, or Claude Code sees it twice. Open Claude Code in the project, approve the server, and check it with `/mcp`.
+4. Close Unity and run `bash .ai/templates/scripts/install.sh --mcp`. It writes `.mcp.json`, which registers the server for Claude Code as `unityMCP` on `http://localhost:8080/mcp`, MCP for Unity's default. Without `--mcp`, `install.sh` writes it only when the manifest already has MCP for Unity, so a project that doesn't use it never sees a failed server. Don't also register it from the window, or Claude Code sees it twice. Open Claude Code in the project, approve the server, and check it with `/mcp`.
 5. Keep the Editor open while the agent works.
 
 The [installation guide](docs/INSTALLATION.md#6-set-up-mcp-for-unity) has the details, including Roslyn for `execute_code` and what to allow in `.claude/settings.json`.
 
-With the Editor open, the Stop hook can't run `verify.sh`, because batch mode can't open a project the Editor has open. The reporters in the `.ai/unity` package, which `install.sh` adds to the manifest, write each compile and test run to `Logs/verify/`, and the hook reads them with `scripts/verify-editor.sh`. If a script changed after the last compile, the hook asks the agent to compile (`refresh_unity`) through the MCP server before finishing. When the tests are due, it also asks the agent to run them (`run_tests`).
+With the Editor open, the Stop hook can't run `verify.sh`, because batch mode can't open a project the Editor has open. The reporters in the `.ai/unity` package, which `install.sh` adds to the manifest, write each compile and test run to `Logs/verify/`, and the hook reads them with `scripts/verify-editor.sh`. If a script changed after the last compile, the hook asks the agent to compile (`refresh_unity`) through the MCP server before finishing. When the tests are due, it also asks the agent to run them (`run_tests`). With the Editor open and no Unity MCP in the manifest, the hook can't ask for either, so it only reports that it couldn't check and lets the agent finish; close Unity for a full check.
 
 ### How verification works
 

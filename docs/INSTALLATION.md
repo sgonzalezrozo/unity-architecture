@@ -7,8 +7,8 @@ When you're done you'll have:
 - The rules in a `.ai` folder (a Git submodule), plus the small entry files that Claude Code, Cursor, Copilot and Rider read.
 - The analyzers, which turn the mechanical rules into compile errors in `Assets/Client`.
 - The `com.sgonzalezrozo.unity-architecture` package from `.ai/unity`: the prefab recipes, the specs, the prefab validator, and the reporters that write each compile and test run to `Logs/verify/`.
-- MCP for Unity, so the agent can compile, test and build prefabs in the open Editor.
 - A Claude Code Stop hook that won't let the agent finish with a broken build.
+- Optionally, MCP for Unity, so the agent can also compile, test and build prefabs while the Editor is open. Everything else works without it.
 
 Already have a project? Skip step 1 and start at step 2. For updating, cloning and installing by hand, see the [README](../README.md#use-it-in-a-project).
 
@@ -20,7 +20,7 @@ Already have a project? Skip step 1 and start at step 2. For updating, cloning a
 | Git | The submodule, and the scripts' change detection | `git --version` |
 | A Bash shell | The install, update and verify scripts. On Windows, Git Bash | `bash --version` |
 | Claude Code | The agent: the CLI, the desktop app or an IDE extension | `claude --version` |
-| `uv` (it brings Python 3.10+ when needed) | MCP for Unity runs its server with `uvx` | `uv --version` |
+| `uv` (it brings Python 3.10+ when needed) | Only for MCP for Unity, which runs its server with `uvx` | `uv --version` |
 
 Install the missing ones. On macOS, with Homebrew:
 
@@ -99,7 +99,7 @@ You now have a `.ai` folder next to `Assets`, with `AGENTS.md`, `architecture`, 
 bash .ai/templates/scripts/install.sh
 ```
 
-It creates the files assistants read from fixed paths, copies the analyzers, writes `.mcp.json` and `.claude/settings.json`, and adds the rules' package to `Packages/manifest.json`. The [README](../README.md#3-put-the-entry-files-at-the-root) lists every file it creates. Files that already exist are kept, so it's safe to run again.
+It creates the files assistants read from fixed paths, copies the analyzers, writes `.claude/settings.json`, and adds the rules' package to `Packages/manifest.json`. It writes `.mcp.json` only for MCP for Unity: with `--mcp`, or when the manifest already has it. The [README](../README.md#3-put-the-entry-files-at-the-root) lists every file it creates. Files that already exist are kept, so it's safe to run again.
 
 At the end it asks: **"Run scripts/verify.sh now?"** Answer `y`. With Unity closed, it opens the project once in batch mode, imports it, compiles it and runs the EditMode tests. The first run can take several minutes; later ones are quick. It ends with an exit code: `0` passed, `1` failed, `2` couldn't run.
 
@@ -111,7 +111,9 @@ UNITY_PATH="/Applications/Unity/Hub/Editor/6000.3.0f1/Unity.app/Contents/MacOS/U
 
 - "Analyzers not installed": `Assets/Client` already had code but no `Client.asmdef`. Add the assembly definition and run the script again (see [Feature structure](../architecture/FEATURE_STRUCTURE.md#assembly-definitions)).
 
-## 5. Add MCP for Unity
+That's all the rules need. Go to [step 7](#7-connect-claude-code) to work with the Editor closed: the agent writes code and prefab specs, the hook verifies in batch mode, and you build prefabs from their specs with one click (**Assets > Unity Architecture > Build Prefab From Spec**). Steps 5 and 6 are only for letting the agent work with the Editor open.
+
+## 5. Optional: add MCP for Unity
 
 MCP for Unity (by Coplay) is a Unity package plus a small local server. Claude Code talks to the server on `localhost`, and the server talks to the open Editor. Nothing leaves your machine.
 
@@ -123,8 +125,15 @@ MCP for Unity (by Coplay) is a Unity package plus a small local server. Claude C
    ```
 
 3. Wait for the import and compile to finish.
+4. Close Unity, and register the server for Claude Code:
 
-## 6. Set up MCP for Unity
+```bash
+bash .ai/templates/scripts/install.sh --mcp
+```
+
+It writes `.mcp.json` and keeps everything else as it is.
+
+## 6. Optional: set up MCP for Unity
 
 This is the part the install script can't do for you. Open **Window > MCP for Unity** (`Cmd+Shift+M` on macOS, `Ctrl+Shift+M` on Windows and Linux). Labels can change a little between MCP for Unity versions.
 
@@ -141,6 +150,16 @@ This is the part the install script can't do for you. Open **Window > MCP for Un
 6. **Don't also register the server from the window.** `.mcp.json` already registers `unityMCP` for this project. If you click **Register with Claude Code** too, Claude Code sees two servers with the same tools. If you prefer the window's registration, delete the `unityMCP` entry from `.mcp.json`, and keep the name `unityMCP`: `.claude/settings.json` allows tools named `mcp__unityMCP__*`.
 
 ## 7. Connect Claude Code
+
+**Without MCP for Unity**, close Unity, open Claude Code at the project root (`claude`), and ask it to check the setup:
+
+```text
+Check that this project is set up for the .ai rules: run capability detection and editor tool detection, run scripts/verify.sh, and tell me what each tool verified.
+```
+
+You should see `verifyScript` and `prefabTools` as `true` and `editorBridge` as `false`, and `verify.sh` passing. That's the whole setup.
+
+**With MCP for Unity:**
 
 1. Keep Unity open, with the server running.
 2. Open Claude Code at the project root:
@@ -168,10 +187,10 @@ git add .
 ```
 
 ```bash
-git commit -m "Add Unity Architecture Agents and MCP for Unity"
+git commit -m "Add Unity Architecture Agents"
 ```
 
-This commits the entry files, `.gitmodules` (the `.ai` version the project uses), the analyzers, `Assets/Client`, `.mcp.json`, `.claude` and the manifest change. `Logs/` stays out: the default Unity `.gitignore` ignores it.
+This commits the entry files, `.gitmodules` (the `.ai` version the project uses), the analyzers, `Assets/Client`, `.claude`, `.mcp.json` if you added MCP for Unity, and the manifest change. `Logs/` stays out: the default Unity `.gitignore` ignores it.
 
 ## 9. Finish in your other tools
 

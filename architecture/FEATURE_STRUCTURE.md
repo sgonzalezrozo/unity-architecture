@@ -126,10 +126,12 @@ Scene transitions MUST go through one project scene loader, never `SceneManager`
 ## Assembly definitions
 
 ```
-Assets/Client/Client.asmdef                  All client code
-Assets/Client/Shared/Client.Shared.asmdef    Optional
+Assets/Client/Client.asmdef                  All client code, Shared/ included
 ```
 
 Place an `.asmdef` inside the folder it should compile. An `.asmdef` directly in `Assets/` would capture the whole project.
 
-Give a feature its own `.asmdef` only when it has heavy dependencies, external integrations, or more than about 100 files.
+| ID | Rule |
+|---|---|
+| `ASM-01` | All feature code compiles in `Client.asmdef`. A feature MUST NOT get its own `.asmdef`: the analyzers (`EDIT-03`), the prefab validator and the prefab specs only read the assembly named `Client`. |
+| `ASM-02` | When a feature needs a package that is already in `Packages/manifest.json`, add that package's assembly to the `references` of `Client.asmdef`. This needs no approval; adding the package itself does (`OPT-03`). |

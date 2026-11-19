@@ -79,7 +79,7 @@ With Screen System, create the screen or layer first with `ScreenAuthoring` (`SC
 
 ## Prefab spec
 
-The [handoff](AGENT_WORKFLOW.md#prefab-handoff) table can also be written as a JSON spec (`HAND-06`). `PrefabSpecs.BuildFromSpec(json, path)` builds it with the recipes, saves it and returns the validator's result (`List<PrefabViolation>`, empty when it passes), and `PrefabSpecs.Compare(json, path)` lists every difference (`List<string>`, empty when they match) between the spec and the prefab, so the same spec always builds the same prefab and a change made by hand shows up.
+The [handoff](AGENT_WORKFLOW.md#prefab-handoff) table can also be written as a JSON spec (`HAND-06`). `PrefabSpecs.BuildFromSpec(json, path)` builds it with the recipes, saves it and returns the validator's result (`List<PrefabViolation>`, empty when it passes), and `PrefabSpecs.Compare(json, path)` lists every difference (`List<string>`, empty when they match) between the spec and the prefab, so the same spec always builds the same prefab and a change made by hand shows up. Without an editor bridge, a person selects the spec in the Project window and runs **Assets > Unity Architecture > Build Prefab From Spec**: it builds the prefab next to the spec (or rebuilds the one prefab under `Assets/Client` with the spec's name), validates it and compares it, and shows the result in the Console.
 
 The spec lists the whole hierarchy in order: nothing is added that it doesn't name.
 

@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 # Puts the files assistants and tools read from fixed paths at the project root, next to the .ai submodule:
 # AGENTS.md, CLAUDE.md, .editorconfig, Copilot, Rider and Cursor rules, scripts/verify.sh, scripts/verify-editor.sh,
-# the Claude Code hook, the Unity MCP config (.mcp.json), and the .ai/unity package (prefab validator, Editor reporters).
+# the Claude Code hook, the .ai/unity package (prefab validator, Editor reporters) and, only when you use MCP for Unity,
+# its config for Claude Code (.mcp.json).
 #
 # Usage, from the project root (the folder that holds Assets and .ai):
 #   bash .ai/templates/scripts/install.sh            creates the files that are missing, keeps the rest
 #   bash .ai/templates/scripts/install.sh --update   also refreshes copies nobody changed after updating .ai
 #   add --verify to run scripts/verify.sh at the end without asking, or --no-verify to skip it
+#   add --mcp to register MCP for Unity in .mcp.json, or --no-mcp to never do it. By default .mcp.json is written
+#   only when Packages/manifest.json already has MCP for Unity: everything else works without it.
 #
 # It also installs the prebuilt analyzers in Assets/Client/Analyzers, creating Assets/Client/Client.asmdef and
 # Client.cs when Assets/Client doesn't exist yet. AGENTS.md, CLAUDE.md, .claude/settings.json and .mcp.json are never replaced.
@@ -14,13 +17,16 @@ set -u
 
 UPDATE=false
 VERIFY=ask
+MCP=auto
 for arg in "$@"; do
     case "$arg" in
         --update) UPDATE=true ;;
         --verify) VERIFY=yes ;;
         --no-verify) VERIFY=no ;;
-        -h|--help) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-        *) echo "Unknown option: $arg (use --update, --verify, --no-verify or --help)"; exit 2 ;;
+        --mcp) MCP=yes ;;
+        --no-mcp) MCP=no ;;
+        -h|--help) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        *) echo "Unknown option: $arg (use --update, --verify, --no-verify, --mcp, --no-mcp or --help)"; exit 2 ;;
     esac
 done
 
@@ -128,13 +134,18 @@ for folder in "$OLD_EDITOR_TOOLS/Tests" "$OLD_EDITOR_TOOLS"; do
 done
 
 # Registers the Unity MCP server (MCP for Unity, by Coplay) for Claude Code, on its default local address.
-# It runs only on this machine and only while the Editor is open with the package installed.
+# It's optional: without it the agent works with the Editor closed and the hook verifies in batch mode. Writing
+# .mcp.json for a server that isn't installed would only show a failed server in every Claude Code session.
+MCP_PACKAGE="com.coplaydev.unity-mcp"
+if [ "$MCP" = auto ]; then
+    if grep -qs "\"$MCP_PACKAGE\"" "$ROOT/Packages/manifest.json"; then MCP=yes; else MCP=no; fi
+fi
 if [ -e "$ROOT/.mcp.json" ]; then
     kept+=(".mcp.json")
-    if ! grep -q '"unityMCP"' "$ROOT/.mcp.json"; then
-        MCP_NOTE="Your .mcp.json was kept and has no unityMCP server. Add the one in .ai/templates/mcp.json to use a Unity MCP server."
+    if [ "$MCP" = yes ] && ! grep -q '"unityMCP"' "$ROOT/.mcp.json"; then
+        MCP_NOTE="Your .mcp.json was kept and has no unityMCP server. Add the one in .ai/templates/mcp.json to use MCP for Unity."
     fi
-else
+elif [ "$MCP" = yes ]; then
     cp "$TEMPLATES/mcp.json" "$ROOT/.mcp.json"
     created+=(".mcp.json")
 fi
@@ -252,10 +263,12 @@ echo "Next:"
 echo "  1. Commit these files and .ai in your project."
 echo "  2. In Rider, open .aiassistant/rules/project.md and set the rule's type to Always."
 echo "  3. Write rules that only apply to this project in AGENTS.md."
-echo "  4. To work with the Editor open, install MCP for Unity"
-echo "     (Package Manager > Add package from git URL: https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity)."
-echo "     In Window > MCP for Unity: choose HTTP Local, click Start Server, and turn on the Testing and"
-echo "     Scripting Extensions tool groups. .mcp.json already registers the server for Claude Code."
-echo "  5. Ask Claude for a feature. With the project closed in Unity, the hook verifies in batch mode;"
-echo "     with it open, it reads the Editor's results."
+echo "  4. Ask Claude for a feature. With the project closed in Unity, the hook verifies in batch mode."
+if [ -e "$ROOT/.mcp.json" ] && grep -q '"unityMCP"' "$ROOT/.mcp.json"; then
+    echo "  5. MCP for Unity is registered in .mcp.json. In Window > MCP for Unity: choose HTTP Local, click Start Server,"
+    echo "     and turn on the Testing and Scripting Extensions tool groups. Then the agent can also work with the Editor open."
+else
+    echo "  5. Optional: to let the agent work with the Editor open, install MCP for Unity (Package Manager > Add package"
+    echo "     from git URL: https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity), then run this script with --mcp."
+fi
 echo "  Step by step: .ai/docs/INSTALLATION.md. Prompts that work: .ai/docs/USAGE.md."
