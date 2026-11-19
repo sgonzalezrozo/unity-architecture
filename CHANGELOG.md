@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-11-19
+
+### Documentation
+
+- The README's installation steps explain both questions `install.sh` asks (the optional analyzers, and running `verify.sh` once), and that the rules' package brings 50 tests: tests of the rules and their tools, not of the project's code, with one that checks the project's prefabs. The Setup Reference lists them.
+
 ## [0.6.1] - 2026-11-19
 
 ### Changed

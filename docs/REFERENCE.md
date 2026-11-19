@@ -39,6 +39,20 @@ Everything the README's three commands set up, how to keep it current, and how v
 
 Before returning code, the agent runs the [pre-response checklist](../architecture/AGENT_WORKFLOW.md#pre-response-checklist). The optional [analyzers](../analyzers) turn the mechanical items into compile errors.
 
+## The rules' tests
+
+`install.sh` adds the rules' package (`com.sgonzalezrozo.unity-architecture`) to `Packages/manifest.json`, under both `dependencies` and `testables`, and Unity runs the tests of every package in `testables`. That's why a brand-new project reports **50 tests**. None of them test your code: they're tests of the rules and the tools that apply them.
+
+| File | Tests | What it checks |
+|---|---|---|
+| `ClientPrefabsTests` | 1 | **Your prefabs**: that everything under `Assets/Client` follows the prefab rules (`PREFAB-xx`). It passes while there are no prefabs |
+| `PrefabValidatorTests` | 22 | The prefab validator itself |
+| `PrefabSpecsTests` | 15 | Building a prefab from a JSON spec |
+| `PrefabRecipesTests` | 8 | The prefab recipes |
+| `PrefabSpecCommandsTests` | 4 | The **Build Prefab From Spec** menu item |
+
+Only the first one is about your project, and it's why the package is in `testables`: that's how the Stop hook checks your prefabs. The other 49 check the tools and run in your project as a side effect; they're fast. Your own tests, once the agent writes them, add to this count.
+
 ## What install.sh creates
 
 Assistants only read instructions from fixed places in your project, and a submodule can only add its own folder, so `install.sh` puts small entry files there, pointing to `.ai`. Run it from a terminal at the project root; double-clicking a `.sh` file opens it in an editor on most systems.

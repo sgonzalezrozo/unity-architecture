@@ -23,7 +23,7 @@ git submodule add https://github.com/sgonzalezrozo/unity-architecture-agents.git
 bash .ai/templates/scripts/install.sh
 ```
 
-5. Responde `y` a **"Run scripts/verify.sh now?"**: compila y corre los tests en batch.
+5. Responde `y` a **"Run scripts/verify.sh now?"** con Unity cerrado: compila y corre los tests en batch. Un proyecto nuevo reporta **50 tests**: prueban las reglas y sus herramientas (el validador de prefabs, los specs y las recetas), no tu código. Solo uno revisa tu proyecto: que los prefabs de `Assets/Client` sigan las reglas de prefabs.
 1. Opcional: instala y configura **MCP for Unity** (ver [Instalar MCP for Unity](doc:mcp.install)).
 
 > [!TIP]
