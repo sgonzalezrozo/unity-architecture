@@ -12,3 +12,8 @@ obj/
 # The Unity package keeps its .meta files, so its GUIDs are the same in every project.
 !unity/**/*.meta
 !unity/*.meta
+
+# The Rules Guide content: Unity skips folders ending in ~, but git must keep them
+# (a global *~ ignore would otherwise drop them).
+!unity/KnowledgeDocs~/
+!unity/KnowledgeDocs~/**
