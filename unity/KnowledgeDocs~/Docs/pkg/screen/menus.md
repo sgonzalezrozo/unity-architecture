@@ -4,7 +4,7 @@
 |---|---|
 | **Tools > Screen System > Setup** | Creates the project assets, the modal backdrop and the special screens. Running it again repairs them |
 | **Tools > Screen System > Documentation** | Opens the documentation |
-| **Assets > Screen System > New Screen Feature** | Creates a feature with its screens, ready for `GoTo` (right-click `Assets/Client`) |
+| **Assets > Screen System > New Screen Feature** | Creates screens, ready for `GoTo`, in the folder you right-click (the feature's folder under `Assets/Client`; its name prefixes the IDs) |
 | **Assets > Screen System > New Layer** | Creates a layer prefab in the selected folder |
 
 ## In the Inspector

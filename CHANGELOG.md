@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.6.5] - 2026-11-19
+
+### Changed
+
+- `SCR-13` and the Screen System menus doc: **New Screen Feature** (Screen System 0.6) creates the screens in the folder you right-click, the feature's folder under `Assets/Client`, whose name prefixes the screen IDs; it no longer makes a feature folder of its own.
+
 ## [0.6.4] - 2026-11-19
 
 ### Fixed
