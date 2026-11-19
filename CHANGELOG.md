@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.6.9] - 2026-11-19
+
+### Added
+
+- **Enhanced Console** in the Rules Guide's **Other tools**, now that its repository is public: a short description, its git URL with **Copy URL**, and **Installed** when the project has it.
+
 ## [0.6.8] - 2026-11-19
 
 ### Changed

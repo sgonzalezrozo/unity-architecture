@@ -1024,6 +1024,9 @@ namespace UnityArchitecture.Knowledge
                 Spanish = "Tweens basados en ECS para la UI de Unity, con una API estilo DOTween.",
                 DependencyName = "LeoECS Core",
                 DependencyUrl = "https://github.com/LeoECSCommunity/ecs.git#91cc7e390fa0eb4fc88a5cf111df88b1f45af37e" },
+            new OtherTool { Name = "Enhanced Console", Package = "com.sgonzalezrozo.enhanced-console", Repository = "unity-enhanced-console",
+                English = "An Editor console for noisy logs: filter by system with sections or regex, search stack traces, timestamps. Editor-only.",
+                Spanish = "Una consola del Editor para logs ruidosos: filtra por sistema con secciones o regex, busca en stack traces, marcas de tiempo. Solo Editor." },
         };
 
         private GUIStyle toolNameStyle, toolTextStyle, toolUrlStyle, installedStyle;
