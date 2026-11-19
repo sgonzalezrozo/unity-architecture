@@ -17,7 +17,7 @@ About 20 minutes, most of it waiting for Unity.
 git submodule add https://github.com/sgonzalezrozo/unity-architecture-agents.git .ai
 ```
 
-4. Run the install script. It creates the entry files and adds this package to the manifest. With `--analyzers` it also installs the optional analyzers.
+4. Run the install script. It creates the entry files and adds this package to the manifest. It asks whether to also install the optional analyzers (default: no).
 
 ```bash
 bash .ai/templates/scripts/install.sh

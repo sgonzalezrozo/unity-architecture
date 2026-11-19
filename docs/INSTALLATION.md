@@ -99,7 +99,7 @@ You now have a `.ai` folder next to `Assets`, with `AGENTS.md`, `architecture`, 
 bash .ai/templates/scripts/install.sh
 ```
 
-It creates the files assistants read from fixed paths, writes `.claude/settings.json`, and adds the rules' package to `Packages/manifest.json`. It writes `.mcp.json` only for MCP for Unity: with `--mcp`, or when the manifest already has it. The [Setup Reference](REFERENCE.md#what-installsh-creates) lists every file it creates. Add `--analyzers` to also install the optional analyzers. Files that already exist are kept, so it's safe to run again.
+It creates the files assistants read from fixed paths, writes `.claude/settings.json`, and adds the rules' package to `Packages/manifest.json`. It writes `.mcp.json` only for MCP for Unity: with `--mcp`, or when the manifest already has it. The [Setup Reference](REFERENCE.md#what-installsh-creates) lists every file it creates. It asks whether to also install the optional analyzers (default: no); `--analyzers` or `--no-analyzers` answers ahead of time. Files that already exist are kept, so it's safe to run again.
 
 At the end it asks: **"Run scripts/verify.sh now?"** Answer `y`. With Unity closed, it opens the project once in batch mode, imports it, compiles it and runs the EditMode tests. The first run can take several minutes; later ones are quick. It ends with an exit code: `0` passed, `1` failed, `2` couldn't run.
 

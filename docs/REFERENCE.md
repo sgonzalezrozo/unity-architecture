@@ -68,7 +68,7 @@ At the end it offers to run `scripts/verify.sh` once. Say yes, with the project 
 | `--update` | Also refreshes copies nobody changed after updating `.ai` |
 | `--verify` / `--no-verify` | Runs `scripts/verify.sh` at the end without asking, or skips it |
 | `--mcp` / `--no-mcp` | Registers MCP for Unity in `.mcp.json`, or never does. By default only when the manifest already has it |
-| `--analyzers` | Installs the optional Roslyn analyzers in `Assets/Client/Analyzers`. Once installed, `--update` keeps them current |
+| `--analyzers` / `--no-analyzers` | Installs the optional Roslyn analyzers in `Assets/Client/Analyzers`, or skips them. Without either, a first install from a terminal asks (default: no). Once installed, `--update` keeps them current and never asks |
 
 ## Finish in your tools
 

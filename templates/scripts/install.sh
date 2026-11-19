@@ -11,7 +11,8 @@
 #   add --mcp to register MCP for Unity in .mcp.json, or --no-mcp to never do it. By default .mcp.json is written
 #   only when Packages/manifest.json already has MCP for Unity: everything else works without it.
 #   add --analyzers to install the optional Roslyn analyzers in Assets/Client/Analyzers (they turn the mechanical rules
-#   into compile errors). They're off by default; once installed, --update keeps them up to date.
+#   into compile errors), or --no-analyzers to skip them. Otherwise a first install asks, defaulting to no; once
+#   installed, --update keeps them up to date.
 #
 # It creates Assets/Client/Client.asmdef and Client.cs when Assets/Client doesn't exist yet.
 # AGENTS.md, CLAUDE.md, .claude/settings.json and .mcp.json are never replaced.
@@ -29,8 +30,9 @@ for arg in "$@"; do
         --mcp) MCP=yes ;;
         --no-mcp) MCP=no ;;
         --analyzers) ANALYZERS=yes ;;
-        -h|--help) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-        *) echo "Unknown option: $arg (use --update, --verify, --no-verify, --mcp, --no-mcp, --analyzers or --help)"; exit 2 ;;
+        --no-analyzers) ANALYZERS=no ;;
+        -h|--help) sed -n '2,19p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        *) echo "Unknown option: $arg (use --update, --verify, --no-verify, --mcp, --no-mcp, --analyzers, --no-analyzers or --help)"; exit 2 ;;
     esac
 done
 
@@ -218,6 +220,14 @@ if [ ! -e "$ROOT/$CLIENT/Client.asmdef" ] && [ -z "$(ls -A "$ROOT/$CLIENT" 2>/de
 fi
 if [ "$ANALYZERS" = auto ] && [ -e "$ROOT/$CLIENT/Analyzers/$ANALYZER.dll" ]; then
     ANALYZERS=yes
+fi
+# A first install from a terminal asks. --update never asks: it only keeps analyzers that are already there.
+if [ "$ANALYZERS" = auto ] && [ "$UPDATE" = false ] && [ -t 0 ] && [ -t 1 ]; then
+    echo
+    echo "Install the optional analyzers? They turn the mechanical rules (no Button, no LINQ, no var...) into compile"
+    printf "errors in Assets/Client. You can add them later with --analyzers. [y/N] "
+    read -r answer
+    case "$answer" in y|Y|yes|Yes) ANALYZERS=yes ;; esac
 fi
 if [ "$ANALYZERS" != yes ]; then
     :

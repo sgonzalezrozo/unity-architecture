@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-11-19
+
+### Changed
+
+- `install.sh` asks whether to install the optional analyzers on a first install from a terminal (default: no). `--analyzers` installs them and `--no-analyzers` skips them without asking; `--update` never asks and keeps analyzers already in the project. The README's installation steps say so.
+
 ## [0.6.0] - 2026-11-19
 
 ### Added

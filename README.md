@@ -8,7 +8,7 @@
 Architecture rules and a working process for AI coding agents on Unity 6: strict MVC for uGUI, a verify script, and a Claude Code hook that won't let an agent finish with a broken build.
 
 [![Unity](https://img.shields.io/badge/Unity-6000.3%20tested-black?style=for-the-badge&logo=unity)](docs/INSTALLATION.md#what-you-need)
-[![Version](https://img.shields.io/badge/version-0.6.0-blue?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.6.1-blue?style=for-the-badge)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [**Installation**](#installation) • [**Key Features**](#key-features) • [**Quickstart**](#quickstart) • [**Usage**](docs/USAGE.md) • [**Rules**](AGENTS.md) • [**Developer Overview**](architecture/DEVELOPER_OVERVIEW.md)
@@ -36,6 +36,8 @@ git submodule add https://github.com/sgonzalezrozo/unity-architecture-agents.git
 ```bash
 bash .ai/templates/scripts/install.sh
 ```
+
+<sub>* It asks whether to add the optional analyzers, which turn the mechanical rules into compile errors (default: no). `--analyzers` or `--no-analyzers` answers ahead of time.</sub>
 
 Then commit:
 
