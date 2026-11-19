@@ -6,6 +6,8 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
+- The Rules Guide window (**Tools > Unity Architecture > Rules Guide**) in the `.ai/unity` package: short, human-readable docs drawn from the rules, with search, shown only for the packages a project has. It no longer throws a `NullReferenceException` when it opens with the Editor, before `EditorStyles` is ready.
+- `ASM-01` and `ASM-02`: all feature code compiles in `Client.asmdef`, since the analyzers, the prefab validator and the specs read only that assembly; a package already in the manifest is added to its references without approval.
 - MCP for Unity is optional everywhere. `install.sh` writes `.mcp.json` only with `--mcp`, or when the manifest already has MCP for Unity (`--no-mcp` never does), so a project without it doesn't see a failed server in every session. With the Editor open and no Unity MCP, `verify-editor.sh` reports an out-of-date compile or due tests as "couldn't check" instead of a failure the agent can't fix (`VERIFY_EDITOR_BRIDGE=1` or `0` overrides the detection). **Assets > Unity Architecture > Build Prefab From Spec** builds, validates and compares a prefab from the selected spec, so specs work without a bridge. The installation guide marks MCP for Unity as optional steps.
 - Usage example 6, Add a list, has two new prompts with mockups: a store with sections (`SectionedScroller`) and an events list whose cards open to show a progress bar, a reward count and an Enter or Continue button (`IExpandableSlot`). The mockups are PNGs in `docs/images/`, built by `mockups.py`, and a new tip says to attach a PNG to a prompt.
 - `OPT-01` covers every use of a package or tool, not only code: prefabs, assets, menu items, wizards and code-tool calls. A rule that names one applies only when its capability is `true`; otherwise the step uses the Unity form or is left out and reported. The new menu rules and `EDIT-13` name the capability each one needs.
@@ -35,6 +37,9 @@ All notable changes to this project are documented in this file.
 
 ### Changed
 
+- `OPT-04`: `OPT-02` wins over matching the code around a change; with a capability `true`, new code uses the package even where older code doesn't.
+- Dependency injection says when Fast IoC's fields are ready: before `Awake` in the first scene, in scenes loaded later and in prefabs created with `IPrefabInstantiator` (Fast IoC 0.11), so Views and Controllers may use them in `Awake` and `OnEnable`.
+- The C# standards say a project without a localization system uses English text until it has one (`DATA-01`).
 - `INPUT-02` and `PREFAB-11`: a modal's close `Action` sits under the `Window`, which blocks touches with its own `Background`; the validator accepts it there. A modal dims with a `Background`, not a `Dimmer`, so it follows `INPUT-03`.
 - The Editor reporters moved from `Assets/Editor/UnityArchitecture` to the `.ai/unity` package, so updating `.ai` updates them. `install.sh` removes the old copies nobody edited, and lists the edited ones to merge and delete by hand.
 - `VIEW-03`: each scope has one root View, on its root, and only it subscribes to the Model. It may tell inner Views what to show, and they set their own components without reading the Model or subscribing. No View reaches into a nested prefab, its root View included. `UA0001` now lets a View reference a View, and still fails when a View references a Controller. `VIEW-01` applies to root Views.
