@@ -4,6 +4,23 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-19
+
+### Added
+
+- `SCOPE-01` to `SCOPE-04`, the scope question: before planning a new feature or screen, the agent asks what to deliver (code only, code and prefabs, code and tests, or all of them), creates only that, and starts from the smallest feature that does what was asked. It doesn't write analyzers, editor tools, generators or test infrastructure unless asked by name; `DET-04` is now for the rules' maintainers only. `ARCH-08` and `TEST-01` ask for tests when the scope includes them; the code stays testable either way. A generic prompt such as "create the player health feature" had taken long, used many tokens and created more than was asked.
+- The Rules Guide in Spanish. **Settings > Language** switches between English and Spanish; the Spanish docs live in `KnowledgeDocs~/es/` with the same ids and paths, and a doc missing in Spanish shows in English. The window's own labels are translated too.
+- An **Other tools** section at the end of the Rules Guide home: the author's other packages with a short description, their git URL (with a Copy URL button) and an **Installed** label when the project has them.
+- `docs/MCP_FOR_UNITY.md`, an installation guide for MCP for Unity on one page, and a matching Rules Guide doc, **Install MCP for Unity**.
+- `docs/REFERENCE.md` (what `install.sh` creates, its options, updating, cloning, verification and installing by hand) and `docs/FAQ.md`, with the content that left the README.
+
+### Changed
+
+- The analyzers are optional. `install.sh` installs them only with `--analyzers`; a project that already has them keeps getting updates.
+- The Stop hook ignores code generators' output (`Assets/FastIoC/Generated` and `*.g.cs`, such as Fast IoC's `FastIoC.InternalsVisibleTo.g.cs`), so a compile that regenerates code no longer looks like a new change and runs the verify again.
+- The Rules Guide repaints on a mouse move only when the mouse moves onto or off something with a hover state, instead of on every move, and measures its category chips once per load.
+- The README follows the packages' style: installation in three commands, how to update, and links to the guides.
+
 ## [0.5.0] - 2026-11-19
 
 ### Added

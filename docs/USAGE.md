@@ -19,13 +19,17 @@ MCP for Unity is optional. Without it, work with the Editor closed: everything i
 
 ## What happens on every task
 
-1. The agent classifies the request ([Agent workflow](../architecture/AGENT_WORKFLOW.md#task-classification)). A question gets an answer, a small change gets made, and a new feature, screen or refactor gets a plan first.
+1. The agent classifies the request ([Agent workflow](../architecture/AGENT_WORKFLOW.md#task-classification)). A question gets an answer, a small change gets made, and a new feature, screen or refactor gets the [scope question](../architecture/AGENT_WORKFLOW.md#scope-question) (code only, with prefabs, with tests) and a plan first. Say the scope in your prompt to skip the question.
 2. It runs [capability detection](../architecture/OPTIONAL_PACKAGES.md#capability-detection) on `Packages/manifest.json`, so its code uses Fast IoC, UI Scroller, Screen System or UI Foundations only when they're installed.
-3. It writes the code, with Model tests first (`TEST-08`).
-4. It compiles, reads every error and warning (`EDIT-02`), and fixes analyzer errors in the code, never by suppressing them (`EDIT-03`).
+3. It writes what the scope includes: the code, and the prefabs and tests when you chose them, with Model tests first (`TEST-08`).
+4. It compiles, reads every error and warning (`EDIT-02`), and fixes compile and (if installed) analyzer errors in the code, never by suppressing them (`EDIT-03`).
 5. It runs the tests related to the change (`TEST-11`).
 6. It ends with what each tool verified and what it didn't ([Reporting back](../architecture/EDITOR_TOOLS.md#reporting-back)).
 7. When it stops, the hook checks again. If something fails, the hook sends the failure back, and the agent keeps working until the check passes or three attempts in a row fail.
+
+## Rules Guide
+
+**Tools > Unity Architecture > Rules Guide** shows the rules written for people, with search. **Settings** (the gear) switches between English and Spanish. The home page ends with the author's other tools, their git URLs, and which ones the project already has.
 
 ## Examples
 

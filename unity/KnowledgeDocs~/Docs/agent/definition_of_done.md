@@ -4,7 +4,8 @@
 
 - [ ] Follows `AGENTS.md` and the checklist
 - [ ] Compiles with no new warnings or analyzer errors, checked by a tool
-- [ ] Everything testable has tests, and the related ones pass
+- [ ] Only what the chosen scope includes was created
+- [ ] With tests in the scope: everything testable has tests, and the related ones pass
 - [ ] A bug fix includes a test that fails without the fix
 - [ ] No unused code or debug logs
 

@@ -1,248 +1,98 @@
+<div align="center">
+
 # Unity Architecture Agents
 
-**Architecture rules and a working process for AI coding assistants on Unity projects.**
+<sub>DESIGNED & BUILT BY</sub><br>
+**✦ [`SANTIAGO GONZÁLEZ ROZO (@sgonzalezrozo)`](https://github.com/sgonzalezrozo) ✦**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+Architecture rules and a working process for AI coding agents on Unity 6: strict MVC for uGUI, a verify script, and a Claude Code hook that won't let an agent finish with a broken build.
 
-Unity Architecture Agents is a free, open-source `AGENTS.md` and `CLAUDE.md` rule set for AI coding agents on Unity 6 projects. It gives agents a strict MVC architecture for uGUI, Roslyn analyzers that turn the rules into compile errors, a batch-mode verify script, and a Claude Code hook that won't let an agent finish with a broken build. Templates cover Cursor, GitHub Copilot and Rider AI Assistant. It works with Unity MCP servers and the Unity CLI.
+[![Unity](https://img.shields.io/badge/Unity-6000.3%20tested-black?style=for-the-badge&logo=unity)](docs/INSTALLATION.md#what-you-need)
+[![Version](https://img.shields.io/badge/version-0.6.0-blue?style=for-the-badge)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-## What's included
+[**Installation**](#installation) • [**Key Features**](#key-features) • [**Quickstart**](#quickstart) • [**Usage**](docs/USAGE.md) • [**Rules**](AGENTS.md) • [**Developer Overview**](architecture/DEVELOPER_OVERVIEW.md)
 
-| File | Purpose |
-|---|---|
-| [Installation](docs/INSTALLATION.md) | Step by step, from a new Unity project to an agent building a checked feature: Git, the submodule, MCP for Unity and its setup |
-| [Usage](docs/USAGE.md) | Working with Claude Code: prompts that work, with the Editor open or closed, and the Stop hook's messages |
-| [AGENTS.md](AGENTS.md) | Entry point: stack, philosophy and where to read next |
-| [Developer overview](architecture/DEVELOPER_OVERVIEW.md) | One-file summary for human developers |
-| [Agent workflow](architecture/AGENT_WORKFLOW.md) | Task classification, plan format, checklist, Definition of Done and Git |
-| [MVC](architecture/MVC.md) | How Models, Views and Controllers work together |
-| [Feature structure](architecture/FEATURE_STRUCTURE.md) | Folders, naming, and screen composition |
-| [Dependency injection](architecture/DEPENDENCY_INJECTION.md) | Bindings, installers and references |
-| [Backend integration](architecture/BACKEND_INTEGRATION.md) | How features talk to a backend |
-| [UI patterns](architecture/UI_PATTERNS.md) | Clickable elements, visual states, tabs, lists and layouts |
-| [Prefabs](architecture/PREFABS.md) | The shape of a UI prefab: root, `Action`, backgrounds, anchors, masks and the `PREFAB-xx` rules |
-| [Optional packages](architecture/OPTIONAL_PACKAGES.md) | How an agent detects optional packages and adapts its code |
-| [C# standards](architecture/CSHARP_STANDARDS.md) | Style, performance, async, logging and tests |
-| [Editor tools](architecture/EDITOR_TOOLS.md) | How an agent verifies its work with Unity MCP, the Unity CLI or `verify.sh` |
-| [Examples](architecture/examples) | Three complete features with invented names: a backend feature, custom input and a filtered list |
-| [Templates](templates) | `.editorconfig`, Copilot, Cursor and Rider rules, `verify.sh`, a Claude Code Stop hook, and `install.sh` and `update.sh` to put them in your project and keep them current |
-| [Analyzers](analyzers) | Roslyn analyzers that turn the mechanical rules into compile errors |
-| [Unity package](unity) | `com.sgonzalezrozo.unity-architecture`: prefab recipes, JSON specs, the prefab validator, and the reporters that write each compile and test run in the open Editor to `Logs/verify/` |
+<sub>[Installation Guide](docs/INSTALLATION.md) • [Setup Reference](docs/REFERENCE.md) • [MCP for Unity](docs/MCP_FOR_UNITY.md) • [FAQ](docs/FAQ.md) • [Changelog](CHANGELOG.md)</sub>
 
-## How the process scales
+</div>
 
-| Request | Process |
-|---|---|
-| Question, explanation, review | Answer directly |
-| Small change inside existing classes | Make the change and summarize it |
-| New feature, screen, class family or refactor | Plan first, wait for approval |
+---
 
-Before returning code, the agent runs the [pre-response checklist](architecture/AGENT_WORKFLOW.md#pre-response-checklist). The [analyzers](analyzers) turn the mechanical items into compile errors.
+## Installation
 
-## Use it in a project
-
-Starting from a new Unity project, or want every step including MCP for Unity? Follow the [installation guide](docs/INSTALLATION.md). Then see [Usage](docs/USAGE.md) for prompts that work.
-
-The short version: five steps, about five minutes. You need Git, and a terminal open at your **project root**: the folder that holds `Assets`, `Packages` and `ProjectSettings`. On Windows, use Git Bash.
-
-### 1. Make sure the project is a Git repository
-
-If `git status` says "not a git repository", create one first:
+Open a terminal at your project root, the folder with `Assets`, `Packages` and `ProjectSettings` (on Windows, Git Bash), and run:
 
 ```bash
 git init
-git add .
-git commit -m "Initial commit"
 ```
 
-Add a Unity `.gitignore` before that first commit, so `Library` and `Temp` stay out.
-
-### 2. Add the rules
+<sub>* Skip it if the project is already a Git repository.</sub>
 
 ```bash
 git submodule add https://github.com/sgonzalezrozo/unity-architecture-agents.git .ai
 ```
 
-You now have a folder named `.ai` next to `Assets`, with `AGENTS.md`, `architecture`, `templates` and `analyzers` inside. Unity ignores folders that start with a dot, so it never imports `.ai` or creates `.meta` files for it.
-
-### 3. Put the entry files at the root
-
-Assistants only read instructions from fixed places in your project, and a submodule can only add its own folder. This script puts small entry files there, pointing to `.ai`:
-
 ```bash
 bash .ai/templates/scripts/install.sh
 ```
 
-Run it from a terminal; double-clicking a `.sh` file opens it in an editor on most systems. Your project root now has:
-
-| File | Read by | What it is |
-|---|---|---|
-| `AGENTS.md` | Codex, Cursor and most agents | Points to `.ai/AGENTS.md`, and holds rules for this project only |
-| `CLAUDE.md` | Claude Code | Loads `.ai/AGENTS.md` and your `AGENTS.md` |
-| `.github/copilot-instructions.md` | GitHub Copilot | Points to `.ai/AGENTS.md`, with the core rules in case nothing else loads |
-| `.aiassistant/rules/project.md` | Rider AI Assistant | The same, for Rider |
-| `.cursor/rules/unity-architecture.mdc` | Cursor | The same, for Cursor |
-| `.editorconfig` | Rider, Visual Studio | Formatting, `var`, braces and naming |
-| `scripts/verify.sh` | Agents, CI | Compiles in batch mode, runs EditMode tests, checks Fast IoC generation |
-| `scripts/verify-editor.sh` | Agents, the hook | Checks the project while the Editor is open, from the results the Editor writes |
-| `.mcp.json` | Claude Code | Registers a local Unity MCP server (MCP for Unity) on `localhost:8080`. Never replaced |
-| `.claude/hooks/verify-on-stop.sh`, `.claude/settings.json` | Claude Code | Runs `verify.sh` when the agent finishes and sends failures back. Also allows `verify.sh` and read-only `git` commands, so Claude doesn't ask for each one |
-| `Assets/Client/Analyzers/UnityArchitecture.Analyzers.dll` | Unity | The [analyzers](analyzers): the mechanical rules become compile errors. Prebuilt, so no .NET SDK needed |
-| `Assets/Client/Client.asmdef`, `Client.cs` | Unity | Only when `Assets/Client` doesn't exist yet: the assembly the analyzers check |
-| `Packages/manifest.json` | Unity | Adds `com.sgonzalezrozo.unity-architecture` from `.ai/unity` to `dependencies` and `testables`: the prefab validator, and the reporters that write each compile and test run in the open Editor to `Logs/verify/` |
-
-Files that already exist are kept, so running it again is safe. If your project already had a `.claude/settings.json`, the script says so: add the Stop hook and the allowed commands from `.ai/templates/claude/settings.json` to it yourself. The analyzers check only the `Client` assembly, not third-party code or tests. In a new project the script creates `Assets/Client/Client.asmdef`, with a `Client.cs` note so Unity doesn't warn about an empty assembly. If `Assets/Client` already has code but no `Client.asmdef`, the analyzers aren't installed, and the script says why.
-
-At the end it offers to run `scripts/verify.sh` once. Say yes, with the project closed in Unity: the first batch-mode run imports the whole project, which can take longer than the hook waits, and later runs are quick. `--verify` runs it without asking, `--no-verify` skips it.
-
-### 4. Commit
+Then commit:
 
 ```bash
 git add .
 git commit -m "Add Unity Architecture Agents"
 ```
 
-This commits the files above and `.gitmodules`, which records the `.ai` version your project uses.
-
-### 5. Finish in your tools
-
-- **Rider:** open `.aiassistant/rules/project.md` and set the rule's type to **Always**.
-- **Rules for this project only:** write them in your root `AGENTS.md`, under "Rules for this project only". Never edit files inside `.ai`: the next update would overwrite them.
-
-That's it: open the project with Claude Code and ask for a feature ([examples](docs/USAGE.md#examples)). It reads the rules from `.ai`, the analyzers stop code that breaks the mechanical rules, and when it finishes the hook compiles and runs the tests, and sends any failure back for it to fix. Either keep the project closed in Unity while it works, so the hook checks in batch mode, or keep it open with [MCP for Unity](#work-with-the-editor-open-mcp-for-unity), so the hook reads the Editor's own results. Batch mode can't open a project the Editor has open.
-
-### Cloning a project that uses it
-
-`git clone` leaves `.ai` empty. Fill it with:
-
-```bash
-git submodule update --init
-```
-
-Or clone with `git clone --recurse-submodules <url>`.
-
-### Updating
-
-One command gets the latest rules and refreshes the files at the root:
+**Updating.** To get newer rules, run the update script and commit:
 
 ```bash
 bash .ai/templates/scripts/update.sh
 ```
 
-It updates the `.ai` submodule from GitHub, then runs `install.sh --update`: the copies that came from `.ai` (Copilot, Rider and Cursor rules, `.editorconfig`, `verify.sh`, `verify-editor.sh`, the hook, the Editor scripts and the analyzers) get the new version, and are listed. A copy you changed in your project, such as a hook that also watches local packages, is kept: the script recognizes an unchanged copy because it matches an earlier version in `.ai`'s history, and lists the changed ones for you to merge by hand. It never touches `AGENTS.md`, `CLAUDE.md`, `.claude/settings.json` or `.mcp.json`, which are yours.
-
-Then commit, so everyone on the project gets the same version:
+After cloning a project that uses the rules, or pulling a teammate's update, fill or sync the `.ai` folder:
 
 ```bash
-git add .
-git commit -m "Update Unity Architecture Agents"
+git submodule update --init
 ```
 
-What changed is in `.ai/CHANGELOG.md`. Teammates get it with `git pull` followed by `git submodule update --init`.
+What each command creates, the install options and how verification works: [Setup Reference](docs/REFERENCE.md). From a brand-new Unity project, step by step: [Installation Guide](docs/INSTALLATION.md).
 
-The files are copies rather than symbolic links because links need extra setup on Windows, and Copilot and Rider don't always follow them.
+---
 
-### Work with the Editor open (MCP for Unity)
+## Key Features
 
-This is optional: without it, the agent works with the Editor closed and everything else in the rules still applies. An agent can also work while the project is open in Unity, through a local Unity MCP server, such as [MCP for Unity](https://github.com/CoplayDev/unity-mcp) (by Coplay). Everything runs on your machine: Claude Code talks to the server on `localhost`, and the server talks to the open Editor. There's no other server or pipeline to set up.
+* **[Strict MVC for uGUI](architecture/MVC.md)**: Models own state, Views render, Controllers receive input, and state flows by pull.
+  Eleven invariants and the layer rules hold in every project, so agents and people write the same shapes.
+* **[Asks before it builds](architecture/AGENT_WORKFLOW.md#scope-question)**: for a new feature the agent asks for code only, with prefabs, with tests, or all of them.
+  It builds the smallest feature that does what you asked, and never adds analyzers or tools you didn't ask for.
+* **[A build it can't skip](docs/REFERENCE.md#how-verification-works)**: when the agent finishes, a Claude Code hook compiles and runs the tests, and sends failures back to fix.
+  It works with the Editor closed (batch mode) or open, through [MCP for Unity](docs/MCP_FOR_UNITY.md).
+* **[Rules Guide in Unity](docs/USAGE.md#rules-guide)**: **Tools > Unity Architecture > Rules Guide** shows the rules for people, in English or Spanish.
+  It lists only the docs for the packages you have, and links to the author's other tools.
+* **[Every assistant](docs/REFERENCE.md#what-installsh-creates)**: one install sets up Claude Code, Cursor, GitHub Copilot and Rider AI Assistant.
+  Optional packages such as Fast IoC, Screen System and UI Scroller are detected, never required.
 
-1. In Unity, **Window > Package Manager > + > Add package from git URL**: `https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity` (needs Python 3.10+ and `uv`).
-2. In **Window > MCP for Unity**, choose the **HTTP Local** transport and click **Start Server**.
-3. In the window's **Tools** section, turn on **Testing** (`run_tests`, `get_test_job`) and **Scripting Extensions** (`execute_code`). They're off by default, and the agent needs them to run tests and to build and validate prefabs.
-4. Close Unity and run `bash .ai/templates/scripts/install.sh --mcp`. It writes `.mcp.json`, which registers the server for Claude Code as `unityMCP` on `http://localhost:8080/mcp`, MCP for Unity's default. Without `--mcp`, `install.sh` writes it only when the manifest already has MCP for Unity, so a project that doesn't use it never sees a failed server. Don't also register it from the window, or Claude Code sees it twice. Open Claude Code in the project, approve the server, and check it with `/mcp`.
-5. Keep the Editor open while the agent works.
+---
 
-The [installation guide](docs/INSTALLATION.md#6-set-up-mcp-for-unity) has the details, including Roslyn for `execute_code` and what to allow in `.claude/settings.json`.
+## Quickstart
 
-With the Editor open, the Stop hook can't run `verify.sh`, because batch mode can't open a project the Editor has open. The reporters in the `.ai/unity` package, which `install.sh` adds to the manifest, write each compile and test run to `Logs/verify/`, and the hook reads them with `scripts/verify-editor.sh`. If a script changed after the last compile, the hook asks the agent to compile (`refresh_unity`) through the MCP server before finishing. When the tests are due, it also asks the agent to run them (`run_tests`). With the Editor open and no Unity MCP in the manifest, the hook can't ask for either, so it only reports that it couldn't check and lets the agent finish; close Unity for a full check.
-
-### How verification works
-
-`scripts/verify.sh` finds the Unity version in `ProjectSettings/ProjectVersion.txt` in Unity Hub's default folder, or in the folder set in **Hub > Preferences > Installs**; set `UNITY_PATH` to use another. It compiles the project and runs the EditMode tests; without the Test Framework package (`com.unity.test-framework`) it only compiles, and says so. It fails on compiler and analyzer errors, and writes `Logs/verify/summary.json` for agents and CI. Exit codes: `0` passed, `1` failed, `2` couldn't run. When Claude Code finishes, the hook runs it if `Assets`, `Packages` or `ProjectSettings` changed, and sends failures back to the agent. It gives up after three attempts in a row. The hook only compiles on most stops: it runs the tests at most every two hours, when something changed since they last passed (`VERIFY_TESTS_EVERY_SECONDS` changes the interval, and `VERIFY_COMPILE_ONLY=1` makes `verify.sh` only compile). Close the project in the Editor while the agent works, or the hook can't check anything.
-
-With a Unity MCP server, such as the Unity CLI's `unity mcp` mode or [MCP for Unity](https://github.com/CoplayDev/unity-mcp), the agent reads the Console, runs tests and builds prefabs through the open Editor instead. [Editor tools](architecture/EDITOR_TOOLS.md) says which tool checks what, and what an agent may do through a bridge.
-
-### Installing without the script
-
-Each file the script creates comes from `.ai/templates`, except `AGENTS.md` and `CLAUDE.md`, and the analyzers, which come from `.ai/analyzers/prebuilt` with `.ai/analyzers/dll.meta.template` as their `.meta`. To do it by hand, copy them to the paths in the table above, make `scripts/verify.sh` and the hook executable, and write the two entry files:
-
-`AGENTS.md`:
-
-```markdown
-# AGENTS.md
-
-All rules live in the `.ai` submodule. Read `.ai/AGENTS.md` completely, then open only the document it points to.
-
-If `.ai/` is empty, run `git submodule update --init`.
-
-## Rules for this project only
-```
-
-`CLAUDE.md`:
+Open Claude Code at the project root and ask for a feature:
 
 ```text
-@.ai/AGENTS.md
-@AGENTS.md
+Create the player health feature to show the player's health in the UI.
 ```
 
-## Project status
+The agent reads the rules in `.ai`, asks what to deliver, shows a short plan for you to approve, and builds it. When it stops, the hook checks the build. Say the scope up front to skip the question:
 
-This is version `0.5.0`. The architecture and the code style are mandatory. [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), [UI Scroller](https://github.com/sgonzalezrozo/unity-ui-scroller), [Screen System](https://github.com/sgonzalezrozo/unity-screen-system) and [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations) are optional: agents detect them, and use plain Unity forms when they're missing.
+```text
+Create the player health feature: code and prefabs, no tests.
+```
 
-## FAQ
+More prompts that work, with the Editor open or closed: [Usage](docs/USAGE.md). Rules for one project only go in the root `AGENTS.md`, under "Rules for this project only"; never edit files inside `.ai`.
 
-### How do I make AI coding agents follow an architecture in Unity?
-
-Give them rules they can't miss, and checks they can't skip. Add this repository as `.ai/` and run its install script: it sets up the rules, the [analyzers](analyzers) and the [verify loop](#how-verification-works) that checks every change. Instructions guide the agent, and the compiler enforces the mechanical rules.
-
-### Does it work with Claude Code, Cursor, Copilot and Rider?
-
-I use it with Claude Code, Copilot and Rider's AI Assistant. Claude Code reads `CLAUDE.md`, and Copilot and Rider read the [templates](templates) you copy into their fixed paths. Cursor and Codex read the same kind of files (a Cursor rule template and `AGENTS.md`), but I haven't tested them yet.
-
-### Does it work with Unity MCP?
-
-Yes. With the Unity CLI (`unity mcp`) or MCP for Unity, the agent verifies through the open Editor and may build prefabs with editor tools. It still never writes prefab or scene YAML as text. See [Editor tools](architecture/EDITOR_TOOLS.md).
-
-### Which architecture does it use?
-
-Strict MVC for uGUI: Models own state, Views render, Controllers receive input, and state flows by pull through parameterless events. No `Button`, `Toggle` or `Slider`, because each is a View and a Controller in one. ECS gameplay is out of scope.
-
-### Do I need Fast IoC or the other packages?
-
-No. [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), [UI Scroller](https://github.com/sgonzalezrozo/unity-ui-scroller), [Screen System](https://github.com/sgonzalezrozo/unity-screen-system) and [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations) are optional. Agents detect them in `Packages/manifest.json` and use plain Unity forms when they're missing.
-
-### Does it work with Unity 6, URP and HDRP?
-
-It's written and tested against Unity 6 (`6000.3`). The rules cover uGUI code, so the render pipeline doesn't matter.
-
-### How do I write an AGENTS.md or CLAUDE.md for a Unity project?
-
-Start from this repository instead of a blank file. Add it as the `.ai/` submodule and run its install script, which creates a root `AGENTS.md` and `CLAUDE.md` that point to it, as [Use it in a project](#use-it-in-a-project) shows. Put rules that only apply to one project in that project's root `AGENTS.md`.
-
-### Are there Cursor rules for Unity?
-
-Yes. Copy [`templates/cursor-rule.mdc`](templates/cursor-rule.mdc) to `.cursor/rules/`. It loads the full rule set from `.ai/AGENTS.md`.
-
-### Is it free for commercial use?
-
-Yes. It's MIT licensed.
-
-### Does anyone else use it?
-
-Not yet. It's version `0.5.0` by a single author, used only in my personal projects so far, and the rules still change. Feedback and issues are very welcome.
-
-### Is there a sample project?
-
-Not yet. A sample project that runs agents against the real packages, with the verify hook installed, will be published once it follows the current rules.
+---
 
 ## Contributing
 
-Bug reports, rule fixes and pull requests are welcome. Please open an issue before starting a large change. See the [contributing guide](.github/CONTRIBUTING.md) and [security policy](.github/SECURITY.md).
-
-## Changelog
-
-See the [changelog](CHANGELOG.md).
-
-## License
-
-Released under the [MIT License](LICENSE).
+Bug reports, rule fixes and pull requests are welcome. Open an issue before a large change. See the [contributing guide](.github/CONTRIBUTING.md) and the [security policy](.github/SECURITY.md). Released under the [MIT License](LICENSE).

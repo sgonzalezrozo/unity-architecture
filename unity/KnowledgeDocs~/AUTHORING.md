@@ -9,8 +9,13 @@ Internal notes for maintaining the Rules Guide docs. **This file doesn't show in
 | `KnowledgeDocs~/knowledge.json` | The index: title, summary, category, color, keywords, source, requirements and home page |
 | `KnowledgeDocs~/Docs/<topic>/*.md` | One doc per topic, short (under about 50 lines) |
 | `KnowledgeDocs~/Images/` | Screenshots and diagrams (`.png` or `.jpg`) |
+| `KnowledgeDocs~/es/knowledge.json`, `es/Docs/...` | The Spanish version: the same ids and paths, with Spanish titles, summaries, categories, home sections and text |
 
 The `~` in the folder name keeps Unity from **importing** it: no `.meta` files or assets, but the window reads it from disk.
+
+## Languages
+
+The window shows English or Spanish (**Settings > Language**). English is the source: every doc and catalog entry exists there first. The Spanish catalog has the same entries in the same order, with the same `id` and `markdownPath`; only `title`, `summary`, `category`, `home` and the docs' text change. Keep Spanish keywords and add the English ones, so a search finds a doc in either language. A doc missing under `es/` shows in English, and images always come from `Images/`.
 
 ## Catalog entry
 

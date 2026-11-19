@@ -11,7 +11,7 @@ Code that breaks one of these **is wrong even if it compiles and runs**.
 | `ARCH-05` | No `Button`, `Toggle`, `Slider` or `Dropdown` |
 | `ARCH-06` | Code and its prefabs share a folder; source art doesn't |
 | `ARCH-07` | Anything that can be deterministic is |
-| `ARCH-08` | Anything testable has tests |
+| `ARCH-08` | Anything testable is testable, and has tests when the scope includes them |
 | `ARCH-09` | Models never form a cycle |
 | `ARCH-10` | No abstraction without a second use |
 | `ARCH-11` | Do the minimum; what isn't used costs nothing |

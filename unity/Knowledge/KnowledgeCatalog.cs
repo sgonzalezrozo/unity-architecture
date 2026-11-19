@@ -40,6 +40,7 @@ namespace UnityArchitecture.Knowledge
 
         [NonSerialized] public string markdownContent;
         [NonSerialized] public string markdownFullPath;
+        [NonSerialized] public string imageFolder;
         [NonSerialized] public string sourceFullPath;
         [NonSerialized] public List<MdBlock> blocks;
         [NonSerialized] public int index;

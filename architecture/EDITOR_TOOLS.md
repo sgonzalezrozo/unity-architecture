@@ -65,7 +65,7 @@ compile + analyzers → EditMode tests → generation status → Play mode check
 
 ## Automatic verification
 
-A Claude Code Stop hook stops an agent from finishing with a broken build. `templates/scripts/install.sh` installs it, as the [README](../README.md#use-it-in-a-project) shows. It runs only when `Assets`, `Packages` or `ProjectSettings` changed, sends failures back to the agent, and gives up after three attempts in a row.
+A Claude Code Stop hook stops an agent from finishing with a broken build. `templates/scripts/install.sh` installs it, as the [Setup Reference](../docs/REFERENCE.md#what-installsh-creates) shows. It runs only when `Assets`, `Packages` or `ProjectSettings` changed, sends failures back to the agent, and gives up after three attempts in a row.
 
 Compiling is quick, so the hook checks it on every stop. The tests are slow, so it runs them at most every two hours, and only when something changed since they last passed. Between runs it sets `VERIFY_COMPILE_ONLY=1`, and its message says when the tests are due. Only a full run the hook asked for counts: a filtered run, such as the related tests or the prefab validator, doesn't reset the interval. Set `VERIFY_TESTS_EVERY_SECONDS` to change the interval. A changed prefab under `Assets/Client` gets the prefab validator (`TEST-12`) on every stop: with the Editor open, the hook asks the agent to run it through `run_tests`; with it closed, `verify.sh` runs only that test. The tests related to a change (`TEST-11`) run on every change: with the Editor open through `run_tests` with a filter, and with it closed through `VERIFY_TEST_FILTER="<names or regex>" scripts/verify.sh`, which passes the filter to Unity's `-testFilter`.
 

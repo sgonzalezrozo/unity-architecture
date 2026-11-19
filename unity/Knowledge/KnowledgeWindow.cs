@@ -52,13 +52,19 @@ namespace UnityArchitecture.Knowledge
         private string loadError;
         private DateTime lastLoadedStamp;
         private float availableWidth;
+        // What the mouse is over (a card header, a chip, a link), so a mouse move repaints only when that changes.
+        private string hoverKey;
+        private string pendingHoverKey;
+        private readonly Dictionary<string, float> chipWidths = new Dictionary<string, float>();
+        private readonly Dictionary<string, string> chipLabels = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> categoryColors = new Dictionary<string, string>();
         private GUIStyle titleStyle, summaryStyle, sectionTitleStyle, sectionDescriptionStyle, chipStyle, emptyStyle;
 
         [MenuItem(MENU_PATH, priority = 0)]
         public static void OpenWindow()
         {
             var window = GetWindow<KnowledgeWindow>();
-            window.titleContent = new GUIContent("Rules Guide", EditorGUIUtility.IconContent("_Help").image);
+            window.titleContent = new GUIContent(KnowledgeLanguage.T("Rules Guide"), EditorGUIUtility.IconContent("_Help").image);
             window.minSize = new Vector2(460f, 320f);
             window.Show();
         }
@@ -131,7 +137,7 @@ namespace UnityArchitecture.Knowledge
 
         private KnowledgeCatalog ReadCatalog()
         {
-            string catalogPath = Path.Combine(knowledgeFolder, CATALOG_FILE);
+            string catalogPath = Path.Combine(LanguageFolder, CATALOG_FILE);
             if (!File.Exists(catalogPath))
             {
                 loadError = $"{CATALOG_FILE} not found in:\n{knowledgeFolder}";
@@ -155,12 +161,16 @@ namespace UnityArchitecture.Knowledge
             if (string.IsNullOrEmpty(entry.id))
                 entry.id = entry.markdownPath ?? index.ToString();
 
-            entry.markdownFullPath = Path.GetFullPath(Path.Combine(knowledgeFolder, entry.markdownPath ?? string.Empty));
+            string englishPath = Path.GetFullPath(Path.Combine(knowledgeFolder, entry.markdownPath ?? string.Empty));
+            string translatedPath = Path.GetFullPath(Path.Combine(LanguageFolder, entry.markdownPath ?? string.Empty));
+            entry.markdownFullPath = File.Exists(translatedPath) ? translatedPath : englishPath;
+            // Images are shared by every language and resolve from the English doc's folder.
+            entry.imageFolder = Path.GetDirectoryName(englishPath);
             entry.sourceFullPath = ResolveSource(entry.source);
 
             string raw = File.Exists(entry.markdownFullPath)
                 ? File.ReadAllText(entry.markdownFullPath, Encoding.UTF8)
-                : $"> [!WARNING] Archivo no encontrado\n> `{entry.markdownPath}`";
+                : $"> [!WARNING] File not found\n> `{entry.markdownPath}`";
             entry.markdownContent = PackageConditions.Apply(raw, installedPackages, ShowAllPackages);
 
             entry.search = KnowledgeSearch.BuildIndex(entry);
@@ -202,6 +212,9 @@ namespace UnityArchitecture.Knowledge
 
         private void BuildCategories()
         {
+            chipLabels.Clear();
+            chipWidths.Clear();
+            categoryColors.Clear();
             categoryOrder.Clear();
             categoryCounts.Clear();
             for (int i = 0; i < allEntries.Count; i++)
@@ -223,7 +236,7 @@ namespace UnityArchitecture.Knowledge
 
         private static string CategoryOf(KnowledgeEntry entry)
         {
-            return string.IsNullOrEmpty(entry.category) ? "General" : entry.category;
+            return string.IsNullOrEmpty(entry.category) ? KnowledgeLanguage.T("General") : entry.category;
         }
 
         /// <summary>
@@ -389,7 +402,7 @@ namespace UnityArchitecture.Knowledge
             KnowledgeEntry entry = ResolveLink(target);
             if (entry == null)
             {
-                ShowNotification(new GUIContent("No doc for " + target + " in this project"));
+                ShowNotification(new GUIContent(KnowledgeLanguage.T("No doc for {0} in this project", target)));
                 return;
             }
 
@@ -452,11 +465,18 @@ namespace UnityArchitecture.Knowledge
             {
                 ReparseAll();
                 titleStyle = null;
+                chipLabels.Clear();
+                chipWidths.Clear();
+                toolNameStyle = null;
             }
             EnsureWindowStyles();
 
-            if (Event.current.type == EventType.MouseMove)
-                Repaint();
+            bool mouseMoved = Event.current.type == EventType.MouseMove;
+            if (mouseMoved)
+            {
+                pendingHoverKey = null;
+                markdown.LinkHoverKey = null;
+            }
 
             DrawToolbar();
 
@@ -489,6 +509,18 @@ namespace UnityArchitecture.Knowledge
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             EditorGUILayout.EndScrollView();
+
+            // A mouse move used to repaint the whole window every time. Now it repaints only when the mouse moves onto
+            // or off something that draws a hover state.
+            if (mouseMoved)
+            {
+                string key = pendingHoverKey ?? markdown.LinkHoverKey;
+                if (key != hoverKey)
+                {
+                    hoverKey = key;
+                    Repaint();
+                }
+            }
         }
 
         /// <summary>
@@ -541,14 +573,14 @@ namespace UnityArchitecture.Knowledge
 
             using (new EditorGUI.DisabledScope(history.Count == 0))
             {
-                if (GUILayout.Button(new GUIContent("Back", "Go back to where you were"), EditorStyles.toolbarButton, GUILayout.Width(46f)))
+                if (GUILayout.Button(new GUIContent(KnowledgeLanguage.T("Back"), KnowledgeLanguage.T("Go back to where you were")), EditorStyles.toolbarButton, GUILayout.Width(46f)))
                     GoBack();
             }
 
             bool onHome = !IsSearching && categoryFilter == null && focusedId == null;
             using (new EditorGUI.DisabledScope(onHome))
             {
-                if (GUILayout.Button(new GUIContent("Home", "Go to the home page"), EditorStyles.toolbarButton, GUILayout.Width(46f)))
+                if (GUILayout.Button(new GUIContent(KnowledgeLanguage.T("Home"), KnowledgeLanguage.T("Go to the home page")), EditorStyles.toolbarButton, GUILayout.Width(46f)))
                     GoHome();
             }
 
@@ -565,18 +597,18 @@ namespace UnityArchitecture.Knowledge
             }
 
             if (IsSearching)
-                GUILayout.Label($"{filteredEntries.Count} results", EditorStyles.miniLabel, GUILayout.ExpandWidth(false));
+                GUILayout.Label(KnowledgeLanguage.T("{0} results", filteredEntries.Count), EditorStyles.miniLabel, GUILayout.ExpandWidth(false));
 
-            if (GUILayout.Button(new GUIContent("Collapse", "Close every doc"), EditorStyles.toolbarButton, GUILayout.Width(60f)))
+            if (GUILayout.Button(new GUIContent(KnowledgeLanguage.T("Collapse"), KnowledgeLanguage.T("Close every doc")), EditorStyles.toolbarButton, GUILayout.Width(60f)))
                 CollapseAll();
 
             GUIContent refresh = EditorGUIUtility.IconContent("Refresh");
-            refresh.tooltip = "Reload knowledge.json and the .md files";
+            refresh.tooltip = KnowledgeLanguage.T("Reload knowledge.json and the .md files");
             if (GUILayout.Button(refresh, EditorStyles.toolbarButton, GUILayout.Width(28f)))
                 Reload();
 
             GUIContent gear = EditorGUIUtility.IconContent("_Popup");
-            gear.tooltip = "Settings";
+            gear.tooltip = KnowledgeLanguage.T("Settings");
             if (GUILayout.Button(gear, EditorStyles.toolbarButton, GUILayout.Width(28f)))
                 PopupWindow.Show(GUILayoutUtility.GetLastRect(), new KnowledgeSettingsPopup(this, knowledgeFolder));
 
@@ -588,9 +620,9 @@ namespace UnityArchitecture.Knowledge
             GUILayout.Space(10f);
             EditorGUILayout.HelpBox(loadError, MessageType.Warning);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Reload"))
+            if (GUILayout.Button(KnowledgeLanguage.T("Reload")))
                 Reload();
-            if (Directory.Exists(knowledgeFolder) && GUILayout.Button("Show folder"))
+            if (Directory.Exists(knowledgeFolder) && GUILayout.Button(KnowledgeLanguage.T("Show folder")))
                 EditorUtility.RevealInFinder(knowledgeFolder);
             GUILayout.EndHorizontal();
         }
@@ -610,8 +642,11 @@ namespace UnityArchitecture.Knowledge
                 GUILayout.Space(14f);
             }
 
-            DrawSectionHeader("Browse by topic", $"All {allEntries.Count} docs, grouped. You can also type what you're looking for above.", width);
+            DrawSectionHeader(KnowledgeLanguage.T("Browse by topic"), KnowledgeLanguage.T("All {0} docs, grouped. You can also type what you're looking for above.", allEntries.Count), width);
             DrawCategoryChips(width);
+
+            GUILayout.Space(14f);
+            DrawOtherTools(width);
         }
 
         private void CollectSection(string sectionName)
@@ -663,7 +698,7 @@ namespace UnityArchitecture.Knowledge
             if (sectionBuffer.Count == 0)
                 return;
 
-            DrawSectionHeader("More in " + CategoryOf(focused), null, width);
+            DrawSectionHeader(KnowledgeLanguage.T("More in {0}", CategoryOf(focused)), null, width);
             DrawEntryList(sectionBuffer, width);
         }
 
@@ -672,7 +707,7 @@ namespace UnityArchitecture.Knowledge
             if (filteredEntries.Count == 0)
             {
                 GUILayout.Space(20f);
-                GUILayout.Label("No results. Try another word.", emptyStyle, GUILayout.Width(width));
+                GUILayout.Label(KnowledgeLanguage.T("No results. Try another word."), emptyStyle, GUILayout.Width(width));
                 return;
             }
 
@@ -745,14 +780,25 @@ namespace UnityArchitecture.Knowledge
             }
         }
 
+        /// <summary>Chip labels and widths are measured once per load (and when the styles change), not every frame.</summary>
         private string ChipLabel(string category)
         {
-            return $"{category}  <color=#{ColorUtility.ToHtmlStringRGB(markdown.Theme.muted)}>{categoryCounts[category]}</color>";
+            if (!chipLabels.TryGetValue(category, out string label))
+            {
+                label = $"{category}  <color=#{ColorUtility.ToHtmlStringRGB(markdown.Theme.muted)}>{categoryCounts[category]}</color>";
+                chipLabels[category] = label;
+            }
+            return label;
         }
 
         private float ChipWidth(string category)
         {
-            return chipStyle.CalcSize(new GUIContent(ChipLabel(category))).x;
+            if (!chipWidths.TryGetValue(category, out float chipWidth))
+            {
+                chipWidth = chipStyle.CalcSize(new GUIContent(ChipLabel(category))).x;
+                chipWidths[category] = chipWidth;
+            }
+            return chipWidth;
         }
 
         private bool DrawChip(Rect rect, string category)
@@ -760,6 +806,8 @@ namespace UnityArchitecture.Knowledge
             Event current = Event.current;
             bool hover = rect.Contains(current.mousePosition);
             MdTheme theme = markdown.Theme;
+            if (hover && current.type == EventType.MouseMove)
+                pendingHoverKey = "chip:" + category;
 
             if (current.type == EventType.Repaint)
             {
@@ -784,12 +832,19 @@ namespace UnityArchitecture.Knowledge
 
         private string CategoryColor(string category)
         {
+            if (categoryColors.TryGetValue(category, out string color))
+                return color;
+
             for (int i = 0; i < allEntries.Count; i++)
             {
                 if (CategoryOf(allEntries[i]) == category)
-                    return allEntries[i].color;
+                {
+                    color = allEntries[i].color;
+                    break;
+                }
             }
-            return null;
+            categoryColors[category] = color;
+            return color;
         }
 
         // ------------------------------------------------------------------ Cards
@@ -823,7 +878,7 @@ namespace UnityArchitecture.Knowledge
                 GUILayout.Space(CARD_PADDING + 4f);
                 float innerWidth = width - CARD_PADDING * 2f - 4f;
                 GUILayout.BeginVertical(GUILayout.Width(innerWidth));
-                markdown.Draw(entry.blocks, Path.GetDirectoryName(entry.markdownFullPath), innerWidth);
+                markdown.Draw(entry.blocks, entry.imageFolder, innerWidth);
                 GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
                 GUILayout.Space(14f);
@@ -837,6 +892,8 @@ namespace UnityArchitecture.Knowledge
         {
             Event current = Event.current;
             bool hover = header.Contains(current.mousePosition);
+            if (hover && current.type == EventType.MouseMove)
+                pendingHoverKey = "entry:" + entry.id;
 
             if (current.type == EventType.Repaint && hover)
                 EditorGUI.DrawRect(new Rect(header.x + 4f, header.y, header.width - 4f, header.height), markdown.Theme.cardHeaderHover);
@@ -845,7 +902,7 @@ namespace UnityArchitecture.Knowledge
             if (entry.sourceFullPath != null)
             {
                 GUIContent sourceIcon = EditorGUIUtility.IconContent("d_TextAsset Icon");
-                sourceIcon.tooltip = "Open the original: " + entry.source;
+                sourceIcon.tooltip = KnowledgeLanguage.T("Open the original: {0}", entry.source);
                 if (GUI.Button(sourceRect, sourceIcon, EditorStyles.iconButton))
                     EditorUtility.OpenWithDefaultApp(entry.sourceFullPath);
             }
@@ -907,6 +964,125 @@ namespace UnityArchitecture.Knowledge
         {
             CloseOthers = value;
         }
+
+        internal void SetLanguage(string code)
+        {
+            KnowledgeLanguage.Current = code;
+            titleContent = new GUIContent(KnowledgeLanguage.T("Rules Guide"), titleContent.image);
+            history.Clear();
+            Reload();
+        }
+
+        /// <summary>The folder the catalog and docs are read from: es/ for Spanish when it's there, the English root otherwise.</summary>
+        private string LanguageFolder
+        {
+            get
+            {
+                if (KnowledgeLanguage.IsSpanish)
+                {
+                    string spanish = Path.Combine(knowledgeFolder, KnowledgeLanguage.SPANISH);
+                    if (File.Exists(Path.Combine(spanish, CATALOG_FILE)))
+                        return spanish;
+                }
+                return knowledgeFolder;
+            }
+        }
+
+        // ------------------------------------------------------------------ Other tools
+
+        private struct OtherTool
+        {
+            public string Name;
+            public string Package;
+            public string Repository;
+            public string English;
+            public string Spanish;
+        }
+
+        private static readonly OtherTool[] OtherTools =
+        {
+            new OtherTool { Name = "Tools Core", Package = "com.sgonzalezrozo.core", Repository = "unity-tools-core",
+                English = "Shared dependency injection interfaces. Needed by Screen System, Fast IoC and UI Scroller: add it first.",
+                Spanish = "Interfaces compartidas de inyección de dependencias. La necesitan Screen System, Fast IoC y UI Scroller: añádela primero." },
+            new OtherTool { Name = "Fast IoC", Package = "com.sgonzalezrozo.fast-ioc", Repository = "unity-fast-ioc",
+                English = "Dependency injection with generated code and no runtime reflection.",
+                Spanish = "Inyección de dependencias con código generado y sin reflexión en runtime." },
+            new OtherTool { Name = "Screen System", Package = "com.sgonzalezrozo.screen-system", Repository = "unity-screen-system",
+                English = "Layer-based UI navigation for uGUI and UI Toolkit: screens, modals and alerts.",
+                Spanish = "Navegación de UI por layers para uGUI y UI Toolkit: pantallas, modales y alertas." },
+            new OtherTool { Name = "UI Scroller", Package = "com.sgonzalezrozo.ui-scroller", Repository = "unity-ui-scroller",
+                English = "Recycling scroll view for lists, grids and bento layouts of any length.",
+                Spanish = "Scroll con reciclado para listas, grids y layouts bento de cualquier tamaño." },
+            new OtherTool { Name = "UI Foundations", Package = "com.sgonzalezrozo.ui-foundations", Repository = "unity-ui-foundations",
+                English = "Click Controllers, view states and group gradients for strict MVC.",
+                Spanish = "Click Controllers, estados de vista y gradientes de grupo para MVC estricto." },
+            new OtherTool { Name = "UI Tweens", Package = "com.sgonzalezrozo.ui-tweens", Repository = "unity-ui-tweens",
+                English = "ECS-based tweens for Unity UI with a DOTween-style API.",
+                Spanish = "Tweens basados en ECS para la UI de Unity, con una API estilo DOTween." },
+        };
+
+        private GUIStyle toolNameStyle, toolTextStyle, toolUrlStyle, installedStyle;
+
+        /// <summary>The author's other packages, each with its git URL, marked Installed when the project has it.</summary>
+        private void DrawOtherTools(float width)
+        {
+            DrawSectionHeader(KnowledgeLanguage.T("Other tools"), KnowledgeLanguage.T("The author's other Unity packages. Install one from Window > Package Manager > + > Add package from git URL."), width);
+
+            if (toolNameStyle == null)
+            {
+                toolNameStyle = new GUIStyle(EditorStyles.boldLabel) { fontSize = 12 };
+                toolTextStyle = new GUIStyle(EditorStyles.wordWrappedLabel) { fontSize = 11 };
+                toolUrlStyle = new GUIStyle(EditorStyles.miniLabel) { fontSize = 10 };
+                installedStyle = new GUIStyle(EditorStyles.miniBoldLabel) { normal = { textColor = new Color(0.25f, 0.73f, 0.31f) } };
+            }
+
+            MdTheme theme = markdown.Theme;
+            for (int i = 0; i < OtherTools.Length; i++)
+            {
+                OtherTool tool = OtherTools[i];
+                string url = $"https://github.com/sgonzalezrozo/{tool.Repository}.git";
+                string text = KnowledgeLanguage.IsSpanish ? tool.Spanish : tool.English;
+                bool installed = installedPackages.ContainsKey(tool.Package);
+
+                Rect card = EditorGUILayout.BeginVertical(GUILayout.Width(width));
+                if (Event.current.type == EventType.Repaint)
+                {
+                    EditorGUI.DrawRect(card, theme.cardBackground);
+                    DrawOutline(card, theme.cardBorder);
+                }
+
+                GUILayout.Space(6f);
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(CARD_PADDING);
+                GUILayout.Label(tool.Name, toolNameStyle, GUILayout.ExpandWidth(false));
+                if (installed)
+                    GUILayout.Label("✓ " + KnowledgeLanguage.T("Installed"), installedStyle, GUILayout.ExpandWidth(false));
+                GUILayout.FlexibleSpace();
+                if (!installed && GUILayout.Button(KnowledgeLanguage.T("Copy URL"), EditorStyles.miniButton, GUILayout.ExpandWidth(false)))
+                {
+                    EditorGUIUtility.systemCopyBuffer = url;
+                    ShowNotification(new GUIContent(KnowledgeLanguage.T("Copied {0}", url)));
+                }
+                GUIContent open = EditorGUIUtility.IconContent("_Help");
+                open.tooltip = KnowledgeLanguage.T("Open the repository");
+                if (GUILayout.Button(open, EditorStyles.iconButton, GUILayout.Width(20f)))
+                    Application.OpenURL($"https://github.com/sgonzalezrozo/{tool.Repository}#readme");
+                GUILayout.Space(CARD_PADDING);
+                GUILayout.EndHorizontal();
+
+                float innerWidth = width - CARD_PADDING * 2f;
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(CARD_PADDING);
+                GUILayout.BeginVertical(GUILayout.Width(innerWidth));
+                GUILayout.Label(text, toolTextStyle, GUILayout.Width(innerWidth));
+                EditorGUILayout.SelectableLabel(url, toolUrlStyle, GUILayout.Width(innerWidth), GUILayout.Height(14f));
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+                GUILayout.Space(6f);
+                EditorGUILayout.EndVertical();
+                GUILayout.Space(6f);
+            }
+        }
     }
 
     internal class KnowledgeSettingsPopup : PopupWindowContent
@@ -922,24 +1098,29 @@ namespace UnityArchitecture.Knowledge
 
         public override Vector2 GetWindowSize()
         {
-            return new Vector2(360f, 150f);
+            return new Vector2(360f, 176f);
         }
 
         public override void OnGUI(Rect rect)
         {
-            GUILayout.Label("Rules Guide", EditorStyles.boldLabel);
+            GUILayout.Label(KnowledgeLanguage.T("Rules Guide"), EditorStyles.boldLabel);
 
-            bool closeOthers = EditorGUILayout.ToggleLeft("Opening a doc closes the others", KnowledgeWindow.GetCloseOthers());
+            int language = Array.IndexOf(KnowledgeLanguage.Codes, KnowledgeLanguage.Current);
+            int chosen = EditorGUILayout.Popup(KnowledgeLanguage.T("Language"), Mathf.Max(0, language), KnowledgeLanguage.Labels);
+            if (chosen != language)
+                owner.SetLanguage(KnowledgeLanguage.Codes[chosen]);
+
+            bool closeOthers = EditorGUILayout.ToggleLeft(KnowledgeLanguage.T("Opening a doc closes the others"), KnowledgeWindow.GetCloseOthers());
             if (closeOthers != KnowledgeWindow.GetCloseOthers())
                 KnowledgeWindow.SetCloseOthers(closeOthers);
 
-            bool showAll = EditorGUILayout.ToggleLeft("Show docs of packages that aren't installed", KnowledgeWindow.GetShowAll());
+            bool showAll = EditorGUILayout.ToggleLeft(KnowledgeLanguage.T("Show docs of packages that aren't installed"), KnowledgeWindow.GetShowAll());
             if (showAll != KnowledgeWindow.GetShowAll())
                 owner.SetShowAll(showAll);
 
             EditorGUILayout.Space(4f);
             EditorGUILayout.LabelField(resolvedFolder ?? string.Empty, EditorStyles.wordWrappedMiniLabel);
-            if (GUILayout.Button("Show folder") && Directory.Exists(resolvedFolder))
+            if (GUILayout.Button(KnowledgeLanguage.T("Show folder")) && Directory.Exists(resolvedFolder))
                 EditorUtility.RevealInFinder(Path.Combine(resolvedFolder, "knowledge.json"));
         }
     }

@@ -155,7 +155,7 @@ With `addressables`, load large textures and audio through it, and always releas
 
 | ID | Rule |
 |---|---|
-| `TEST-01` | Anything that can be unit tested MUST have unit tests: Models, Modules, pure C# classes, data conversions and calculations. |
+| `TEST-01` | Anything that can be unit tested MUST have unit tests when the task's scope includes tests (`SCOPE-01`): Models, Modules, pure C# classes, data conversions and calculations. |
 | `TEST-02` | Tests MUST cover the happy path, edge cases and errors. |
 | `TEST-03` | Logic that can't be tested where it is MUST move to a testable class. It usually belongs in a Model. |
 | `TEST-04` | A bug fix MUST include a test that fails without the fix. |

@@ -9,7 +9,7 @@
 - [ ] Every file in its folder, source art outside the feature?
 - [ ] Lambdas, LINQ, `var`, `?.` on Unity objects, `///` on members, hardcoded text?
 - [ ] Could a tool have decided this? Does a Model read time or randomness directly?
-- [ ] Everything testable covered, with Model tests first?
+- [ ] Everything testable covered, with Model tests first? Without tests in the scope, still testable and the missing tests listed?
 - [ ] Model and View on their scope root?
 - [ ] Cycles between Models? A Model with serialized fields?
 - [ ] Is it the minimum, with no unused abstraction?

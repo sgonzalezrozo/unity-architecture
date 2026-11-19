@@ -17,14 +17,14 @@ About 20 minutes, most of it waiting for Unity.
 git submodule add https://github.com/sgonzalezrozo/unity-architecture-agents.git .ai
 ```
 
-4. Run the install script. It creates the entry files, copies the analyzers, and adds this package to the manifest.
+4. Run the install script. It creates the entry files and adds this package to the manifest. With `--analyzers` it also installs the optional analyzers.
 
 ```bash
 bash .ai/templates/scripts/install.sh
 ```
 
 5. Answer `y` to **"Run scripts/verify.sh now?"**: it compiles and runs the tests in batch mode.
-1. Optional: install and set up **MCP for Unity** (see [Set up MCP for Unity](doc:mcp.setup)).
+1. Optional: install and set up **MCP for Unity** (see [Install MCP for Unity](doc:mcp.install)).
 
 > [!TIP]
 > When you clone a project that already has it: `git submodule update --init`.

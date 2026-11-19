@@ -1986,6 +1986,28 @@
       ]
     },
     {
+      "id": "mcp.install",
+      "title": "Install MCP for Unity",
+      "summary": "The package, the server and the tool groups, step by step",
+      "category": "MCP for Unity",
+      "color": "teal",
+      "keywords": [
+        "mcp",
+        "install",
+        "installation",
+        "guide",
+        "setup",
+        "uv",
+        "package",
+        "coplay",
+        "unity-mcp"
+      ],
+      "markdownPath": "Docs/mcp/install.md",
+      "source": "docs/MCP_FOR_UNITY.md",
+      "home": "Packages and installation",
+      "homeOrder": 3
+    },
+    {
       "id": "mcp.setup",
       "title": "Set up MCP for Unity",
       "summary": "Window, HTTP server and the Cmd+Shift+M shortcut",
@@ -2178,6 +2200,30 @@
       ],
       "markdownPath": "Docs/agent/task_types.md",
       "source": "architecture/AGENT_WORKFLOW.md"
+    },
+    {
+      "id": "agent.scope_question",
+      "title": "The scope question",
+      "summary": "Code only, with prefabs, with tests: the agent asks before a new feature",
+      "category": "Working with the agent",
+      "color": "blue",
+      "keywords": [
+        "scope",
+        "question",
+        "prefabs",
+        "tests",
+        "analyzers",
+        "SCOPE-01",
+        "SCOPE-02",
+        "SCOPE-03",
+        "SCOPE-04",
+        "tokens",
+        "minimum"
+      ],
+      "markdownPath": "Docs/agent/scope_question.md",
+      "source": "architecture/AGENT_WORKFLOW.md",
+      "home": "Getting started",
+      "homeOrder": 4
     },
     {
       "id": "agent.when_to_ask",

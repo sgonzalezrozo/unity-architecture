@@ -10,7 +10,18 @@ Match the process to the task size. Run [capability detection](OPTIONAL_PACKAGES
 |---|---|
 | Question, explanation, review | Answer directly |
 | Small change inside existing classes, with no architectural decision | Make the change and summarize it |
-| New feature, new screen, new class family, refactor, anything touching `Shared/` | Plan first, ask the user to approve it, wait for approval |
+| New feature, new screen, new class family, refactor, anything touching `Shared/` | Ask the [scope question](#scope-question), plan, ask the user to approve both, wait for approval |
+
+## Scope question
+
+A short prompt ("create the player health feature to show the player's health in the UI") doesn't say how much to build. Ask instead of guessing high: building more than was asked costs time and tokens and leaves files the user didn't want.
+
+| ID | Rule |
+|---|---|
+| `SCOPE-01` | Before planning a new feature or screen, the agent MUST ask the user what to deliver, as one question with these choices: **Code only**; **Code and prefabs**; **Code and tests**; **Code, prefabs and tests**. Ask it together with the plan, in the same prompt. Skip it only when the request already says. |
+| `SCOPE-02` | The agent MUST create only what the chosen scope includes. Without prefabs, it describes them in the [handoff](#prefab-handoff) for the developer instead. Without tests, the code stays testable (logic in Models and plain classes, `TEST-03`) and the report lists the tests that would cover it. |
+| `SCOPE-03` | The agent MUST NOT write analyzers, editor tools, generators, test infrastructure or new shared abstractions unless the user asks for them by name. `DET-04` is for the maintainers of these rules, not for feature tasks. |
+| `SCOPE-04` | The plan names every file it will create. Start from the smallest feature that does what was asked: for "show the player's health", a Model and a View, and a Controller only if there's input. No backend, service, persistence or Module unless the request asks for it. |
 
 ## Plan
 
@@ -62,7 +73,7 @@ Agent output varies between runs. A deterministic tool gives the same result eve
 | `DET-01` | If a compiler, analyzer, test, script or generator can decide something, the agent MUST use that tool and MUST NOT rely on its own judgment. |
 | `DET-02` | A claim about code MUST come from a tool result, not from memory. If no tool can check it, report it as unverified. |
 | `DET-03` | Mechanical work repeated across files SHOULD become a script or generator, and the output SHOULD be reproducible. |
-| `DET-04` | A rule that can be checked mechanically SHOULD become an analyzer or a test, not only a sentence in a document. |
+| `DET-04` | For the maintainers of these rules: a rule that can be checked mechanically SHOULD become an analyzer or a test, not only a sentence in a document. An agent on a feature task doesn't write analyzers (`SCOPE-03`). |
 | `DET-05` | Runtime logic MUST be reproducible: the same state and input produce the same result. |
 | `DET-06` | Models MUST NOT read time, randomness or external state directly. They MUST receive them through an interface, so tests control them. See [the example](examples/01_BACKEND_FEATURE_TROPHY_ROOM.md#services). |
 | `DET-07` | Logic MUST NOT depend on undefined order, such as `Dictionary` enumeration order or the Unity `Awake` order of unrelated objects. |
@@ -90,7 +101,7 @@ Run this before returning code. Item numbers are stable: the [analyzers](../anal
 7. Is every file in the right folder, and is source art outside the feature?
 8. Are there lambdas, LINQ, `var`, `?.` on Unity objects, `///` comments on members, or hardcoded text?
 9. Could a deterministic tool have decided this? Does a Model read time or randomness directly?
-10. Is everything that can be unit tested covered by a test, with Model tests written first?
+10. Is everything that can be unit tested covered by a test, with Model tests written first? When the scope has no tests (`SCOPE-02`), is the logic still testable, and are the missing tests listed in the report?
 11. Is each Model and View on its scope root? Does any View render outside its scope?
 12. Do Model dependencies form a cycle? Does any Model have a serialized field?
 13. Is this the minimum that finishes the need, with no unused abstraction and nothing loaded before it's needed?
@@ -126,7 +137,8 @@ State what changed, which tool verified it, and what wasn't verified. If you cou
 
 - [ ] Follows `AGENTS.md` and the checklist above
 - [ ] Compiles with no new warnings or analyzer errors, checked by a tool (`EDIT-02`)
-- [ ] Everything that can be unit tested has tests, and the tests directly related to the change, existing and new, pass (`TEST-11`). The full suite runs in the Stop hook at most every two hours; until it has run, report it as not verified
+- [ ] Only what the chosen scope includes was created (`SCOPE-02`)
+- [ ] When the scope includes tests: everything that can be unit tested has tests, and the tests directly related to the change, existing and new, pass (`TEST-11`). Without tests in the scope, the existing related tests still pass. The full suite runs in the Stop hook at most every two hours; until it has run, report it as not verified
 - [ ] A bug fix includes a test that fails without the fix
 - [ ] No unused code, no debug logs
 

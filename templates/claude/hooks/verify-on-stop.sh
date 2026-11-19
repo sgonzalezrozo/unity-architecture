@@ -17,7 +17,13 @@ ATTEMPTS_FILE="$STATE/attempts"
 TESTS_EVERY="${VERIFY_TESTS_EVERY_SECONDS:-7200}"
 LAST_TESTS_FILE="$STATE/last-tests"
 TESTS_PENDING_FILE="$STATE/tests-pending"
-PATHS="Assets Packages ProjectSettings"
+# Unity files the agent can change. Code generators' output doesn't count: Fast IoC writes Assets/FastIoC/Generated and
+# a FastIoC.InternalsVisibleTo.g.cs next to an assembly's .asmdef every time it compiles, and counting those would make
+# each check look like a new change and run the verify again.
+PATHSPEC=(Assets Packages ProjectSettings
+    ':(exclude)Assets/FastIoC/Generated'
+    ':(exclude,glob)**/*.g.cs'
+    ':(exclude,glob)**/*.g.cs.meta')
 
 cat > /dev/null
 cd "$ROOT" || exit 0
@@ -42,9 +48,9 @@ notify() {
 
 fingerprint() {
     {
-        git status --porcelain -- $PATHS
-        git diff HEAD -- $PATHS
-        git ls-files --others --exclude-standard -z -- $PATHS | xargs -0 git hash-object --
+        git status --porcelain -- "${PATHSPEC[@]}"
+        git diff HEAD -- "${PATHSPEC[@]}"
+        git ls-files --others --exclude-standard -z -- "${PATHSPEC[@]}" | xargs -0 git hash-object --
     } 2>/dev/null | git hash-object --stdin
 }
 
@@ -59,7 +65,7 @@ seconds_until_tests() {
 }
 
 # Nothing to check: no pending changes, or the same files already passed.
-if [ -z "$(git status --porcelain -- $PATHS 2>/dev/null)" ]; then
+if [ -z "$(git status --porcelain -- "${PATHSPEC[@]}" 2>/dev/null)" ]; then
     exit 0
 fi
 

@@ -33,6 +33,9 @@ namespace UnityArchitecture.Knowledge
         /// <summary>Raised when a link is clicked: "doc:id", "rule:VIEW-03" or a URL.</summary>
         public event Action<string> LinkClicked;
 
+        /// <summary>The link under the mouse during a MouseMove, so the window repaints only when it changes.</summary>
+        public string LinkHoverKey { get; set; }
+
         public MdTheme Theme => theme;
 
         /// <summary>Returns true if the skin changed and the docs must be parsed again (colors are baked into the text).</summary>
@@ -212,12 +215,19 @@ namespace UnityArchitecture.Knowledge
 
             Event current = Event.current;
             bool isClick = current.type == EventType.MouseDown && current.button == 0;
-            if ((current.type != EventType.Repaint && !isClick) || !rect.Contains(current.mousePosition))
+            bool isMove = current.type == EventType.MouseMove;
+            if ((current.type != EventType.Repaint && !isClick && !isMove) || !rect.Contains(current.mousePosition))
                 return;
 
             MdLink link = FindLinkAt(rect, content, style, links, current.mousePosition);
             if (link == null)
                 return;
+
+            if (isMove)
+            {
+                LinkHoverKey = link.target + "@" + rect.y;
+                return;
+            }
 
             if (current.type == EventType.Repaint)
             {

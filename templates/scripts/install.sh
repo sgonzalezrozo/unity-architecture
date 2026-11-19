@@ -10,14 +10,17 @@
 #   add --verify to run scripts/verify.sh at the end without asking, or --no-verify to skip it
 #   add --mcp to register MCP for Unity in .mcp.json, or --no-mcp to never do it. By default .mcp.json is written
 #   only when Packages/manifest.json already has MCP for Unity: everything else works without it.
+#   add --analyzers to install the optional Roslyn analyzers in Assets/Client/Analyzers (they turn the mechanical rules
+#   into compile errors). They're off by default; once installed, --update keeps them up to date.
 #
-# It also installs the prebuilt analyzers in Assets/Client/Analyzers, creating Assets/Client/Client.asmdef and
-# Client.cs when Assets/Client doesn't exist yet. AGENTS.md, CLAUDE.md, .claude/settings.json and .mcp.json are never replaced.
+# It creates Assets/Client/Client.asmdef and Client.cs when Assets/Client doesn't exist yet.
+# AGENTS.md, CLAUDE.md, .claude/settings.json and .mcp.json are never replaced.
 set -u
 
 UPDATE=false
 VERIFY=ask
 MCP=auto
+ANALYZERS=auto
 for arg in "$@"; do
     case "$arg" in
         --update) UPDATE=true ;;
@@ -25,8 +28,9 @@ for arg in "$@"; do
         --no-verify) VERIFY=no ;;
         --mcp) MCP=yes ;;
         --no-mcp) MCP=no ;;
-        -h|--help) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-        *) echo "Unknown option: $arg (use --update, --verify, --no-verify, --mcp, --no-mcp or --help)"; exit 2 ;;
+        --analyzers) ANALYZERS=yes ;;
+        -h|--help) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        *) echo "Unknown option: $arg (use --update, --verify, --no-verify, --mcp, --no-mcp, --analyzers or --help)"; exit 2 ;;
     esac
 done
 
@@ -185,9 +189,10 @@ else
     created+=(".claude/settings.json")
 fi
 
-# The analyzers turn the mechanical rules into compile errors. They check only the assembly named Client, so a new
-# project gets Assets/Client/Client.asmdef with Client.cs, a note that keeps Unity from warning about an assembly
+# A new project gets Assets/Client/Client.asmdef with Client.cs, a note that keeps Unity from warning about an assembly
 # definition with no scripts. When Assets/Client already has code but no Client.asmdef, it's left alone.
+# The optional analyzers turn the mechanical rules into compile errors in that assembly. They're installed with
+# --analyzers, and kept up to date afterwards when they're already in the project.
 ANALYZER="UnityArchitecture.Analyzers"
 CLIENT="Assets/Client"
 if [ ! -e "$ROOT/$CLIENT/Client.asmdef" ] && [ -z "$(ls -A "$ROOT/$CLIENT" 2>/dev/null)" ]; then
@@ -208,10 +213,15 @@ if [ ! -e "$ROOT/$CLIENT/Client.asmdef" ] && [ -z "$(ls -A "$ROOT/$CLIENT" 2>/de
     "versionDefines": [],
     "noEngineReferences": false
 }'
-    own "$CLIENT/Client.cs" '// The Client assembly (Client.asmdef) holds this project'"'"'s own code. The architecture analyzers in
-// Analyzers/ check only this assembly, so third-party code elsewhere in Assets isn'"'"'t checked.'
+    own "$CLIENT/Client.cs" '// The Client assembly (Client.asmdef) holds this project'"'"'s own code. The optional architecture
+// analyzers (install.sh --analyzers) check only this assembly, so third-party code elsewhere in Assets isn'"'"'t checked.'
 fi
-if [ -e "$ROOT/$CLIENT/Client.asmdef" ]; then
+if [ "$ANALYZERS" = auto ] && [ -e "$ROOT/$CLIENT/Analyzers/$ANALYZER.dll" ]; then
+    ANALYZERS=yes
+fi
+if [ "$ANALYZERS" != yes ]; then
+    :
+elif [ -e "$ROOT/$CLIENT/Client.asmdef" ]; then
     copy "$CLIENT/Analyzers/$ANALYZER.dll" "$AI_DIR/analyzers/prebuilt/$ANALYZER.dll"
     copy "$CLIENT/Analyzers/$ANALYZER.dll.meta" "$AI_DIR/analyzers/dll.meta.template"
 else

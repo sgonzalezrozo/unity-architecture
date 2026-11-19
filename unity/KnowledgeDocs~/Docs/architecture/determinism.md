@@ -4,7 +4,7 @@
 > Anything that can be deterministic **is**. A tool (compiler, analyzer, test, script) beats someone's judgment.
 
 > [!RULE] ARCH-08
-> Anything that can be unit tested **has tests**. Logic that can't be tested where it is moves to where it can.
+> Anything that can be unit tested **is testable**, and has tests when the task's [scope](doc:agent.scope_question) includes them. Logic that can't be tested where it is moves to where it can.
 
 ## At runtime
 
