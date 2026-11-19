@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.6.4] - 2026-11-19
+
+### Fixed
+
+- The `.ai/unity` package's `package.json` names its author "Santiago González Rozo", like the other packages, so the Package Manager lists it with them instead of under a separate "sgonzalezrozo" group. It also has the documentation link, license, repository and keywords the other packages have, and declares its `com.unity.ugui` dependency (its prefab tools use uGUI and TextMeshPro).
+
 ## [0.6.3] - 2026-11-19
 
 ### Changed
