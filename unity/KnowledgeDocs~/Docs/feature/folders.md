@@ -8,13 +8,14 @@ Assets/
 │   ├── TrophyRoom/
 │   │   ├── MainRoom/          the screen's C# and prefabs, side by side
 │   │   ├── DetailsTrophy/
-│   │   └── Services/
-│   └── Shared/
+│   │   ├── Services/
+│   │   └── Tests/         the feature's tests (Client.Tests.asmref)
+│   ├── Shared/
+│   └── Tests/             Client.Tests.asmdef
 ├── Art/        Source art: textures, sprites, materials, VFX
 ├── Audio/      SFX, music, voice
 ├── Scenes/
-├── Editor/
-└── Tests/      One folder per feature
+└── Editor/
 ```
 
 > [!RULE] ARCH-06

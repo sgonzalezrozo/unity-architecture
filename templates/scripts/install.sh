@@ -14,7 +14,8 @@
 #   into compile errors), or --no-analyzers to skip them. Otherwise a first install asks, defaulting to no; once
 #   installed, --update keeps them up to date.
 #
-# It creates Assets/Client/Client.asmdef and Client.cs when Assets/Client doesn't exist yet.
+# It creates Assets/Client/Client.asmdef and Client.cs when Assets/Client doesn't exist yet, and the Client.Tests
+# assembly in Assets/Client/Tests when the project has the Test Framework package.
 # AGENTS.md, CLAUDE.md, .claude/settings.json and .mcp.json are never replaced.
 set -u
 
@@ -218,6 +219,39 @@ if [ ! -e "$ROOT/$CLIENT/Client.asmdef" ] && [ -z "$(ls -A "$ROOT/$CLIENT" 2>/de
     own "$CLIENT/Client.cs" '// The Client assembly (Client.asmdef) holds this project'"'"'s own code. The optional architecture
 // analyzers (install.sh --analyzers) check only this assembly, so third-party code elsewhere in Assets isn'"'"'t checked.'
 fi
+# The project's EditMode tests compile in one assembly, Client.Tests, but live next to the feature they test: each
+# Assets/Client/{Feature}/Tests folder has a Client.Tests.asmref that adds it to this assembly (ASM-03). The Stop hook
+# runs a feature's tests by their namespace, Client.{Feature}. Only with the Test Framework package, which it needs.
+if [ -e "$ROOT/$CLIENT/Client.asmdef" ] && grep -qs '"com.unity.test-framework"' "$ROOT/Packages/manifest.json"; then
+    own "$CLIENT/Tests/Client.Tests.asmdef" '{
+    "name": "Client.Tests",
+    "rootNamespace": "",
+    "references": [
+        "Client",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}'
+    own "$CLIENT/Tests/ClientTests.cs" '// The Client.Tests assembly holds this project'"'"'s EditMode tests. They live next to their feature, in
+// Assets/Client/{Feature}/Tests, with a Client.Tests.asmref that adds the folder to this assembly, and use the
+// namespace Client.{Feature}.Tests, so the Stop hook can run one feature'"'"'s tests. See .ai/architecture/FEATURE_STRUCTURE.md.'
+fi
+
 if [ "$ANALYZERS" = auto ] && [ -e "$ROOT/$CLIENT/Analyzers/$ANALYZER.dll" ]; then
     ANALYZERS=yes
 fi

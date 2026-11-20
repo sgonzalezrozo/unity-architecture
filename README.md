@@ -8,7 +8,7 @@
 Architecture rules and a working process for AI coding agents on Unity 6: strict MVC for uGUI, a verify script, and a Claude Code hook that won't let an agent finish with a broken build.
 
 [![Unity](https://img.shields.io/badge/Unity-6000.3%20tested-black?style=for-the-badge&logo=unity)](docs/INSTALLATION.md#what-you-need)
-[![Version](https://img.shields.io/badge/version-0.6.9-blue?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.7.0-blue?style=for-the-badge)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [**Installation**](#installation) • [**Key Features**](#key-features) • [**Quickstart**](#quickstart) • [**Usage**](docs/USAGE.md) • [**Rules**](AGENTS.md) • [**Developer Overview**](architecture/DEVELOPER_OVERVIEW.md)
@@ -42,7 +42,7 @@ It asks two questions:
 1. **Install the optional analyzers?** They turn the mechanical rules (no `Button`, no LINQ, no `var`...) into compile errors in `Assets/Client`. Answer `n` unless you want them; you can add them later with `--analyzers`.
 2. **Run scripts/verify.sh now?** Answer `y` with the project **closed** in Unity. It imports, compiles and tests the project once in batch mode (a few minutes), so the hook's checks are quick later. With `n`, the first check just happens later.
 
-The installer also adds the rules' package to `Packages/manifest.json`, with its **50 tests**. They test the rules and their tools, not your code: one checks that your prefabs under `Assets/Client` follow the prefab rules (it passes while there are none), and the other 49 test the prefab validator, specs and recipes themselves. So a new project reports "Verify passed: 50 tests". [Which tests](docs/REFERENCE.md#the-rules-tests).
+The installer also adds the rules' package to `Packages/manifest.json`, with its **50 tests**. They test the rules and their tools, not your code: one checks that your prefabs under `Assets/Client` follow the prefab rules, with one case per feature folder (a single case that passes while there are no prefabs), and the other 49 test the prefab validator, specs and recipes themselves. So a new project reports "Verify passed: 50 tests". [Which tests](docs/REFERENCE.md#the-rules-tests).
 
 Then commit:
 

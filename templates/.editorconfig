@@ -156,7 +156,7 @@ dotnet_diagnostic.IDE0051.severity = none
 dotnet_diagnostic.IDE0044.severity = none
 
 # ---------- Tests use Method_Condition_Result names ----------
-[Assets/Tests/**.cs]
+[{Assets/Client/Tests/**.cs,Assets/Client/**/Tests/**.cs,Assets/Tests/**.cs}]
 dotnet_diagnostic.IDE1006.severity = none
 resharper_inconsistent_naming_highlighting = none
 

@@ -5,6 +5,8 @@
 # The agent compiles and runs tests through a Unity MCP server (refresh_unity, run_tests); this script only reads
 # the results. Exit codes: 0 passed, 1 failed or out of date, 2 couldn't check.
 # Set VERIFY_COMPILE_ONLY=1 to check only the compile, as the Stop hook does between test runs.
+# Set VERIFY_TEST_FEATURES to check the tests of some features instead of the full suite, as the Stop hook does while
+# a task is scoped to them: feature folder names under Assets/Client, separated by spaces ("Inventory Store").
 # A Unity MCP is optional. Without one (no MCP for Unity or Unity CLI package in the manifest, or
 # VERIFY_EDITOR_BRIDGE=0), the agent can't compile or test in the Editor, so a result that's out of date is
 # "couldn't check" (2) instead of a failure the agent can't fix. Errors the Editor already reported still fail.
@@ -14,8 +16,10 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="$ROOT/Logs/verify"
 COMPILE="$OUT/editor-compile.json"
 TESTS="$OUT/editor-tests.json"
-PREFABS="$OUT/editor-prefabs.json"
-PREFAB_TEST="UnityArchitecture.Prefabs.Tests.ClientPrefabsTests.ClientPrefabsFollowThePrefabRules"
+CLIENT="Assets/Client"
+# The prefab validator (TEST-12) has one case per feature folder under Assets/Client, named after it, and the Editor
+# writes each case's result to editor-prefabs-{Feature}.json. Each feature's tests go to editor-tests-{Feature}.json.
+PREFAB_CASE_PREFIX="UnityArchitecture.Prefabs.Tests.ClientPrefabsTests."
 GENERATION_STATUS="$ROOT/Assets/FastIoC/Generated/GenerationStatus.json"
 
 # True when the agent can drive the open Editor: MCP for Unity, or the Unity CLI's package. VERIFY_EDITOR_BRIDGE=1 or 0
@@ -58,9 +62,11 @@ changed_script_files() {
     done
 }
 
+# The newest change to a file that makes Unity compile, optionally only under one folder of the project.
 newest_script_change() {
-    local newest=0 path time
+    local newest=0 path time under="${1:+$ROOT/$1/}"
     while IFS= read -r path; do
+        case "$path" in "$under"*) ;; *) continue ;; esac
         [ -f "$path" ] || continue
         time="$(modified_time "$path")"
         [ "$time" -gt "$newest" ] && newest="$time"
@@ -68,16 +74,20 @@ newest_script_change() {
     echo "$newest"
 }
 
-# The newest change to a prefab under Assets/Client, which the prefab validator (TEST-12) checks.
-newest_prefab_change() {
-    local newest=0 path time
-    while IFS= read -r path; do
-        [ -f "$path" ] || continue
-        time="$(modified_time "$path")"
-        [ "$time" -gt "$newest" ] && newest="$time"
-    done < <(cd "$ROOT" && git status --porcelain --untracked-files=all -- Assets/Client 2>/dev/null \
-        | sed 's/^...//; s/^.* -> //; s/^"//; s/"$//; s|^|'"$ROOT"'/|' | grep '\.prefab$')
-    echo "$newest"
+# Each changed prefab under Assets/Client that still exists, as "<feature> <modified time>": the feature is its first
+# folder there, or Root for a prefab directly in Assets/Client, like the validator's cases.
+changed_prefabs() {
+    local path relative feature
+    (cd "$ROOT" && git status --porcelain --untracked-files=all -- "$CLIENT" 2>/dev/null \
+        | sed 's/^...//; s/^.* -> //; s/^"//; s/"$//' | grep '\.prefab$') | while IFS= read -r path; do
+        [ -f "$ROOT/$path" ] || continue
+        relative="${path#"$CLIENT"/}"
+        case "$relative" in
+            */*) feature="${relative%%/*}" ;;
+            *) feature="Root" ;;
+        esac
+        echo "$feature $(modified_time "$ROOT/$path")"
+    done
 }
 
 if [ ! -f "$COMPILE" ]; then
@@ -115,29 +125,77 @@ if [ "${ERRORS:-0}" != "0" ]; then
     exit 1
 fi
 
-# A changed prefab is checked on every stop, even between test runs: the validator is one quick test.
-PREFAB_CHANGE="$(newest_prefab_change)"
-if [ "$PREFAB_CHANGE" -gt 0 ] && grep -qs '"com.sgonzalezrozo.unity-architecture"' "$ROOT/Packages/manifest.json"; then
-    VALIDATED_AT="$(json_number startedAtUnixSeconds "$PREFABS" 2>/dev/null)"
-    if [ ! -f "$PREFABS" ] || [ "${VALIDATED_AT:-0}" -lt "$PREFAB_CHANGE" ]; then
+# A changed prefab is checked on every stop, even between test runs: its feature's validator case is one quick test.
+if grep -qs '"com.sgonzalezrozo.unity-architecture"' "$ROOT/Packages/manifest.json"; then
+    DUE_PREFABS=""
+    PREFAB_ERRORS=""
+    for feature in $(changed_prefabs | awk '{ print $1 }' | sort -u); do
+        changed_at="$(changed_prefabs | awk -v f="$feature" '$1 == f && $2 > newest { newest = $2 } END { print newest + 0 }')"
+        report="$OUT/editor-prefabs-$feature.json"
+        validated_at="$(json_number startedAtUnixSeconds "$report" 2>/dev/null)"
+        if [ ! -f "$report" ] || [ "${validated_at:-0}" -lt "$changed_at" ]; then
+            DUE_PREFABS="$DUE_PREFABS $feature"
+        elif grep -Eq '"passed": *false' "$report"; then
+            PREFAB_ERRORS="$PREFAB_ERRORS$(json_list errors "$report")
+"
+        fi
+    done
+
+    if [ -n "$DUE_PREFABS" ]; then
+        names=""
+        for feature in $DUE_PREFABS; do names="$names, \"$PREFAB_CASE_PREFIX$feature\""; done
         if ! has_bridge; then
-            echo "A prefab under Assets/Client changed after the prefab validator last ran: run ClientPrefabsTests in the Test Runner. $NO_BRIDGE_HINT"
+            echo "Prefabs of$DUE_PREFABS changed after the prefab validator last checked them: run their ClientPrefabsTests cases in the Test Runner. $NO_BRIDGE_HINT"
             exit 2
         fi
-        echo "A prefab under Assets/Client changed after the prefab validator last ran."
-        echo "Run it with run_tests through the Unity MCP (EditMode, test_names: [\"$PREFAB_TEST\"]), poll get_test_job until it finishes, then check again."
+        echo "Prefabs of$DUE_PREFABS changed after the prefab validator last checked them."
+        echo "Run their cases with run_tests through the Unity MCP (EditMode, test_names: [${names#, }]), poll get_test_job until it finishes, then check again."
         exit 1
     fi
 
-    if grep -Eq '"passed": *false' "$PREFABS"; then
+    if [ -n "$PREFAB_ERRORS" ]; then
         echo "The prefab validator found errors. Fix the prefabs through the recipes or a spec, never as text (EDIT-06):"
-        json_list errors "$PREFABS"
+        printf '%s' "$PREFAB_ERRORS"
         exit 1
     fi
 fi
 
 COMPILE_ONLY="${VERIFY_COMPILE_ONLY:-0}"
-if [ "$COMPILE_ONLY" != "1" ] && grep -qs '"com.unity.test-framework"' "$ROOT/Packages/manifest.json" "$ROOT/Packages/packages-lock.json"; then
+TEST_FEATURES="${VERIFY_TEST_FEATURES:-}"
+if [ "$COMPILE_ONLY" != "1" ] && [ -n "$TEST_FEATURES" ]; then
+    # Each feature's tests, all of them in one run that started after the feature's last script change.
+    DUE_FEATURES=""
+    TOTAL=0
+    for feature in $TEST_FEATURES; do
+        report="$OUT/editor-tests-$feature.json"
+        tested_at="$(json_number startedAtUnixSeconds "$report" 2>/dev/null)"
+        if [ ! -f "$report" ] || [ "${tested_at:-0}" -lt "$(newest_script_change "$CLIENT/$feature")" ] \
+            || ! grep -Eq '"complete": *true' "$report"; then
+            DUE_FEATURES="$DUE_FEATURES $feature"
+            continue
+        fi
+        failed="$(json_number failed "$report")"
+        if [ "${failed:-0}" != "0" ]; then
+            echo "Tests of $feature failed: $failed of $(json_number total "$report"):"
+            json_list failures "$report"
+            exit 1
+        fi
+        TOTAL=$(( TOTAL + $(json_number total "$report") ))
+    done
+
+    if [ -n "$DUE_FEATURES" ]; then
+        groups=""
+        for feature in $DUE_FEATURES; do groups="$groups, \"^Client\\\\.$feature\\\\.\""; done
+        if ! has_bridge; then
+            echo "The tests of$DUE_FEATURES are due: run them in Window > General > Test Runner. $NO_BRIDGE_HINT"
+            exit 2
+        fi
+        echo "The tests of$DUE_FEATURES are due, and they haven't all run since the feature's last script change."
+        echo "Run them with run_tests through the Unity MCP (EditMode, group_names: [${groups#, }]), poll get_test_job until it finishes, then check again."
+        exit 1
+    fi
+    FEATURES_TESTED=true
+elif [ "$COMPILE_ONLY" != "1" ] && grep -qs '"com.unity.test-framework"' "$ROOT/Packages/manifest.json" "$ROOT/Packages/packages-lock.json"; then
     # Compared with the newest script change, not the last compile: Unity also compiles after a test run, with no
     # script changed. A run that started after the change tested the code as it is.
     TESTED_AT="$(json_number startedAtUnixSeconds "$TESTS" 2>/dev/null)"
@@ -171,6 +229,8 @@ fi
 
 if [ "$COMPILE_ONLY" = "1" ]; then
     echo "Verify passed in the open Editor: compiled."
+elif [ "${FEATURES_TESTED:-false}" = true ]; then
+    echo "Verify passed in the open Editor: compiled, ${TOTAL} tests of $TEST_FEATURES."
 elif [ -n "${TOTAL:-}" ]; then
     echo "Verify passed in the open Editor: compiled, ${TOTAL} tests."
 else

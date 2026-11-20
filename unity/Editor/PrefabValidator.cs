@@ -17,6 +17,7 @@ namespace UnityArchitecture.Prefabs
     public static class PrefabValidator
     {
         public const string CLIENT_FOLDER = "Assets/Client";
+        public const string ROOT_FEATURE = "Root";
         public const int MAX_DEPTH = 5;
 
         private const string ACTION = "Action";
@@ -38,6 +39,17 @@ namespace UnityArchitecture.Prefabs
 
             paths.Sort(StringComparer.Ordinal);
             return paths;
+        }
+
+        /// <summary>
+        /// The feature a prefab under Assets/Client belongs to: its first folder there (Inventory, Shared), or
+        /// <see cref="ROOT_FEATURE"/> for a prefab directly in Assets/Client. The Stop hook uses the same mapping.
+        /// </summary>
+        public static string FeatureOf(string assetPath)
+        {
+            string relative = assetPath.Substring(CLIENT_FOLDER.Length + 1);
+            int slash = relative.IndexOf('/');
+            return slash < 0 ? ROOT_FEATURE : relative.Substring(0, slash);
         }
 
         public static List<PrefabViolation> ValidateAsset(string assetPath)

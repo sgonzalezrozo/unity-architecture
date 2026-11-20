@@ -4,7 +4,7 @@
 
 ## Project status
 
-This is version `0.6.9`. The architecture and the code style are mandatory. [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), [UI Scroller](https://github.com/sgonzalezrozo/unity-ui-scroller), [Screen System](https://github.com/sgonzalezrozo/unity-screen-system) and [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations) are optional: agents detect them, and use plain Unity forms when they're missing.
+This is version `0.7.0`. The architecture and the code style are mandatory. [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), [UI Scroller](https://github.com/sgonzalezrozo/unity-ui-scroller), [Screen System](https://github.com/sgonzalezrozo/unity-screen-system) and [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations) are optional: agents detect them, and use plain Unity forms when they're missing.
 
 ## How do I make AI coding agents follow an architecture in Unity?
 
@@ -44,7 +44,7 @@ Yes. It's MIT licensed.
 
 ## Does anyone else use it?
 
-Not yet. It's version `0.6.9` by a single author, used only in my personal projects so far, and the rules still change. Feedback and issues are very welcome.
+Not yet. It's version `0.7.0` by a single author, used only in my personal projects so far, and the rules still change. Feedback and issues are very welcome.
 
 ## Is there a sample project?
 

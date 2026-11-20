@@ -18,7 +18,7 @@ A short prompt ("create the player health feature to show the player's health in
 
 | ID | Rule |
 |---|---|
-| `SCOPE-01` | Before planning a new feature or screen, the agent MUST ask the user what to deliver, as one question with these choices: **Code only**; **Code and prefabs**; **Code and tests**; **Code, prefabs and tests**. Ask it together with the plan, in the same prompt. Skip it only when the request already says. |
+| `SCOPE-01` | Before planning a new feature or screen, the agent MUST ask the user what to deliver, as one question with these choices: **Code only**; **Code and prefabs**; **Code and tests**; **Code, prefabs and tests**. Ask it together with the plan, in the same prompt, with the test scope question (`TEST-13`). Skip it only when the request already says. |
 | `SCOPE-02` | The agent MUST create only what the chosen scope includes. Without prefabs, it describes them in the [handoff](#prefab-handoff) for the developer instead. Without tests, the code stays testable (logic in Models and plain classes, `TEST-03`) and the report lists the tests that would cover it. |
 | `SCOPE-03` | The agent MUST NOT write analyzers, editor tools, generators, test infrastructure or new shared abstractions unless the user asks for them by name. `DET-04` is for the maintainers of these rules, not for feature tasks. |
 | `SCOPE-04` | The plan names every file it will create. Start from the smallest feature that does what was asked: for "show the player's health", a Model and a View, and a Controller only if there's input. No backend, service, persistence or Module unless the request asks for it. |
@@ -138,7 +138,7 @@ State what changed, which tool verified it, and what wasn't verified. If you cou
 - [ ] Follows `AGENTS.md` and the checklist above
 - [ ] Compiles with no new warnings or analyzer errors, checked by a tool (`EDIT-02`)
 - [ ] Only what the chosen scope includes was created (`SCOPE-02`)
-- [ ] When the scope includes tests: everything that can be unit tested has tests, and the tests directly related to the change, existing and new, pass (`TEST-11`). Without tests in the scope, the existing related tests still pass. The full suite runs in the Stop hook at most every two hours; until it has run, report it as not verified
+- [ ] When the scope includes tests: everything that can be unit tested has tests, and the tests directly related to the change, existing and new, pass (`TEST-11`). Without tests in the scope, the existing related tests still pass. The Stop hook runs the tests of the scoped and changed features on every stop, and the full suite at most every two hours (every 24 hours while the task is scoped to features); until the full suite has run, report it as not verified
 - [ ] A bug fix includes a test that fails without the fix
 - [ ] No unused code, no debug logs
 

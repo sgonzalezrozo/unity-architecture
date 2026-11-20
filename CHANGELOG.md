@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-19
+
+### Changed
+
+- Tests live next to their feature: `Assets/Client/{Feature}/Tests/`, with a `Client.Tests.asmref` that compiles them in one `Client.Tests` assembly, in the namespace `Client.{Feature}.Tests` (`ASM-03`). `install.sh` creates `Assets/Client/Tests/Client.Tests.asmdef` when the project has the Test Framework package. Tests in `Assets/Tests/` still run, but only in full runs: move them to their feature's `Tests` folder to get feature runs.
+- The Stop hook runs a task's feature tests on every stop. With the scope question, the agent asks which feature folder the tests are scoped to (`TEST-13`) and writes it to `Logs/verify/test-scope`. Every stop then runs the tests of those features and of every feature the change touched, and the full suite at most every 24 hours (`VERIFY_FULL_TESTS_EVERY_SECONDS`). With no scope, or a change that can affect any feature (`Shared/`, `Client.asmdef`, `Packages`, `ProjectSettings`...), it compiles and runs the full suite at most every two hours, as before. The scope file can only add tests, never skip the ones a change owes.
+- The prefab validator has one case per feature folder (`ClientPrefabsTests.Inventory`, `Root` for prefabs directly in `Assets/Client`), so a changed prefab only checks its feature, and leftover errors in another feature don't block the task. With the Editor open, the reporters write `editor-prefabs-{Feature}.json` and `editor-tests-{Feature}.json`, which `verify-editor.sh` reads.
+- `install.sh --help` no longer prints the script's first line of code.
+
 ## [0.6.9] - 2026-11-19
 
 ### Added

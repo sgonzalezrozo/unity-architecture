@@ -10,10 +10,10 @@ the Play mode check.
 
 Lo que hace el agente, en orden:
 
-1. Escribe Model, View y Controller en la carpeta, y los tests del Model en `Assets/Tests/Rewards/`.
+1. Escribe Model, View y Controller en la carpeta, y los tests del Model en `Assets/Client/Rewards/Tests/`.
 1. Compila (`refresh_unity`) y corre los tests nuevos.
 1. Escribe `ClaimTrophyBanner.json`: `UI Content` con fondo, título e icono, y el `Action` al lado.
 1. Lo construye con `execute_code` (`BuildFromSpec`, `ValidateAsset`, `Compare`).
 1. Reporta validador y diferencias (ambos vacíos) y relee la jerarquía.
-1. Corre `ClientPrefabsTests`.
+1. Corre el caso de `ClientPrefabsTests` de `Rewards`.
 1. Entra en Play mode, toca el `Action`, comprueba Model y View, lee la Consola y sale.

@@ -117,7 +117,7 @@ The spec lists the whole hierarchy in order: nothing is added that it doesn't na
 
 ## Checking a prefab
 
-The prefab validator (`TEST-12`) is an EditMode test in the rules' package, `com.sgonzalezrozo.unity-architecture`, which `install.sh` adds to `Packages/manifest.json` from `.ai/unity`. It loads every prefab under `Assets/Client` and fails with the prefab, the object and the rule ID of each error. It runs with the other tests: in `verify.sh`, and in the open Editor through `run_tests`. To run only it, filter by its name, `UnityArchitecture.Prefabs.Tests.ClientPrefabsTests.ClientPrefabsFollowThePrefabRules` (`test_names` with `run_tests`, or `VERIFY_TEST_FILTER` with `verify.sh`); `group_names: ClientPrefabsTests` works with `run_tests` too.
+The prefab validator (`TEST-12`) is an EditMode test in the rules' package, `com.sgonzalezrozo.unity-architecture`, which `install.sh` adds to `Packages/manifest.json` from `.ai/unity`. It loads the prefabs under `Assets/Client` and fails with the prefab, the object and the rule ID of each error. It has one case per feature folder, named after it: `UnityArchitecture.Prefabs.Tests.ClientPrefabsTests.Inventory` checks the prefabs under `Assets/Client/Inventory`, and `Root` those directly in `Assets/Client`. It runs with the other tests: in `verify.sh`, and in the open Editor through `run_tests`. To run one feature's case, filter by its name (`test_names` with `run_tests`, or `VERIFY_TEST_FILTER` with `verify.sh`); `group_names: ClientPrefabsTests` runs every case with `run_tests`.
 
 | Checked | Rules |
 |---|---|

@@ -22,18 +22,19 @@ Assets/
 │   │   ├── EditRoom/
 │   │   ├── DetailsTrophy/
 │   │   ├── DetailsTrophySnapshot/
-│   │   └── Services/
+│   │   ├── Services/
+│   │   └── Tests/      The feature's EditMode tests, with a Client.Tests.asmref
 │   ├── Store/
 │   ├── Inventory/
 │   ├── HomePage/
-│   └── Shared/
+│   ├── Shared/
+│   └── Tests/          Client.Tests.asmdef: the assembly of every feature's tests
 ├── Art/        Source art: textures, sprites, materials, VFX, animations
 ├── Audio/      Source audio: SFX, Music, Voice
 ├── Fonts/
 ├── Scenes/     Scenes, each next to its own scripts
 ├── Editor/     Editor-only tools
-├── Plugins/    Third-party SDKs
-└── Tests/      EditMode and PlayMode test assemblies, one folder per feature
+└── Plugins/    Third-party SDKs
 ```
 
 ### Inside a screen folder
@@ -53,6 +54,10 @@ A very large screen may use subfolders by section (`Tabs/`, `Members/`), never b
 | `{Feature}Data.cs` | Data classes from the backend |
 | `{Feature}Installer.cs` | Fast IoC bindings. Not needed without a container ([Dependency injection](DEPENDENCY_INJECTION.md)) |
 | `ScreenDefinition` asset(s) | With `screenSystem`. One if the feature has a single screen. If there are several, see below |
+
+### Inside `Tests`
+
+The feature's tests and a `Client.Tests.asmref`, which compiles them in the `Client.Tests` assembly (`ASM-03`). It's the one folder named after what it holds: tests stay out of the game build, so they can't sit next to the screen they test. Tests of `Shared/` go in `Shared/Tests` the same way.
 
 ### Multi-screen features
 
@@ -80,7 +85,7 @@ Only for things used by two or more features that belong to none of them: reusab
 | Installer | `{Feature}Installer` | `TrophyRoomInstaller` |
 | Prefab | Same as its main element | `MainRoom.prefab`, `TrophySlot.prefab` |
 
-**Namespaces:** `Client.{Feature}`, flat for the whole feature. Folder names MUST NOT contain spaces.
+**Namespaces:** `Client.{Feature}`, flat for the whole feature, and `Client.{Feature}.Tests` for its tests. Folder names MUST NOT contain spaces.
 
 ## Screen composition
 
@@ -126,7 +131,9 @@ Scene transitions MUST go through one project scene loader, never `SceneManager`
 ## Assembly definitions
 
 ```
-Assets/Client/Client.asmdef                  All client code, Shared/ included
+Assets/Client/Client.asmdef                          All client code, Shared/ included
+Assets/Client/Tests/Client.Tests.asmdef              All EditMode tests (Editor only)
+Assets/Client/{Feature}/Tests/Client.Tests.asmref    Adds the feature's tests to Client.Tests
 ```
 
 Place an `.asmdef` inside the folder it should compile. An `.asmdef` directly in `Assets/` would capture the whole project.
@@ -135,3 +142,4 @@ Place an `.asmdef` inside the folder it should compile. An `.asmdef` directly in
 |---|---|
 | `ASM-01` | All feature code compiles in `Client.asmdef`. A feature MUST NOT get its own `.asmdef`: the analyzers (`EDIT-03`), the prefab validator and the prefab specs only read the assembly named `Client`. |
 | `ASM-02` | When a feature needs a package that is already in `Packages/manifest.json`, add that package's assembly to the `references` of `Client.asmdef`. This needs no approval; adding the package itself does (`OPT-03`). |
+| `ASM-03` | A feature's EditMode tests MUST go in `Assets/Client/{Feature}/Tests/`, with a `Client.Tests.asmref` (`{ "reference": "Client.Tests" }`) so they compile in `Client.Tests`, never in `Client`, and in the namespace `Client.{Feature}.Tests`: the Stop hook runs a feature's tests by that namespace. A feature MUST NOT get its own test `.asmdef`. `install.sh` creates `Client.Tests.asmdef` when the project has the Test Framework package; if it's missing, create it as `install.sh` does. PlayMode tests, when a project has them, follow the same pattern with a `Client.PlayModeTests` assembly in `Assets/Client/PlayModeTests/` and `Tests/PlayMode/` folders. |

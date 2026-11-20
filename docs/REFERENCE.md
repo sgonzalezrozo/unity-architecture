@@ -45,13 +45,13 @@ Before returning code, the agent runs the [pre-response checklist](../architectu
 
 | File | Tests | What it checks |
 |---|---|---|
-| `ClientPrefabsTests` | 1 | **Your prefabs**: that everything under `Assets/Client` follows the prefab rules (`PREFAB-xx`). It passes while there are no prefabs |
+| `ClientPrefabsTests` | 1 per feature | **Your prefabs**: that everything under `Assets/Client` follows the prefab rules (`PREFAB-xx`), one case per feature folder. While there are no prefabs it has one case, which passes |
 | `PrefabValidatorTests` | 22 | The prefab validator itself |
 | `PrefabSpecsTests` | 15 | Building a prefab from a JSON spec |
 | `PrefabRecipesTests` | 8 | The prefab recipes |
 | `PrefabSpecCommandsTests` | 4 | The **Build Prefab From Spec** menu item |
 
-Only the first one is about your project, and it's why the package is in `testables`: that's how the Stop hook checks your prefabs. The other 49 check the tools and run in your project as a side effect; they're fast. Your own tests, once the agent writes them, add to this count.
+Only the first one is about your project, and it's why the package is in `testables`: that's how the Stop hook checks your prefabs. The other 49 check the tools and run in your project as a side effect; they're fast, and only full runs include them: a feature's tests and its prefab validator case run without them. With prefabs in several features, the first one has a case per feature, so the count grows. Your own tests, once the agent writes them, add to this count.
 
 ## What install.sh creates
 
@@ -71,6 +71,7 @@ Assistants only read instructions from fixed places in your project, and a submo
 | `.claude/hooks/verify-on-stop.sh`, `.claude/settings.json` | Claude Code | Runs `verify.sh` when the agent finishes and sends failures back. Also allows `verify.sh` and read-only `git` commands, so Claude doesn't ask for each one |
 | `Assets/Client/Analyzers/UnityArchitecture.Analyzers.dll` | Unity | Only with `--analyzers`: the optional [analyzers](../analyzers) make the mechanical rules compile errors. Prebuilt, so no .NET SDK needed |
 | `Assets/Client/Client.asmdef`, `Client.cs` | Unity | Only when `Assets/Client` doesn't exist yet: the assembly that holds the project's code |
+| `Assets/Client/Tests/Client.Tests.asmdef`, `ClientTests.cs` | Unity | Only with the Test Framework package, when `Client.asmdef` exists: the assembly of the project's EditMode tests, which live in each feature's `Tests` folder (`ASM-03`) |
 | `Packages/manifest.json` | Unity | Adds `com.sgonzalezrozo.unity-architecture` from `.ai/unity` to `dependencies` and `testables`: the prefab validator, and the reporters that write each compile and test run in the open Editor to `Logs/verify/` |
 
 Files that already exist are kept, so running it again is safe. If your project already had a `.claude/settings.json`, the script says so: add the Stop hook and the allowed commands from `.ai/templates/claude/settings.json` to it yourself. In a new project the script creates `Assets/Client/Client.asmdef`, with a `Client.cs` note so Unity doesn't warn about an empty assembly. The optional analyzers (`--analyzers`) check only the `Client` assembly, not third-party code or tests.

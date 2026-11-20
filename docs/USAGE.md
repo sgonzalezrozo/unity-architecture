@@ -65,7 +65,7 @@ Build a ClaimTrophyBanner for a new Rewards feature in Assets/Client/Rewards/Cla
 
 What the agent does, in order:
 
-1. It writes the Model, View and Controller in `Assets/Client/Rewards/ClaimTrophyBanner/`, and the Model tests in `Assets/Tests/Rewards/`. With UI Foundations installed, the Controller derives from `BaseClickController` (`OPT-02`).
+1. It writes the Model, View and Controller in `Assets/Client/Rewards/ClaimTrophyBanner/`, and the Model tests in `Assets/Client/Rewards/Tests/`, with a `Client.Tests.asmref` (`ASM-03`). With UI Foundations installed, the Controller derives from `BaseClickController` (`OPT-02`).
 2. It compiles (`refresh_unity`) and runs the new tests.
 3. It writes `ClaimTrophyBanner.json`, the handoff as a [prefab spec](../architecture/PREFABS.md#prefab-spec) (`HAND-06`): a `UI Content` with the background, title and icon, and the `Action` next to it (`PREFAB-17`).
 4. It builds the prefab through `execute_code`:
@@ -208,11 +208,14 @@ The .ai rules were updated. Read .ai/CHANGELOG.md and tell me what changed that 
 | Message | What the agent does |
 |---|---|
 | "Unity hasn't compiled the latest script changes" | Calls `refresh_unity`, reads the Console and stops again |
-| "A prefab under Assets/Client changed after the prefab validator last ran" | Runs `ClientPrefabsTests` with `run_tests` and stops again |
-| "The full EditMode suite is due" | Runs every EditMode test with `run_tests` (no filter). This happens at most every two hours |
+| "Prefabs of Rewards changed after the prefab validator last checked them" | Runs that feature's `ClientPrefabsTests` case with `run_tests` and stops again |
+| "The tests of Rewards are due" | Runs that feature's tests with `run_tests` (`group_names`) and stops again. This happens on every stop while the task is scoped to the feature |
+| "The full EditMode suite is due" | Runs every EditMode test with `run_tests` (no filter). This happens at most every two hours, or every 24 hours while the task is scoped to features |
 | A prefab error with a rule ID | Rebuilds or fixes the prefab, and runs the validator again |
 | A compile or analyzer error (`CS...`, `UA00..`) | Fixes the code |
 | "Verify passed" | Nothing: the agent can finish |
+
+To scope a task's tests without being asked (`TEST-13`), name the folder in the prompt: `tests: Assets/Client/Rewards`. Without it, the agent asks with the scope question; leave it empty for the whole project.
 
 The hook gives up after three failed attempts in a row and says so. Then read the failure yourself, or ask the agent to continue.
 
