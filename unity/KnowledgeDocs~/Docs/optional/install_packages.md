@@ -58,6 +58,9 @@ https://github.com/sgonzalezrozo/unity-enhanced-console.git
 https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity
 ```
 
+> [!WARNING] Wait for each package to compile
+> Add one URL, wait until Unity finishes importing and compiling, then add the next. Adding a package while Unity is still importing another can log `ScriptableSingleton already exists` and `assets located in immutable packages were unexpectedly altered`. Nothing is broken: clear the Console. If they come back when you open the project without adding a package, report it.
+
 > [!NOTE]
 > After installing one, its docs show up in this window on their own. Setup menus: Fast IoC **Tools > FastIoC > Setup**, Screen System **Tools > Screen System > Setup**.
 

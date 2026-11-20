@@ -1,0 +1,4 @@
+# Bash fails on CRLF line endings, and cmd needs them: keep each script's endings on every checkout,
+# whatever the machine's core.autocrlf.
+*.sh text eol=lf
+*.cmd text eol=crlf

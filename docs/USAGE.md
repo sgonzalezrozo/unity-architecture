@@ -197,6 +197,8 @@ Ask Claude Code, or run it yourself:
 bash .ai/templates/scripts/update.sh
 ```
 
+On Windows, outside Git Bash: `.ai\templates\scripts\update.cmd`.
+
 It updates `.ai`, refreshes the copied files you didn't change, and lists the ones you did. Then:
 
 ```text

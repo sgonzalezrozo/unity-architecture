@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Windows launchers `templates/scripts/install.cmd` and `update.cmd`. They find Git Bash and run the `.sh` script with the same options, because a plain `bash` in PowerShell or cmd is WSL's launcher, which fails when no Linux distribution is installed. `.gitattributes` keeps `.sh` files LF and `.cmd` files CRLF on every checkout.
+- The installation guide's troubleshooting and the Rules Guide say to add Tools Core first and wait for each package to compile: adding one while Unity is still importing another can log `ScriptableSingleton already exists` and "assets located in immutable packages were unexpectedly altered", which block nothing.
+
 ## [0.7.0] - 2026-11-19
 
 ### Changed

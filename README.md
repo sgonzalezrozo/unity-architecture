@@ -37,6 +37,8 @@ git submodule add https://github.com/sgonzalezrozo/unity-architecture-agents.git
 bash .ai/templates/scripts/install.sh
 ```
 
+**On Windows**, run the scripts in Git Bash, or call the `.cmd` launcher from PowerShell or cmd: `.ai\templates\scripts\install.cmd` (same options). A plain `bash` in PowerShell or cmd is WSL's launcher, which fails with "Windows Subsystem for Linux has no installed distributions".
+
 It asks two questions:
 
 1. **Install the optional analyzers?** They turn the mechanical rules (no `Button`, no LINQ, no `var`...) into compile errors in `Assets/Client`. Answer `n` unless you want them; you can add them later with `--analyzers`.
@@ -56,6 +58,8 @@ git commit -m "Add Unity Architecture Agents"
 ```bash
 bash .ai/templates/scripts/update.sh
 ```
+
+On Windows, outside Git Bash: `.ai\templates\scripts\update.cmd`.
 
 After cloning a project that uses the rules, or pulling a teammate's update, fill or sync the `.ai` folder:
 

@@ -99,6 +99,8 @@ You now have a `.ai` folder next to `Assets`, with `AGENTS.md`, `architecture`, 
 bash .ai/templates/scripts/install.sh
 ```
 
+**On Windows**, run the scripts in Git Bash, or call the `.cmd` launcher from PowerShell or cmd: `.ai\templates\scripts\install.cmd` (same options). A plain `bash` in PowerShell or cmd is WSL's launcher, which fails with "Windows Subsystem for Linux has no installed distributions".
+
 It creates the files assistants read from fixed paths, writes `.claude/settings.json`, and adds the rules' package to `Packages/manifest.json`. It writes `.mcp.json` only for MCP for Unity: with `--mcp`, or when the manifest already has it. The [Setup Reference](REFERENCE.md#what-installsh-creates) lists every file it creates. It asks whether to also install the optional analyzers (default: no); `--analyzers` or `--no-analyzers` answers ahead of time. Files that already exist are kept, so it's safe to run again.
 
 At the end it asks: **"Run scripts/verify.sh now?"** Answer `y`. With Unity closed, it opens the project once in batch mode, imports it, compiles it and runs the EditMode tests. The first run can take several minutes; later ones are quick. It ends with an exit code: `0` passed, `1` failed, `2` couldn't run. A new project reports 50 tests: they're the rules' own tests, not your code ([which ones](REFERENCE.md#the-rules-tests)).
@@ -211,6 +213,8 @@ This commits the entry files, `.gitmodules` (the `.ai` version the project uses)
 | Symptom | Cause and fix |
 |---|---|
 | `.ai` is empty after cloning | Submodules aren't cloned by default. Run `git submodule update --init` |
+| Windows: "Windows Subsystem for Linux has no installed distributions" | `bash` in PowerShell or cmd is WSL's. Run the script in Git Bash, or use `.ai\templates\scripts\install.cmd` (or `update.cmd`) |
+| `ScriptableSingleton already exists` or `assets located in immutable packages were unexpectedly altered` after adding packages (such as Screen System) | A package was added while Unity was still importing another. Nothing is broken: clear the Console. Add Tools Core first and wait for the compile before adding the next package. If they come back when you open the project without adding a package, report it |
 | `install.sh`: "doesn't look like a Unity project" | Run it from the project root, and `.ai` must sit next to `Assets` |
 | `/mcp` doesn't list `unityMCP`, or it's disconnected | Open the Editor, start the server in **Window > MCP for Unity**, and check that the port matches `.mcp.json` |
 | The agent says `run_tests` or `execute_code` doesn't exist | Turn on the **Testing** and **Scripting Extensions** tool groups (step 6), then restart Claude Code |
