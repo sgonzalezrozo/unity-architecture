@@ -1630,7 +1630,7 @@
     {
       "id": "pkg.screen.menus",
       "title": "Menús y atajos: Screen System",
-      "summary": "Setup, New Screen Feature, New Layer e Inspector",
+      "summary": "Setup, New Screen, New Layer e Inspector",
       "category": "Screen System",
       "color": "purple",
       "keywords": [
@@ -1768,7 +1768,7 @@
     {
       "id": "pkg.scroller.menus",
       "title": "Menús y atajos: UI Scroller",
-      "summary": "Bento Layout Editor y por qué no New Scroll List",
+      "summary": "Bento Layout Editor y New Scroll List",
       "category": "UI Scroller",
       "color": "pink",
       "keywords": [

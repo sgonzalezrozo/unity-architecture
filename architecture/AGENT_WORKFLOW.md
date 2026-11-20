@@ -96,7 +96,7 @@ Run this before returning code. Item numbers are stable: the [analyzers](../anal
 3. Does any Controller change a visual, hold a rule, or serialize a reference?
 4. Does any event have parameters? Is anything pushed that could be pulled?
 5. Is there a `Button`, `Toggle`, `Slider`, `Dropdown`, `onClick` or `Initialize(model)`?
-   Does the code reference a package whose capability is `false`?
+   Does the code reference a package whose capability is `false`? Does `Client.asmdef` reference every assembly the packages it uses need (`ASM-02`)?
 6. Are assigned fields `internal`, with no attribute under Fast IoC, and everything else `private`?
 7. Is every file in the right folder, and is source art outside the feature?
 8. Are there lambdas, LINQ, `var`, `?.` on Unity objects, `///` comments on members, or hardcoded text?

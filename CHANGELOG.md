@@ -4,6 +4,13 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- `LIST-09` allows **New Scroll List** under `Assets/Client` when its output is the Model, View and Controller split (`{Name}ListModel`, `{Name}ItemSlotModel`...), which follows the rules and adds its assemblies to the folder's `.asmdef`. The older output (`{Name}ItemController`, `{Name}Instantiator`) is still forbidden, and the agent still doesn't run the wizard (`EDIT-13`).
+- **New Screen Feature** is now **New Screen** (Screen System), in `SCR-13` and the Rules Guide. `ASM-02` notes that the packages' wizards now add their own assemblies to the folder's `.asmdef`, and that Screen System moves `ScreenIds` next to it when it's in `Assembly-CSharp`.
+
+- `ASM-02` is a required step: code that uses a package needs every assembly that package names in its `agent-rules.md` in `Client.asmdef` (and `Client.Tests.asmdef`), added in the same change as the first `using`, with a table per capability (`ToolsCore` too for UI Scroller, Screen System and Fast IoC, and `FastIoC.Core` for `IInjectableForChildren`). A `CS0246` on a package namespace is fixed with the reference, never by moving the code out of `Client`. The pre-response checklist (item 5), capability detection, the Copilot instructions and the Rules Guide say so too.
+
 ### Added
 
 - Windows launchers `templates/scripts/install.cmd` and `update.cmd`. They find Git Bash and run the `.sh` script with the same options, because a plain `bash` in PowerShell or cmd is WSL's launcher, which fails when no Linux distribution is installed. `.gitattributes` keeps `.sh` files LF and `.cmd` files CRLF on every checkout.

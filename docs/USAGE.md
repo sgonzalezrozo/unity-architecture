@@ -147,7 +147,7 @@ Add an inventory list to Assets/Client/Inventory/MainInventory/ with tabs for We
 
 With `uiScroller` the agent uses a `Scroller<T>`, with a Slot Model on the slot prefab. Without it, it uses the [plain Unity list](../architecture/OPTIONAL_PACKAGES.md#list-without-ui-scroller). The closest example is [Filtered list](../architecture/examples/03_FILTERED_LIST_INVENTORY.md).
 
-Don't ask for **Assets > UI Scroller > New Scroll List** in a prompt: its generated code breaks the rules, so the agent builds lists itself (`LIST-09`).
+**Assets > UI Scroller > New Scroll List** is for people: it writes the same Model, View and Controller split the agent writes (`LIST-09`). The agent doesn't run it through MCP, since it opens a window (`EDIT-13`), so don't ask for it in a prompt.
 
 ### 7. Replace a Toggle or a Slider
 

@@ -950,7 +950,7 @@
     {
       "id": "feature.asmdef",
       "title": "Assembly definitions",
-      "summary": "ASM-01 and 02: everything in Client.asmdef",
+      "summary": "ASM-01 and 02: everything in Client.asmdef, with each package's assemblies",
       "category": "Features and folders",
       "color": "gray",
       "keywords": [
@@ -961,7 +961,15 @@
         "assembly",
         "Client",
         "references",
-        "definition"
+        "definition",
+        "CS0246",
+        "references",
+        "ToolsCore",
+        "UIScroller",
+        "ScreenSystem",
+        "FastIoC.Core",
+        "UIFoundations",
+        "namespace could not be found"
       ],
       "markdownPath": "Docs/feature/asmdef.md",
       "source": "architecture/FEATURE_STRUCTURE.md"
@@ -1495,7 +1503,7 @@
     {
       "id": "pkg.screen.menus",
       "title": "Menus and shortcuts: Screen System",
-      "summary": "Setup, New Screen Feature, New Layer and the Inspector",
+      "summary": "Setup, New Screen, New Layer and the Inspector",
       "category": "Screen System",
       "color": "purple",
       "keywords": [
@@ -1628,7 +1636,7 @@
     {
       "id": "pkg.scroller.menus",
       "title": "Menus and shortcuts: UI Scroller",
-      "summary": "Bento Layout Editor, and why not New Scroll List",
+      "summary": "Bento Layout Editor and New Scroll List",
       "category": "UI Scroller",
       "color": "pink",
       "keywords": [

@@ -141,5 +141,17 @@ Place an `.asmdef` inside the folder it should compile. An `.asmdef` directly in
 | ID | Rule |
 |---|---|
 | `ASM-01` | All feature code compiles in `Client.asmdef`. A feature MUST NOT get its own `.asmdef`: the analyzers (`EDIT-03`), the prefab validator and the prefab specs only read the assembly named `Client`. |
-| `ASM-02` | When a feature needs a package that is already in `Packages/manifest.json`, add that package's assembly to the `references` of `Client.asmdef`. This needs no approval; adding the package itself does (`OPT-03`). |
+| `ASM-02` | When code uses a package that is already in `Packages/manifest.json`, `Client.asmdef` (and `Client.Tests.asmdef` when tests use it) MUST list every assembly that package names in the **Assembly references** section of its `Documentation~/agent-rules.md` (summary in the table below), in the same change that adds the first `using`. Unity doesn't add them, and without them the build fails with `CS0246`. Check the `references` before compiling, and fix a `CS0246` on a package namespace by adding the reference, never by moving the code out of `Client` (`ASM-01`). The packages' wizards (**New Scroll List**, **New Screen**, **New Layer**, **New MonoInstaller**) add their own to the folder's `.asmdef`; code written by hand still needs this rule. This needs no approval; adding the package itself does (`OPT-03`). |
 | `ASM-03` | A feature's EditMode tests MUST go in `Assets/Client/{Feature}/Tests/`, with a `Client.Tests.asmref` (`{ "reference": "Client.Tests" }`) so they compile in `Client.Tests`, never in `Client`, and in the namespace `Client.{Feature}.Tests`: the Stop hook runs a feature's tests by that namespace. A feature MUST NOT get its own test `.asmdef`. `install.sh` creates `Client.Tests.asmdef` when the project has the Test Framework package; if it's missing, create it as `install.sh` does. PlayMode tests, when a project has them, follow the same pattern with a `Client.PlayModeTests` assembly in `Assets/Client/PlayModeTests/` and `Tests/PlayMode/` folders. |
+
+Assemblies each capability needs in `Client.asmdef`. The package's own `agent-rules.md` is the source; this table is a summary:
+
+| Capability | Add to `references` |
+|---|---|
+| Always | `UnityEngine.UI`, `Unity.TextMeshPro` |
+| `fastIoC` | `FastIoC` (installers), `FastIoC.Core` (`IInjectableForChildren`), `ToolsCore` (`IPrefabInstantiator`) |
+| `uiScroller` | `UIScroller`, `ToolsCore` (`ISlot<T>` derives from a Tools Core interface) |
+| `screenSystem` | `ScreenSystem`, `ToolsCore` |
+| `uiFoundations` | `UIFoundations` |
+| `com.sgonzalezrozo.ui-tweens` | `UITweens` |
+| `addressables` | `Unity.Addressables`, `Unity.ResourceManager` |
