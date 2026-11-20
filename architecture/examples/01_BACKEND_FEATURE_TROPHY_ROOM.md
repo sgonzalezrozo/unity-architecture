@@ -6,9 +6,9 @@ Two screens share one Module. `MainRoom` lists trophies. `DetailsTrophy` renders
 
 **Demonstrates:** folder layout, Module, Connector, load states, UI Scroller, async command, timer, tests.
 
-Capability profile: `fastIoC`, `uiScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping). With `uiFoundations`, each click Controller derives from `BaseClickController` and overrides `OnClick()` instead of implementing `IPointerClickHandler`, and its `Action` has no `Image` (`OPT-02`); drag Controllers keep the `IDrag*` interfaces. Every `Action` sits next to one `UI Content` that wraps what it hits ([`PREFAB-17`](../PREFABS.md#rules)). Screen navigation is omitted because that API is [not specified yet](../FEATURE_STRUCTURE.md#modals-and-navigation).
+Capability profile: `fastIoC`, `uiScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#forks). With `uiFoundations`, each click Controller derives from `BaseClickController` and overrides `OnClick()` instead of implementing `IPointerClickHandler`, and its `Action` has no `Image` (`OPT-02`); drag Controllers keep the `IDrag*` interfaces. Every `Action` sits next to one `UI Content` that wraps what it hits ([`PREFAB-17`](../PREFABS.md#rules)). Screen navigation is omitted because that API is [not specified yet](../FEATURE_STRUCTURE.md#modals-and-navigation).
 
-`TrophyRoomModule` is injected because two screens share it, with no common parent (row 2 in [Where a Model lives](../MVC.md#where-a-model-lives)).
+`TrophyRoomModule` is injected because two screens share it, with no common parent (row 2 in [Where a Model lives](../mvc/where-a-model-lives.md#where-a-model-lives)).
 
 ## Files
 
@@ -74,7 +74,7 @@ public class SystemClock : IClock
 }
 ```
 
-`TrophyRoomConnector` implements both calls with the project's backend client. It returns data and holds no state. `IClock` keeps the Module deterministic (`DET-06`), so a test controls the time. The installer is in [Dependency injection](../DEPENDENCY_INJECTION.md#fast-ioc-installers).
+`TrophyRoomConnector` implements both calls with the project's backend client. It returns data and holds no state. `IClock` keeps the Module deterministic (`DET-06`), so a test controls the time. The installer is in [Dependency injection](../branches/fast-ioc/installers.md).
 
 ```csharp
 public enum TrophyLoadState { Idle, Loading, Loaded, Failed }

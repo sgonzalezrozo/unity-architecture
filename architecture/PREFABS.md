@@ -2,7 +2,7 @@
 
 **Load when:** building, reviewing or describing a UI prefab, by hand, through a handoff or with editor tools.
 
-A prefab's shape is predictable, so a person, an agent or a tool can build it and another can check it (`ARCH-07`, `DET-04`). The rules here add to the ones that already have a home: scopes in [MVC](MVC.md#scopes), input objects and visual states in [UI patterns](UI_PATTERNS.md), names and folders in [Feature structure](FEATURE_STRUCTURE.md), and the handoff in [Agent workflow](AGENT_WORKFLOW.md#prefab-handoff). None of them changes the MVC.
+A prefab's shape is predictable, so a person, an agent or a tool can build it and another can check it (`ARCH-07`, `DET-04`). The rules here add to the ones that already have a home: scopes in [MVC](mvc/scopes.md#scopes), input objects and visual states in [UI patterns](UI_PATTERNS.md), names and folders in [Feature structure](FEATURE_STRUCTURE.md), and the handoff in [Agent workflow](workflow/prefab-handoff.md#prefab-handoff). None of them changes the MVC.
 
 ## Shape
 
@@ -55,7 +55,7 @@ QuitGameAlert                 root: Model and root View (SCOPE-02), scale 1, rot
 
 The punch follows the MVC flow: the click calls a Model command, and the View that reacts to the Model's event starts the tween on `UI Content` (`PREFAB-05`, `ARCH-03`), with the project's tween package if it has one; `UI Content` is required either way. Feedback while the finger is still down, such as staying scaled while pressed, has no rule yet: UI Foundations' `BaseClickController` handles only the click.
 
-With `uiFoundations` ([capability detection](OPTIONAL_PACKAGES.md#capability-detection)), every click Controller on an `Action` derives from `BaseClickController` (`OPT-02`), not `MonoBehaviour, IPointerClickHandler`. It's a transparent `Graphic`, so it's its own raycast target: `AddAction` and a spec's `action` give it no `Image`. The `Client` assembly definition references `UIFoundations`. See [Click input](OPTIONAL_PACKAGES.md#mapping).
+With `uiFoundations` (the [profile](OPTIONAL_PACKAGES.md#the-profile)), every click Controller on an `Action` derives from `BaseClickController` (`OPT-02`), not `MonoBehaviour, IPointerClickHandler`. It's a transparent `Graphic`, so it's its own raycast target: `AddAction` and a spec's `action` give it no `Image`. The `Client` assembly definition references `UIFoundations`. See [Click input](OPTIONAL_PACKAGES.md#forks).
 
 ## Building a prefab
 
@@ -79,7 +79,7 @@ With Screen System, create the screen or layer first with `ScreenAuthoring` (`SC
 
 ## Prefab spec
 
-The [handoff](AGENT_WORKFLOW.md#prefab-handoff) table can also be written as a JSON spec (`HAND-06`). `PrefabSpecs.BuildFromSpec(json, path)` builds it with the recipes, saves it and returns the validator's result (`List<PrefabViolation>`, empty when it passes), and `PrefabSpecs.Compare(json, path)` lists every difference (`List<string>`, empty when they match) between the spec and the prefab, so the same spec always builds the same prefab and a change made by hand shows up. Without an editor bridge, a person selects the spec in the Project window and runs **Assets > Unity Architecture > Build Prefab From Spec**: it builds the prefab next to the spec (or rebuilds the one prefab under `Assets/Client` with the spec's name), validates it and compares it, and shows the result in the Console.
+The [handoff](workflow/prefab-handoff.md#prefab-handoff) table can also be written as a JSON spec (`HAND-06`). `PrefabSpecs.BuildFromSpec(json, path)` builds it with the recipes, saves it and returns the validator's result (`List<PrefabViolation>`, empty when it passes), and `PrefabSpecs.Compare(json, path)` lists every difference (`List<string>`, empty when they match) between the spec and the prefab, so the same spec always builds the same prefab and a change made by hand shows up. Without an editor bridge, a person selects the spec in the Project window and runs **Assets > Unity Architecture > Build Prefab From Spec**: it builds the prefab next to the spec (or rebuilds the one prefab under `Assets/Client` with the spec's name), validates it and compares it, and shows the result in the Console.
 
 The spec lists the whole hierarchy in order: nothing is added that it doesn't name.
 

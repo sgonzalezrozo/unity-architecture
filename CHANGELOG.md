@@ -4,6 +4,21 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-20
+
+### Changed
+
+- Agents read only the rules a task needs. `MVC.md`, `UI_PATTERNS.md`, `CSHARP_STANDARDS.md` and `AGENT_WORKFLOW.md` are now short indexes of topic files in `architecture/mvc/`, `ui/`, `csharp/` and `workflow/` (the largest is 74 lines), and `AGENTS.md` routes each task straight to them. Every rule keeps its ID and text.
+- Package-dependent rules are forks. Where a rule depends on a package, its topic file has a fork block with one file per branch in `architecture/branches/`: `container` (Fast IoC, another container, none), `list` (UI Scroller or not), `navigation` (Screen System or not) and `input` (UI Foundations or not). `OPTIONAL_PACKAGES.md` no longer holds every alternative: it describes the profile, the forks and the `OPT` rules. The Fast IoC parts of `DEPENDENCY_INJECTION.md` moved to the `fast-ioc` branch.
+- The scope question's rules are `TASK-01` to `TASK-04`, which were `SCOPE-01` to `SCOPE-04` and clashed with the MVC scope rules of the same IDs. `SCOPE-01` to `SCOPE-05` now only mean scopes.
+
+### Added
+
+- `README.md`: a **Reads only what it needs** feature, the profile in the Quickstart, the SessionStart step when updating, and the lint in Contributing.
+- The project profile: `scripts/ai-profile.sh` writes `Logs/ai/profile.md` from `Packages/manifest.json` and the new `capabilities.json`, with the capabilities that are true and the branch each fork resolves to. It regenerates only when the manifest, the table or a path it checks changes. `OPT-06`: agents take capabilities and forks from the profile, never from the manifest, and open only the branch it names. `install.sh` copies the script and writes the profile; a SessionStart hook in `.claude/settings.json` puts it in Claude Code's context at every session start (an existing `settings.json` is kept, and the script says what to add). The Copilot, Cursor and Rider rules point to the same file.
+- `capabilities.json` is the one capability table: the profile script, the docs and the Rules Guide window read it. The window's `requires` and `<!-- if: -->` blocks accept a capability id (`fastIoC`) as well as a package name.
+- `tools/lint-rules.sh`, for maintainers: every rule ID defined once, every fork listing exactly its branches with files that exist, every branch with a folder, every relative link and anchor resolving, no conditional markers in the rules, and every Rules Guide source existing. It found and fixed three broken anchors in `docs/`. `tools/test-ai-profile.sh` tests the profile script.
+
 ## [0.8.0] - 2026-11-19
 
 ### Changed

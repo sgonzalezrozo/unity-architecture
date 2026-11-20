@@ -4,9 +4,9 @@
 
 An agent that can compile, test and inspect the project checks its own work. One that can't must say so. This document decides which tool does the checking. It never changes the [architecture](../AGENTS.md#architecture-invariants).
 
-## Capability detection
+## Editor capabilities
 
-Run this with [package capability detection](OPTIONAL_PACKAGES.md#capability-detection), once per task. A step that needs one of these tools runs only when its capability is `true`; otherwise it's left out and reported as not verified (`OPT-01`, `EDIT-01`).
+These capabilities come from the [profile](OPTIONAL_PACKAGES.md#the-profile) with the package ones (`OPT-06`). A step that needs one of these tools runs only when its capability is `true`; otherwise it's left out and reported as not verified (`OPT-01`, `EDIT-01`).
 
 | Capability | `true` when |
 |---|---|
@@ -28,7 +28,7 @@ A bridge and the verify script can't both own the project. `verify.sh` needs the
 | Build and check prefabs | `execute_code` | **Scripting Extensions** tool group, off by default |
 | Play mode | `manage_editor` (`play`, `stop`) | Core tools |
 
-If a tool the task needs isn't available, report which group to turn on in **Window > MCP for Unity > Tools**; don't fall back to the generic tools for prefabs (`EDIT-11`). Without Roslyn installed in that window, `execute_code` compiles C# 6: write `UnityEngine.Object`, not `Object`, and no newer syntax. The setup is in the [installation guide](../docs/INSTALLATION.md#6-set-up-mcp-for-unity).
+If a tool the task needs isn't available, report which group to turn on in **Window > MCP for Unity > Tools**; don't fall back to the generic tools for prefabs (`EDIT-11`). Without Roslyn installed in that window, `execute_code` compiles C# 6: write `UnityEngine.Object`, not `Object`, and no newer syntax. The setup is in the [installation guide](../docs/INSTALLATION.md#6-optional-set-up-mcp-for-unity).
 
 ## Rules
 
@@ -38,10 +38,10 @@ If a tool the task needs isn't available, report which group to turn on in **Win
 | `EDIT-02` | After a script change, the agent MUST wait for the compile to finish, then read every error and warning it caused before it reports. With `editorBridge`, read the Console. Otherwise, run `verify.sh`. |
 | `EDIT-03` | Analyzer diagnostics (`UA0001` and up) are compile errors. Fix the code. MUST NOT suppress, disable or move code out of the analyzed assembly to pass. |
 | `EDIT-04` | With `generationStatus`, a change to an installer, constructor or injected field is done only when `GenerationStatus.json` reports `"status": 0` with no new `warnings`. Fix installers or code, never the generated files. |
-| `EDIT-05` | With `editorBridge`, the agent MAY create GameObjects, components and prefabs through the bridge's editor tools (with `prefabTools`, as `EDIT-11` says). It MUST still write the [prefab handoff](AGENT_WORKFLOW.md#prefab-handoff) table first, as the spec, then read the built hierarchy back and report any difference. |
+| `EDIT-05` | With `editorBridge`, the agent MAY create GameObjects, components and prefabs through the bridge's editor tools (with `prefabTools`, as `EDIT-11` says). It MUST still write the [prefab handoff](workflow/prefab-handoff.md#prefab-handoff) table first, as the spec, then read the built hierarchy back and report any difference. |
 | `EDIT-06` | MUST NOT write `.prefab`, `.unity`, `.asset` or `.meta` YAML as text, through a bridge or not. Unity's serializer owns those files. |
 | `EDIT-07` | With `editorBridge`, a new screen's Play mode check (`TEST-10`) is automated: enter Play mode, open the screen, read the Console, exit. Report it as verified only if all of that ran. |
-| `EDIT-08` | Bridge actions that add or remove packages, change Project Settings, delete assets or start a build MUST follow [When to ask](AGENT_WORKFLOW.md#when-to-ask). |
+| `EDIT-08` | Bridge actions that add or remove packages, change Project Settings, delete assets or start a build MUST follow [When to ask](workflow/planning.md#when-to-ask). |
 | `EDIT-09` | Prefer a package's own validation tool or status file to the agent's judgment of that package (`DET-01`). |
 | `EDIT-10` | With the Editor open, after changing scripts the agent MUST ask the Editor to compile (`refresh_unity` with MCP for Unity) before it finishes: an Editor without focus doesn't refresh on its own. It runs the tests related to the change (`TEST-11`) in the Editor, with `run_tests` filtered by `test_names`, `group_names` or `assembly_names`, then `get_test_job` until it finishes. It runs every EditMode test only when the Stop hook asks for them. |
 | `EDIT-11` | With `editorBridge` and `prefabTools`, the agent MUST build or change a prefab under `Assets/Client` only through `PrefabRecipes` or a spec (`PrefabSpecs.BuildFromSpec`), called with the bridge's code tool (`execute_code` with MCP for Unity), not object by object with the bridge's generic tools. To change a prefab, rebuild it from its spec, or open it with `PrefabUtility.LoadPrefabContents`, change it with the recipes and save it. What the recipes can't build is reported, not improvised. |

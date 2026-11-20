@@ -6,9 +6,9 @@ One toggle prefab is reused for every on/off setting. Adding a setting takes one
 
 **Demonstrates:** reusable prefab driven by config values, visual state roots, drag input.
 
-Capability profile: `fastIoC`, `uiScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping). With `uiFoundations`, each click Controller derives from `BaseClickController` and overrides `OnClick()` instead of implementing `IPointerClickHandler`, and its `Action` has no `Image` (`OPT-02`); drag Controllers keep the `IDrag*` interfaces. Every `Action` sits next to one `UI Content` that wraps what it hits ([`PREFAB-17`](../PREFABS.md#rules)).
+Capability profile: `fastIoC`, `uiScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#forks). With `uiFoundations`, each click Controller derives from `BaseClickController` and overrides `OnClick()` instead of implementing `IPointerClickHandler`, and its `Action` has no `Image` (`OPT-02`); drag Controllers keep the `IDrag*` interfaces. Every `Action` sits next to one `UI Content` that wraps what it hits ([`PREFAB-17`](../PREFABS.md#rules)).
 
-All Views and Controllers sit under one screen, so `SettingsModel` lives on the screen root (row 1 in [Where a Model lives](../MVC.md#where-a-model-lives)). No installer is needed.
+All Views and Controllers sit under one screen, so `SettingsModel` lives on the screen root (row 1 in [Where a Model lives](../mvc/where-a-model-lives.md#where-a-model-lives)). No installer is needed.
 
 ## Hierarchy
 

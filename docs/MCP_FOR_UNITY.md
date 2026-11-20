@@ -57,7 +57,7 @@ Open Unity and **Window > MCP for Unity** (`Cmd+Shift+M` on macOS, `Ctrl+Shift+M
 4. Ask it to check the setup:
 
    ```text
-   Check that this project is set up for the .ai rules: run capability detection and editor tool detection, refresh Unity, read the Console, run the prefab validator test, and tell me what each tool verified.
+   Check that this project is set up for the .ai rules: read the project profile (Logs/ai/profile.md) and list its forks and capabilities, refresh Unity, read the Console, run the prefab validator test, and tell me what each tool verified.
    ```
 
    You should see `editorBridge`, `verifyScript` and `prefabTools` as `true` and a clean compile.

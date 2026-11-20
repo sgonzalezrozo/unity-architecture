@@ -3,7 +3,7 @@
 Una instrucción es una petición, no una garantía. Estos analyzers Roslyn convierten las reglas mecánicas en **errores de compilación**, lo escriba una persona o un agente.
 
 > [!NOTE] Opcionales
-> Solo se instalan con `bash .ai/templates/scripts/install.sh --analyzers`. Sin ellos, las reglas siguen aplicando y se revisan en review. Un agente nunca escribe analyzers nuevos en una tarea de feature (`SCOPE-03`).
+> Solo se instalan con `bash .ai/templates/scripts/install.sh --analyzers`. Sin ellos, las reglas siguen aplicando y se revisan en review. Un agente nunca escribe analyzers nuevos en una tarea de feature (`TASK-03`).
 
 | Regla | Falla cuando |
 |---|---|

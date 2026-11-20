@@ -25,7 +25,7 @@ An instruction is a request, not a guarantee. These rules fail the build, whethe
 
 Layers come from class names: `*Model` and `*Module`, `*View`, and `*Controller`. A `BaseClickController` subclass also counts as a Controller, if the project has UI Foundations. `TMP_InputField` is allowed.
 
-The [checklist](../architecture/AGENT_WORKFLOW.md#pre-response-checklist) also covers rules a compiler can't judge, such as a View calling a command, a Controller holding a rule, file locations and hardcoded text. Those stay in code review.
+The [checklist](../architecture/workflow/checklist.md#pre-response-checklist) also covers rules a compiler can't judge, such as a View calling a command, a Controller holding a rule, file locations and hardcoded text. Those stay in code review.
 
 ## Install
 

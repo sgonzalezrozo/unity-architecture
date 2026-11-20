@@ -158,7 +158,7 @@ This is the part the install script can't do for you. Open **Window > MCP for Un
 **Without MCP for Unity**, close Unity, open Claude Code at the project root (`claude`), and ask it to check the setup:
 
 ```text
-Check that this project is set up for the .ai rules: run capability detection and editor tool detection, run scripts/verify.sh, and tell me what each tool verified.
+Check that this project is set up for the .ai rules: read the project profile (Logs/ai/profile.md) and list its forks and capabilities, run scripts/verify.sh, and tell me what each tool verified.
 ```
 
 You should see `verifyScript` and `prefabTools` as `true` and `editorBridge` as `false`, and `verify.sh` passing. That's the whole setup.
@@ -177,7 +177,7 @@ claude
 5. Ask Claude Code to check the setup. It reads the rules, detects the capabilities and runs the checks:
 
 ```text
-Check that this project is set up for the .ai rules: run capability detection and editor tool detection, refresh Unity, read the Console, run the prefab validator test, and tell me what each tool verified.
+Check that this project is set up for the .ai rules: read the project profile (Logs/ai/profile.md) and list its forks and capabilities, refresh Unity, read the Console, run the prefab validator test, and tell me what each tool verified.
 ```
 
 You should see `editorBridge`, `verifyScript` and `prefabTools` as `true`, a clean compile, and `ClientPrefabsTests` passing (with no prefabs yet, it has nothing to fail on).

@@ -4,7 +4,7 @@ No hace falta nombrar las reglas: el agente carga `AGENTS.md` y lo que toca. Nom
 
 | Quieres | Pide |
 |---|---|
-| Revisar el setup | *Check that this project is set up for the .ai rules: run capability detection and editor tool detection, refresh Unity, read the Console, run the prefab validator test.* |
+| Revisar el setup | *Check that this project is set up for the .ai rules: read the project profile (Logs/ai/profile.md) and list its forks and capabilities, refresh Unity, read the Console, run the prefab validator test.* |
 | Planificar | *Plan a TrophyRoom feature: a list of trophies from the backend and a details popup with a claim button. Don't write code yet.* |
 | Revisar código | *Review Assets/Client/Shop for rule violations. Cite the rule ID for each one, and don't change anything.* |
 | Arreglar un bug | *The coin balance doesn't update after a purchase. Fix it, with a test that fails without the fix.* |

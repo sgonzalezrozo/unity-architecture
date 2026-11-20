@@ -8,6 +8,7 @@ namespace UnityArchitecture.Knowledge
     /// Conditional blocks inside a .md, so a rule shows only the part for the installed tool:
     /// <c>&lt;!-- if: com.x.package --&gt;</c>, <c>&lt;!-- if-not: com.x.package --&gt;</c>,
     /// <c>&lt;!-- else --&gt;</c> and <c>&lt;!-- endif --&gt;</c>, each on its own line. They can nest.
+    /// The name can also be a capability id from .ai/capabilities.json (<c>&lt;!-- if: uiScroller --&gt;</c>).
     /// With showAll every branch is shown and only the markers are removed.
     /// </summary>
     internal static class PackageConditions

@@ -19,8 +19,8 @@ MCP for Unity is optional. Without it, work with the Editor closed: everything i
 
 ## What happens on every task
 
-1. The agent classifies the request ([Agent workflow](../architecture/AGENT_WORKFLOW.md#task-classification)). A question gets an answer, a small change gets made, and a new feature, screen or refactor gets the [scope question](../architecture/AGENT_WORKFLOW.md#scope-question) (code only, with prefabs, with tests) and a plan first. Say the scope in your prompt to skip the question.
-2. It runs [capability detection](../architecture/OPTIONAL_PACKAGES.md#capability-detection) on `Packages/manifest.json`, so its code uses Fast IoC, UI Scroller, Screen System or UI Foundations only when they're installed.
+1. The agent classifies the request ([Agent workflow](../architecture/workflow/planning.md#task-classification)). A question gets an answer, a small change gets made, and a new feature, screen or refactor gets the [scope question](../architecture/workflow/planning.md#scope-question) (code only, with prefabs, with tests) and a plan first. Say the scope in your prompt to skip the question.
+2. It takes the forks from the [project profile](../architecture/OPTIONAL_PACKAGES.md#the-profile), which the SessionStart hook put in its context, and opens only the branch each one names: its code uses Fast IoC, UI Scroller, Screen System or UI Foundations only when they're installed, and it never reads the rules for the ones that aren't.
 3. It writes what the scope includes: the code, and the prefabs and tests when you chose them, with Model tests first (`TEST-08`).
 4. It compiles, reads every error and warning (`EDIT-02`), and fixes compile and (if installed) analyzer errors in the code, never by suppressing them (`EDIT-03`).
 5. It runs the tests related to the change (`TEST-11`).
@@ -38,7 +38,7 @@ Each example is a prompt you can paste, followed by what the agent should do. Re
 ### 1. Check the setup
 
 ```text
-Check that this project is set up for the .ai rules: run capability detection and editor tool detection, refresh Unity, read the Console, run the prefab validator test, and tell me what each tool verified.
+Check that this project is set up for the .ai rules: read the project profile (Logs/ai/profile.md) and list its forks and capabilities, refresh Unity, read the Console, run the prefab validator test, and tell me what each tool verified.
 ```
 
 The agent reads `Packages/manifest.json` and lists every capability, calls `refresh_unity`, reads the Console, and runs `ClientPrefabsTests` through `run_tests`. Do this once after installing, and again whenever something in the setup changes.
@@ -49,7 +49,7 @@ The agent reads `Packages/manifest.json` and lists every capability, calls `refr
 Plan a TrophyRoom feature: a screen with a list of trophies loaded from the backend, and a details popup with a claim button. Don't write code yet.
 ```
 
-A new feature is "plan first, wait for approval". You get a short plan in the [plan format](../architecture/AGENT_WORKFLOW.md#plan): location, new files, where each Model lives, scopes, tests, capabilities and open questions. Answer the open questions, then:
+A new feature is "plan first, wait for approval". You get a short plan in the [plan format](../architecture/workflow/planning.md#plan): location, new files, where each Model lives, scopes, tests, capabilities and open questions. Answer the open questions, then:
 
 ```text
 Approved. Build it.
@@ -116,7 +116,7 @@ It has three sections, each with a header: Daily Deals (with a reset timer), Coi
 
 What the agent does:
 
-1. Plans first (a new feature), with `uiScroller` checked: a `SectionedScroller<StoreItemData, StoreSectionData>` that `StoreModel` feeds with a `SectionedSource`. Without UI Scroller, it plans the [plain Unity list](../architecture/OPTIONAL_PACKAGES.md#list-without-ui-scroller) instead and says that it has no headers (`OPT-01`).
+1. Plans first (a new feature), with `uiScroller` checked: a `SectionedScroller<StoreItemData, StoreSectionData>` that `StoreModel` feeds with a `SectionedSource`. Without UI Scroller, it plans the [plain Unity list](../architecture/branches/no-ui-scroller/lists.md) instead and says that it has no headers (`OPT-01`).
 2. Writes `StoreModel` with its tests first (`TEST-08`): the sections, `Buy`, what happens when the player can't afford an item, and an event when something changes.
 3. Writes two slots, each with a Slot Model that implements `ISlot<T>`: a header slot (title and timer) and an item slot. The item slot has Price and Owned state roots, and only the Price state has an `Action` (`INPUT-04`). Its `UI Content` wraps the visuals (`PREFAB-17`), and `BuyItemController` derives from `BaseClickController` when UI Foundations is installed.
 4. Builds both slot prefabs and the screen from specs, validates them, and runs the tests.
@@ -133,7 +133,7 @@ Each card shows the event's icon, title and time left. Tapping a card opens it t
 
 What the agent does:
 
-1. Plans first: a `Scroller<EventData>` whose slot is expandable. The Slot Model implements `IExpandableSlot<EventData>`, and tapping the card's header calls `ToggleExpanded()`, so the list measures the open card and moves the cards below it ([Expandable slots](../architecture/UI_PATTERNS.md#expandable-slots)). One card at a time is the list's default (**Allow Multiple Expanded** off): opening a card closes the open one by itself.
+1. Plans first: a `Scroller<EventData>` whose slot is expandable. The Slot Model implements `IExpandableSlot<EventData>`, and tapping the card's header calls `ToggleExpanded()`, so the list measures the open card and moves the cards below it ([Expandable slots](../architecture/branches/ui-scroller/lists-layouts.md#expandable-slots)). One card at a time is the list's default (**Allow Multiple Expanded** off): opening a card closes the open one by itself.
 2. Writes `EventsModel` and its tests first: joining, progress, rewards claimed. Whether a card is open and whether the player joined live in the Model, never in the slot, which shows another event later (`LIST-07`).
 3. Builds the progress bar as an `Image` set to Filled, not a `Slider` (`ARCH-05`), and the button with Enter and Continue state roots, each with its own `Action` and Controller.
 4. Gives the slot a layout group so the list can measure it open (`DefaultExtent` is the closed height), and keeps `UI Content` around what each `Action` hits (`PREFAB-17`).
@@ -145,7 +145,7 @@ What the agent does:
 Add an inventory list to Assets/Client/Inventory/MainInventory/ with tabs for Weapons and Armor, a selected item, and a details panel.
 ```
 
-With `uiScroller` the agent uses a `Scroller<T>`, with a Slot Model on the slot prefab. Without it, it uses the [plain Unity list](../architecture/OPTIONAL_PACKAGES.md#list-without-ui-scroller). The closest example is [Filtered list](../architecture/examples/03_FILTERED_LIST_INVENTORY.md).
+With `uiScroller` the agent uses a `Scroller<T>`, with a Slot Model on the slot prefab. Without it, it uses the [plain Unity list](../architecture/branches/no-ui-scroller/lists.md). The closest example is [Filtered list](../architecture/examples/03_FILTERED_LIST_INVENTORY.md).
 
 **Assets > UI Scroller > New Scroll List** is for people: it writes the same Model, View and Controller split the agent writes (`LIST-09`). The agent doesn't run it through MCP, since it opens a window (`EDIT-13`), so don't ask for it in a prompt.
 

@@ -22,7 +22,9 @@ The architecture rules cover all client code except gameplay simulation, which i
 | Unity, C#, uGUI, TextMeshPro | Required runtime |
 | Fast IoC, UI Scroller, Screen System, UI Foundations, Addressables | **Optional.** They change the implementation, never the architecture |
 
-Run [capability detection](architecture/OPTIONAL_PACKAGES.md#capability-detection) before generating code, and [editor tool detection](architecture/EDITOR_TOOLS.md#capability-detection) before verifying it.
+Take the capabilities and forks from the [project profile](architecture/OPTIONAL_PACKAGES.md#the-profile), `Logs/ai/profile.md` (`OPT-06`). In Claude Code it's already in your context from the session start; otherwise read it, and run `bash scripts/ai-profile.sh` when it's missing. Never detect packages from the manifest yourself.
+
+Where a rule depends on a package, the document has a **fork**: a block that lists one file per branch. Open only the file of the branch the profile names, never the others.
 
 ## Architecture invariants
 
@@ -36,11 +38,11 @@ Strict MVC. Code that violates an invariant is incorrect even if it compiles and
 | `ARCH-04` | State flows by pull. If A references B, A reads from B and B never sends data to A. If A knows B, A MUST do all the work to get what it needs from B, and B MUST NOT prepare, format or deliver data for A. Events MUST have no parameters: they signal a change, and the listener reads the Model. | `UA0004`, review |
 | `ARCH-05` | `Selectable` components MUST NOT be used: `Button`, `Toggle`, `Slider` and `Dropdown` combine View and Controller. Controllers implement `IPointer*` and `IDrag*` interfaces. `TMP_InputField` is the only exception. | `UA0005` |
 | `ARCH-06` | Feature code and the prefabs built from it share a folder. Source art does not. | Review |
-| `ARCH-07` | Anything that can be deterministic MUST be. Prefer a deterministic tool to agent judgment, and keep runtime logic reproducible. See [Determinism](architecture/AGENT_WORKFLOW.md#determinism). | `verify.sh`, review |
-| `ARCH-08` | Anything that can be unit tested MUST be testable, and MUST have unit tests when the task's scope includes tests ([scope question](architecture/AGENT_WORKFLOW.md#scope-question)). Logic that can't be tested where it is MUST move to where it can. See [Tests](architecture/CSHARP_STANDARDS.md#tests). | `verify.sh`, review |
+| `ARCH-07` | Anything that can be deterministic MUST be. Prefer a deterministic tool to agent judgment, and keep runtime logic reproducible. See [Determinism](architecture/workflow/determinism.md#determinism). | `verify.sh`, review |
+| `ARCH-08` | Anything that can be unit tested MUST be testable, and MUST have unit tests when the task's scope includes tests ([scope question](architecture/workflow/planning.md#scope-question)). Logic that can't be tested where it is MUST move to where it can. See [Tests](architecture/csharp/tests.md#tests). | `verify.sh`, review |
 | `ARCH-09` | Model dependencies MUST be acyclic. If two Models need each other, what they share MUST move to a new Model that needs neither. A shared Model MUST NOT reference a feature's Model. | `UA0014` |
 | `ARCH-10` | Code MUST NOT add an interface or abstraction without a second use or a test need. | Review |
-| `ARCH-11` | Do the minimum that completely finishes the need. A feature not in use MUST cost nothing at runtime. See [Performance](architecture/CSHARP_STANDARDS.md#performance). | Review |
+| `ARCH-11` | Do the minimum that completely finishes the need. A feature not in use MUST cost nothing at runtime. See [Performance](architecture/csharp/performance.md#performance). | Review |
 
 ```
 Input event → Controller → Model command → state change → parameterless event → View reads Model → View renders
@@ -48,20 +50,25 @@ Input event → Controller → Model command → state change → parameterless 
 
 ## Document routing
 
+Open only the parts the task needs. Each index ([MVC](architecture/MVC.md), [UI patterns](architecture/UI_PATTERNS.md), [C# standards](architecture/CSHARP_STANDARDS.md), [Agent workflow](architecture/AGENT_WORKFLOW.md)) lists its parts, if a task isn't in this table.
+
 | Task | Load |
 |---|---|
-| Any Model, View or Controller, scopes, where a Model lives | [MVC](architecture/MVC.md) |
-| Clicks, visual states, tabs, lists, layouts | [UI patterns](architecture/UI_PATTERNS.md) |
-| Any dependency on a package, or code that differs by package | [Optional packages](architecture/OPTIONAL_PACKAGES.md) |
-| New feature or screen, file location, naming, prefab hierarchy | [Feature structure](architecture/FEATURE_STRUCTURE.md) |
-| Building, reviewing or describing a UI prefab | [Prefabs](architecture/PREFABS.md) |
-| Reference acquisition, Fast IoC bindings | [Dependency injection](architecture/DEPENDENCY_INJECTION.md) |
+| Starting a feature, screen, refactor or anything touching `Shared/` | [Planning a task](architecture/workflow/planning.md) |
+| A Model, View or Controller | [Layers](architecture/mvc/layers.md), [Where a Model lives](architecture/mvc/where-a-model-lives.md), then the layer's rules: [Models](architecture/mvc/models.md), [Views](architecture/mvc/views.md), [Controllers](architecture/mvc/controllers.md) |
+| Scopes, what a prefab root holds | [Scopes](architecture/mvc/scopes.md) |
+| Clicks, visual states, tabs, lists, layouts | The part of [UI patterns](architecture/UI_PATTERNS.md): [clicks](architecture/ui/clicks.md), [visual states](architecture/ui/visual-states.md), [tabs](architecture/ui/tabs.md), [lists](architecture/ui/lists.md), [layouts](architecture/ui/layouts.md) |
+| New feature or screen, file location, naming, prefab hierarchy, navigation, `.asmdef` | [Feature structure](architecture/FEATURE_STRUCTURE.md) |
+| Building, reviewing or describing a UI prefab | [Prefabs](architecture/PREFABS.md), and [Prefab handoff](architecture/workflow/prefab-handoff.md) when a person builds it |
+| Reference acquisition, injection, installers | [Dependency injection](architecture/DEPENDENCY_INJECTION.md) |
 | Backend calls | [Backend integration](architecture/BACKEND_INTEGRATION.md) |
-| C# style, performance, async, logging, tests | [C# standards](architecture/CSHARP_STANDARDS.md) |
-| Task process, scope question, checklist, Definition of Done, Git | [Agent workflow](architecture/AGENT_WORKFLOW.md) |
+| Writing or reviewing C# | [Code style](architecture/csharp/style.md); [performance](architecture/csharp/performance.md) for loading or allocations; [async and errors](architecture/csharp/async-and-errors.md) for `Task`, exceptions or logging |
+| Tests | [Tests](architecture/csharp/tests.md) |
 | Verifying a change, Unity MCP or Unity CLI tools, `verify.sh` | [Editor tools](architecture/EDITOR_TOOLS.md) |
+| Finishing a task | [Checklist and Definition of Done](architecture/workflow/checklist.md) |
+| Git | [Git](architecture/workflow/git.md) |
 
-Read the closest example before generating a feature:
+Read the closest example before generating a feature. They use one profile ([which](architecture/OPTIONAL_PACKAGES.md#forks)): adapt them with your branches.
 
 | Example | Demonstrates |
 |---|---|
@@ -71,10 +78,8 @@ Read the closest example before generating a feature:
 
 ## Completion
 
-A task is complete only when it passes the [pre-response checklist](architecture/AGENT_WORKFLOW.md#pre-response-checklist) and the [Definition of Done](architecture/AGENT_WORKFLOW.md#definition-of-done). Report what each tool verified and what wasn't verified ([Editor tools](architecture/EDITOR_TOOLS.md#reporting-back)).
+A task is complete only when it passes the [pre-response checklist](architecture/workflow/checklist.md#pre-response-checklist) and the [Definition of Done](architecture/workflow/checklist.md#definition-of-done). Report what each tool verified and what wasn't verified ([Editor tools](architecture/EDITOR_TOOLS.md#reporting-back)).
 
 ## API policy
 
-MUST NOT invent an API. The documented surface of project packages is in the linked documents. For anything else, read the package source or ask. Verify each symbol below before use:
-
-`Scroller<T>`, `SectionedScroller<TItem, THeader>`, `ISlot<T>`, `IExpandableSlot<T>`, `IScroller`, `IItemSource<T>`, `ListSource<T>`, `FilteredSource<T>`, `PagedSource<T>`, `IPageLoader<T>`, `SectionedSource<TItem, THeader>`, `BentoLayout`, `ScrollAlign`, `IInjectableForChildren`, `BindingRecorder`, `MonoInstaller`, `ScreenManager`, `ScreenDefinition`, `LayerDefinition`, `IScreenShow`, `IScreenHide`, `IScreenLifecycle`, `IScreenParameter<T>`, `ModalResult<T>`, `NavigationResult`, `NavigationHistory`, `ScreenIds`, `ScreenAuthoring`, `IPrefabInstantiator`, `IInjectingPrefabInstantiator`, `BaseClickController`, `ViewStateMachine`.
+MUST NOT invent an API. A package's documented surface is in its branch files, each of which lists the symbols to verify before use; open them only through a fork. For anything else, read the package source or ask.

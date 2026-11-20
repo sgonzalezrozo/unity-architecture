@@ -6,7 +6,7 @@ Tabs filter one list, and a details panel renders the selection. All state is lo
 
 **Demonstrates:** tab elements from one class, a filtered list without allocations, shared selection.
 
-Capability profile: `fastIoC`, `uiScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#mapping). With `uiFoundations`, each click Controller derives from `BaseClickController` and overrides `OnClick()` instead of implementing `IPointerClickHandler`, and its `Action` has no `Image` (`OPT-02`); drag Controllers keep the `IDrag*` interfaces. Every `Action` sits next to one `UI Content` that wraps what it hits ([`PREFAB-17`](../PREFABS.md#rules)).
+Capability profile: `fastIoC`, `uiScroller` and `screenSystem` are `true`, and `uiFoundations` is `false`. For another profile, apply the [mapping](../OPTIONAL_PACKAGES.md#forks). With `uiFoundations`, each click Controller derives from `BaseClickController` and overrides `OnClick()` instead of implementing `IPointerClickHandler`, and its `Action` has no `Image` (`OPT-02`); drag Controllers keep the `IDrag*` interfaces. Every `Action` sits next to one `UI Content` that wraps what it hits ([`PREFAB-17`](../PREFABS.md#rules)).
 
 `InventoryModel` is injected because this example's cells receive it through `IInjectableForChildren`.
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Puts the files assistants and tools read from fixed paths at the project root, next to the .ai submodule:
-# AGENTS.md, CLAUDE.md, .editorconfig, Copilot, Rider and Cursor rules, scripts/verify.sh, scripts/verify-editor.sh,
-# the Claude Code hook, the .ai/unity package (prefab validator, Editor reporters) and, only when you use MCP for Unity,
-# its config for Claude Code (.mcp.json).
+# AGENTS.md, CLAUDE.md, .editorconfig, Copilot, Rider and Cursor rules, scripts/verify.sh, verify-editor.sh and
+# ai-profile.sh, the Claude Code hooks, the .ai/unity package (prefab validator, Editor reporters) and, only when you
+# use MCP for Unity, its config for Claude Code (.mcp.json).
 #
 # Usage, from the project root (the folder that holds Assets and .ai):
 #   bash .ai/templates/scripts/install.sh            creates the files that are missing, keeps the rest
@@ -118,6 +118,7 @@ copy ".aiassistant/rules/project.md" "$TEMPLATES/rider-project-rule.md"
 copy ".cursor/rules/unity-architecture.mdc" "$TEMPLATES/cursor-rule.mdc"
 copy "scripts/verify.sh" "$TEMPLATES/scripts/verify.sh" executable
 copy "scripts/verify-editor.sh" "$TEMPLATES/scripts/verify-editor.sh" executable
+copy "scripts/ai-profile.sh" "$TEMPLATES/scripts/ai-profile.sh" executable
 copy ".claude/hooks/verify-on-stop.sh" "$TEMPLATES/claude/hooks/verify-on-stop.sh" executable
 
 # The Editor reporters, which write compile and test results to Logs/verify/ for the hook, used to be copied to
@@ -185,6 +186,8 @@ if [ -e "$ROOT/.claude/settings.json" ]; then
     kept+=(".claude/settings.json")
     if ! grep -q "verify-on-stop.sh" "$ROOT/.claude/settings.json"; then
         SETTINGS_NOTE="Your .claude/settings.json was kept and has no verify hook. Add the Stop hook and the allowed commands from .ai/templates/claude/settings.json to it."
+    elif ! grep -q "ai-profile.sh" "$ROOT/.claude/settings.json"; then
+        SETTINGS_NOTE="Your .claude/settings.json was kept and has no SessionStart hook for the project profile. Add the SessionStart hook and the ai-profile.sh commands from .ai/templates/claude/settings.json to it, so Claude starts each session with the profile."
     fi
 else
     mkdir -p "$ROOT/.claude"
@@ -295,6 +298,13 @@ for note in "${SETTINGS_NOTE:-}" "${MCP_NOTE:-}" "${ANALYZER_NOTE:-}" "${MANIFES
         echo "$note"
     fi
 done
+
+# The project profile the agents read (OPT-06): which capabilities are true and which branch each fork resolves to.
+# Claude Code regenerates it on every session start; writing it now also serves Copilot, Cursor and Rider.
+if [ -x "$ROOT/scripts/ai-profile.sh" ] && "$ROOT/scripts/ai-profile.sh" > /dev/null; then
+    echo
+    echo "Project profile: Logs/ai/profile.md"
+fi
 
 # A first batch-mode run imports the whole project, which can take longer than the hook waits.
 # Running it once now makes the hook's checks quick.

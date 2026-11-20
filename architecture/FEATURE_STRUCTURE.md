@@ -4,7 +4,7 @@
 
 ## Definition
 
-A feature is usually one main screen plus modal popups. It may have several screens the user navigates between. A feature is not a scope: see [Scopes](MVC.md#scopes).
+A feature is usually one main screen plus modal popups. It may have several screens the user navigates between. A feature is not a scope: see [Scopes](mvc/scopes.md#scopes).
 
 | ID | Rule |
 |---|---|
@@ -122,9 +122,13 @@ Rules:
 
 Popups are separate prefabs in the screen folder that uses them. A modal's state lives in a Model like any other state.
 
-With `screenSystem`, a popup is a screen whose `ScreenDefinition` type is `Modal`, opened with `GoTo` and closed with `GoBack`. One modal is open at a time, an `alert` blocks navigation until `DismissAlert()`, `GoTo(screen, value)` passes a typed value to `IScreenParameter<T>` components, and `GoToForResult<T>` awaits a modal's answer from `CloseWithResult(value)` (`SCR-07` to `SCR-09`). The package's README documents the rest; for anything not listed there, read how existing features do it, and ask if there is no precedent.
+How screens open, close and show popups depends on the package:
 
-Pass what the navigation is about (which trophy to show) with `GoTo(screen, value)`. State that several screens share stays in a Model: if screen B and others need the selected trophy, screen A sets it on a shared Model and B reads it there. The [backend example](examples/01_BACKEND_FEATURE_TROPHY_ROOM.md) does this with `TrophyRoomModule.SelectTrophy`.
+> **Fork `navigation`** · open only the branch the [profile](OPTIONAL_PACKAGES.md#the-profile) names:
+> - `screen-system`: [Screen System: navigation](branches/screen-system/navigation.md), and [Screen System authoring](branches/screen-system/authoring.md) to create a screen or layer
+> - `no-screen-system`: [Navigation without Screen System](branches/no-screen-system/navigation.md)
+
+State that several screens share stays in a Model: if screen B and others need the selected trophy, screen A sets it on a shared Model and B reads it there (`ARCH-04`).
 
 Scene transitions MUST go through one project scene loader, never `SceneManager` from feature code. Showing a menu screen is not the same as leaving a gameplay scene. With `screenSystem`, a single scene load cleans up the UI by itself (`SCR-03`).
 

@@ -4,7 +4,7 @@ You don't need to name the rules: the agent loads `AGENTS.md` and what the task 
 
 | You want | Ask |
 |---|---|
-| Check the setup | *Check that this project is set up for the .ai rules: run capability detection and editor tool detection, refresh Unity, read the Console, run the prefab validator test.* |
+| Check the setup | *Check that this project is set up for the .ai rules: read the project profile (Logs/ai/profile.md) and list its forks and capabilities, refresh Unity, read the Console, run the prefab validator test.* |
 | A plan | *Plan a TrophyRoom feature: a list of trophies from the backend and a details popup with a claim button. Don't write code yet.* |
 | A review | *Review Assets/Client/Shop for rule violations. Cite the rule ID for each one, and don't change anything.* |
 | A bug fix | *The coin balance doesn't update after a purchase. Fix it, with a test that fails without the fix.* |

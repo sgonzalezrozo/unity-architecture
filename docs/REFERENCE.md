@@ -29,15 +29,23 @@ Everything the README's three commands set up, how to keep it current, and how v
 | [Analyzers](../analyzers) | Optional Roslyn analyzers that turn the mechanical rules into compile errors (`install.sh --analyzers`) |
 | [Unity package](../unity) | `com.sgonzalezrozo.unity-architecture`: prefab recipes, JSON specs, the prefab validator, and the reporters that write each compile and test run in the open Editor to `Logs/verify/` |
 
+## How agents read the rules
+
+An agent reads only what the task needs. `AGENTS.md` routes each task to short topic files (`architecture/mvc/`, `ui/`, `csharp/`, `workflow/`) instead of whole documents. Where a rule depends on a package, the topic file has a **fork**: a block with one file per branch, such as Fast IoC, another container or no container.
+
+The [project profile](../architecture/OPTIONAL_PACKAGES.md#the-profile) decides each fork once. `scripts/ai-profile.sh` writes it from `Packages/manifest.json` and `.ai/capabilities.json`, and regenerates it only when one of them changes; Claude Code gets it at every session start, and the other assistants read `Logs/ai/profile.md`. So an agent opens one branch per fork and never reads the rules of a package the project doesn't have (`OPT-06`).
+
+For maintainers, `bash tools/lint-rules.sh` checks the rules: every rule ID defined once, every fork listing its branches with files that exist, every relative link and anchor resolving. `bash tools/test-ai-profile.sh` tests the profile script.
+
 ## How the process scales
 
 | Request | Process |
 |---|---|
 | Question, explanation, review | Answer directly |
 | Small change inside existing classes | Make the change and summarize it |
-| New feature, screen, class family or refactor | Ask the [scope question](../architecture/AGENT_WORKFLOW.md#scope-question) (code only, with prefabs, with tests), plan, wait for approval |
+| New feature, screen, class family or refactor | Ask the [scope question](../architecture/workflow/planning.md#scope-question) (code only, with prefabs, with tests), plan, wait for approval |
 
-Before returning code, the agent runs the [pre-response checklist](../architecture/AGENT_WORKFLOW.md#pre-response-checklist). The optional [analyzers](../analyzers) turn the mechanical items into compile errors.
+Before returning code, the agent runs the [pre-response checklist](../architecture/workflow/checklist.md#pre-response-checklist). The optional [analyzers](../analyzers) turn the mechanical items into compile errors.
 
 ## The rules' tests
 
@@ -66,9 +74,10 @@ Assistants only read instructions from fixed places in your project, and a submo
 | `.cursor/rules/unity-architecture.mdc` | Cursor | The same, for Cursor |
 | `.editorconfig` | Rider, Visual Studio | Formatting, `var`, braces and naming |
 | `scripts/verify.sh` | Agents, CI | Compiles in batch mode, runs EditMode tests, checks Fast IoC generation |
+| `scripts/ai-profile.sh` | Agents, the SessionStart hook | Writes the project profile, `Logs/ai/profile.md`: which capabilities are true and which branch each fork in the rules resolves to (`OPT-06`) |
 | `scripts/verify-editor.sh` | Agents, the hook | Checks the project while the Editor is open, from the results the Editor writes |
 | `.mcp.json` | Claude Code | Registers a local Unity MCP server (MCP for Unity) on `localhost:8080`. Never replaced |
-| `.claude/hooks/verify-on-stop.sh`, `.claude/settings.json` | Claude Code | Runs `verify.sh` when the agent finishes and sends failures back. Also allows `verify.sh` and read-only `git` commands, so Claude doesn't ask for each one |
+| `.claude/hooks/verify-on-stop.sh`, `.claude/settings.json` | Claude Code | The Stop hook runs `verify.sh` when the agent finishes and sends failures back; the SessionStart hook runs `ai-profile.sh --print`, so every session starts with the profile. Also allows `verify.sh`, `ai-profile.sh` and read-only `git` commands, so Claude doesn't ask for each one |
 | `Assets/Client/Analyzers/UnityArchitecture.Analyzers.dll` | Unity | Only with `--analyzers`: the optional [analyzers](../analyzers) make the mechanical rules compile errors. Prebuilt, so no .NET SDK needed |
 | `Assets/Client/Client.asmdef`, `Client.cs` | Unity | Only when `Assets/Client` doesn't exist yet: the assembly that holds the project's code |
 | `Assets/Client/Tests/Client.Tests.asmdef`, `ClientTests.cs` | Unity | Only with the Test Framework package, when `Client.asmdef` exists: the assembly of the project's EditMode tests, which live in each feature's `Tests` folder (`ASM-03`) |

@@ -4,11 +4,11 @@
 
 ## Project status
 
-This is version `0.8.0`. The architecture and the code style are mandatory. [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), [UI Scroller](https://github.com/sgonzalezrozo/unity-ui-scroller), [Screen System](https://github.com/sgonzalezrozo/unity-screen-system) and [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations) are optional: agents detect them, and use plain Unity forms when they're missing.
+This is version `0.9.0`. The architecture and the code style are mandatory. [Fast IoC](https://github.com/sgonzalezrozo/unity-fast-ioc), [UI Scroller](https://github.com/sgonzalezrozo/unity-ui-scroller), [Screen System](https://github.com/sgonzalezrozo/unity-screen-system) and [UI Foundations](https://github.com/sgonzalezrozo/unity-ui-foundations) are optional: agents detect them, and use plain Unity forms when they're missing.
 
 ## How do I make AI coding agents follow an architecture in Unity?
 
-Give them rules they can't miss, and checks they can't skip. Add this repository as `.ai/` and run its install script: it sets up the rules and the [verify loop](#how-verification-works) that checks every change. Instructions guide the agent, the verify loop checks the build and tests, and the optional [analyzers](../analyzers) turn the mechanical rules into compile errors.
+Give them rules they can't miss, and checks they can't skip. Add this repository as `.ai/` and run its install script: it sets up the rules and the [verify loop](REFERENCE.md#how-verification-works) that checks every change. Instructions guide the agent, the verify loop checks the build and tests, and the optional [analyzers](../analyzers) turn the mechanical rules into compile errors.
 
 ## Does it work with Claude Code, Cursor, Copilot and Rider?
 
@@ -32,7 +32,7 @@ It's written and tested against Unity 6 (`6000.3`). The rules cover uGUI code, s
 
 ## How do I write an AGENTS.md or CLAUDE.md for a Unity project?
 
-Start from this repository instead of a blank file. Add it as the `.ai/` submodule and run its install script, which creates a root `AGENTS.md` and `CLAUDE.md` that point to it, as [Use it in a project](#use-it-in-a-project) shows. Put rules that only apply to one project in that project's root `AGENTS.md`.
+Start from this repository instead of a blank file. Add it as the `.ai/` submodule and run its install script, which creates a root `AGENTS.md` and `CLAUDE.md` that point to it, as the [installation guide](INSTALLATION.md) shows. Put rules that only apply to one project in that project's root `AGENTS.md`.
 
 ## Are there Cursor rules for Unity?
 
@@ -44,7 +44,7 @@ Yes. It's MIT licensed.
 
 ## Does anyone else use it?
 
-Not yet. It's version `0.8.0` by a single author, used only in my personal projects so far, and the rules still change. Feedback and issues are very welcome.
+Not yet. It's version `0.9.0` by a single author, used only in my personal projects so far, and the rules still change. Feedback and issues are very welcome.
 
 ## Is there a sample project?
 

@@ -38,7 +38,7 @@ The window shows English or Spanish (**Settings > Language**). English is the so
 - `source`: the original rule, relative to the `.ai` root, or `package:<name>/<file>` for a package file.
 - `keywords`: add synonyms and every rule ID the doc defines; rule links resolve through them.
 - `home` / `homeOrder`: shows the doc on the home page, in a section from `homeSections`.
-- `requires` / `requiresMissing`: the doc shows only when those packages are (or aren't) installed.
+- `requires` / `requiresMissing`: the doc shows only when those packages are (or aren't) installed. A capability id from `.ai/capabilities.json` (`fastIoC`, `uiScroller`...) works too, and is true under the same conditions as in the agents' profile.
 
 ## Text
 
@@ -135,7 +135,7 @@ Text without Screen System
 <!-- endif -->
 ```
 
-Also `<!-- if-not: ... -->`. They can nest.
+Also `<!-- if-not: ... -->`. They can nest. The name can be a package or a capability id: `<!-- if: screenSystem -->` is the same as the package above.
 
 > [!NOTE]
 > The editor font has no emoji: use callouts and colors instead of icons.

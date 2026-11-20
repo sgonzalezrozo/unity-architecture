@@ -17,7 +17,7 @@ Backend ← Connector ← Module → (event) → View reads Module
 
 ## The Module
 
-A Module is a Model, so all [Model rules](MVC.md#model-rules) apply. It is the only Model that MAY reference a Connector.
+A Module is a Model, so all [Model rules](mvc/models.md#model-rules) apply. It is the only Model that MAY reference a Connector.
 
 There is one Module per feature, shared by all of that feature's screens. That is what lets several screens work on the same data.
 

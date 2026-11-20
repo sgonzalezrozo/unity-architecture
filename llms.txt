@@ -1,6 +1,6 @@
 # Unity Architecture Agents
 
-> AGENTS.md rule set for AI coding agents (Claude Code, Cursor, GitHub Copilot, Rider AI Assistant, Codex) on Unity 6 projects. Strict MVC for uGUI with stable rule IDs and RFC 2119 keywords, optional Roslyn analyzers (UA0001-UA0016, `install.sh --analyzers`), a scope question before each new feature (code only, with prefabs, with tests), and a verify loop (scripts/verify.sh plus a Claude Code Stop hook) that stops an agent from finishing with a broken build. Works with Unity MCP servers and the Unity CLI. Install as a git submodule at `.ai/`, then run `bash .ai/templates/scripts/install.sh` from the project root; `update.sh` updates it later. MIT licensed, pre-release, single author, no other users yet.
+> AGENTS.md rule set for AI coding agents (Claude Code, Cursor, GitHub Copilot, Rider AI Assistant, Codex) on Unity 6 projects. Strict MVC for uGUI with stable rule IDs and RFC 2119 keywords, optional Roslyn analyzers (UA0001-UA0016, `install.sh --analyzers`), a scope question before each new feature (code only, with prefabs, with tests), and a verify loop (scripts/verify.sh plus a Claude Code Stop hook) that stops an agent from finishing with a broken build. A project profile, written once from the manifest, resolves each package-dependent rule to one branch, so agents never read the rules of packages a project lacks. Works with Unity MCP servers and the Unity CLI. Install as a git submodule at `.ai/`, then run `bash .ai/templates/scripts/install.sh` from the project root; `update.sh` updates it later. MIT licensed, pre-release, single author, no other users yet.
 
 ## Docs
 
@@ -12,6 +12,7 @@
 - [Agent workflow](https://github.com/sgonzalezrozo/unity-architecture-agents/blob/main/architecture/AGENT_WORKFLOW.md): task classification, plan, checklist, Definition of Done
 - [Editor tools](https://github.com/sgonzalezrozo/unity-architecture-agents/blob/main/architecture/EDITOR_TOOLS.md): verification with Unity MCP, the Unity CLI or verify.sh
 - [MVC](https://github.com/sgonzalezrozo/unity-architecture-agents/blob/main/architecture/MVC.md): Models, Views, Controllers, where a Model lives
+- [Optional packages](https://github.com/sgonzalezrozo/unity-architecture-agents/blob/main/architecture/OPTIONAL_PACKAGES.md): the project profile (scripts/ai-profile.sh) and the forks that send an agent to one branch per package
 - [Analyzers](https://github.com/sgonzalezrozo/unity-architecture-agents/blob/main/analyzers/README.md): Roslyn rules and installation
 
 ## Examples

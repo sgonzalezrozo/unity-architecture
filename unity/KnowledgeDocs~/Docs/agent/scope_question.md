@@ -9,10 +9,10 @@ A short prompt, like "create the player health feature to show it in the UI", do
 | **Code and tests** | The scripts and their unit tests |
 | **Code, prefabs and tests** | All of it |
 
-> [!RULE] SCOPE-01
+> [!RULE] TASK-01
 > The agent asks this once, together with the plan. It skips it when your request already says.
 
-> [!RULE] SCOPE-03
+> [!RULE] TASK-03
 > The agent doesn't write analyzers, editor tools, generators or test infrastructure unless you ask for them by name.
 
 > [!TIP]

@@ -1,6 +1,8 @@
 {
   "permissions": {
     "allow": [
+      "Bash(bash scripts/ai-profile.sh)",
+      "Bash(scripts/ai-profile.sh)",
       "Bash(scripts/verify.sh)",
       "Bash(bash scripts/verify.sh)",
       "Bash(git status:*)",
@@ -16,6 +18,17 @@
     ]
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR}/scripts/ai-profile.sh\" --print",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [

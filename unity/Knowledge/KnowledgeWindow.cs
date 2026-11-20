@@ -190,9 +190,15 @@ namespace UnityArchitecture.Knowledge
             PackageInfo[] packages = PackageInfo.GetAllRegisteredPackages();
             for (int i = 0; i < packages.Length; i++)
                 installedPackages[packages[i].name] = packages[i].resolvedPath;
+
+            string packageFolder = string.IsNullOrEmpty(knowledgeFolder)
+                ? null
+                : Path.GetDirectoryName(knowledgeFolder);
+            string capabilityTable = Capabilities.FindTable(packageFolder);
+            Capabilities.AddTrueCapabilities(capabilityTable, Directory.GetCurrentDirectory(), installedPackages);
         }
 
-        /// <summary>A doc with requires only shows when the project has those packages installed.</summary>
+        /// <summary>A doc with requires only shows when the project has those packages, or capabilities.</summary>
         private bool MeetsRequirements(KnowledgeEntry entry)
         {
             for (int i = 0; entry.requires != null && i < entry.requires.Count; i++)

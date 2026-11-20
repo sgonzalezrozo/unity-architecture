@@ -8,7 +8,7 @@
 Architecture rules and a working process for AI coding agents on Unity 6: strict MVC for uGUI, a verify script, and a Claude Code hook that won't let an agent finish with a broken build.
 
 [![Unity](https://img.shields.io/badge/Unity-6000.3%20tested-black?style=for-the-badge&logo=unity)](docs/INSTALLATION.md#what-you-need)
-[![Version](https://img.shields.io/badge/version-0.8.0-blue?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.0-blue?style=for-the-badge)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [**Installation**](#installation) • [**Key Features**](#key-features) • [**Quickstart**](#quickstart) • [**Usage**](docs/USAGE.md) • [**Rules**](AGENTS.md) • [**Developer Overview**](architecture/DEVELOPER_OVERVIEW.md)
@@ -61,6 +61,8 @@ bash .ai/templates/scripts/update.sh
 
 On Windows, outside Git Bash: `.ai\templates\scripts\update.cmd`.
 
+It keeps your `.claude/settings.json`. If it predates the project profile, the script says so: add the SessionStart hook from `.ai/templates/claude/settings.json`, so Claude Code starts each session with the profile.
+
 After cloning a project that uses the rules, or pulling a teammate's update, fill or sync the `.ai` folder:
 
 ```bash
@@ -75,8 +77,10 @@ What each command creates, the install options and how verification works: [Setu
 
 * **[Strict MVC for uGUI](architecture/MVC.md)**: Models own state, Views render, Controllers receive input, and state flows by pull.
   Eleven invariants and the layer rules hold in every project, so agents and people write the same shapes.
-* **[Asks before it builds](architecture/AGENT_WORKFLOW.md#scope-question)**: for a new feature the agent asks for code only, with prefabs, with tests, or all of them.
+* **[Asks before it builds](architecture/workflow/planning.md#scope-question)**: for a new feature the agent asks for code only, with prefabs, with tests, or all of them.
   It builds the smallest feature that does what you asked, and never adds analyzers or tools you didn't ask for.
+* **[Reads only what it needs](docs/REFERENCE.md#how-agents-read-the-rules)**: a project profile, written once from `Packages/manifest.json`, tells the agent which branch of each package-dependent rule applies.
+  It opens short topic files and one branch per fork, never the rules of packages you don't have: about half the rules it read before for the same task.
 * **[A build it can't skip](docs/REFERENCE.md#how-verification-works)**: when the agent finishes, a Claude Code hook compiles and runs the tests, and sends failures back to fix.
   It works with the Editor closed (batch mode) or open, through [MCP for Unity](docs/MCP_FOR_UNITY.md).
 * **[Rules Guide in Unity](docs/USAGE.md#rules-guide)**: **Tools > Unity Architecture > Rules Guide** shows the rules for people, in English or Spanish.
@@ -94,7 +98,7 @@ Open Claude Code at the project root and ask for a feature:
 Create the player health feature to show the player's health in the UI.
 ```
 
-The agent reads the rules in `.ai`, asks what to deliver, shows a short plan for you to approve, and builds it. When it stops, the hook checks the build. Say the scope up front to skip the question:
+The agent starts with the project profile, reads only the rules the task needs, asks what to deliver, shows a short plan for you to approve, and builds it. When it stops, the hook checks the build. Say the scope up front to skip the question:
 
 ```text
 Create the player health feature: code and prefabs, no tests.
@@ -106,4 +110,4 @@ More prompts that work, with the Editor open or closed: [Usage](docs/USAGE.md). 
 
 ## Contributing
 
-Bug reports, rule fixes and pull requests are welcome. Open an issue before a large change. See the [contributing guide](.github/CONTRIBUTING.md) and the [security policy](.github/SECURITY.md). Released under the [MIT License](LICENSE).
+Bug reports, rule fixes and pull requests are welcome. Open an issue before a large change, and run `bash tools/lint-rules.sh` after changing a rule: it checks rule IDs, forks and links. See the [contributing guide](.github/CONTRIBUTING.md) and the [security policy](.github/SECURITY.md). Released under the [MIT License](LICENSE).
