@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-19
+
 ### Changed
 
 - `LIST-09` allows **New Scroll List** under `Assets/Client` when its output is the Model, View and Controller split (`{Name}ListModel`, `{Name}ItemSlotModel`...), which follows the rules and adds its assemblies to the folder's `.asmdef`. The older output (`{Name}ItemController`, `{Name}Instantiator`) is still forbidden, and the agent still doesn't run the wizard (`EDIT-13`).

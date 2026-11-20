@@ -1,6 +1,6 @@
 {
   "name": "com.sgonzalezrozo.unity-architecture",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "displayName": "Unity Architecture Agents",
   "description": "Editor tools for the unity-architecture-agents rules: the Rules Guide window (Tools > Unity Architecture > Rules Guide), the prefab validator, prefab recipes and specs, and the reporters that write compile and test results to Logs/verify/ for the Stop hook. Installed from the .ai submodule by install.sh.",
   "documentationUrl": "https://github.com/sgonzalezrozo/unity-architecture-agents#readme",
