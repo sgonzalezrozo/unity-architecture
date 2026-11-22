@@ -11,7 +11,7 @@ Run this before returning code. Item numbers are stable: the [analyzers](../../a
 5. Is there a `Button`, `Toggle`, `Slider`, `Dropdown`, `onClick` or `Initialize(model)`?
    Does the code reference a package whose capability is `false`? Does `Client.asmdef` reference every assembly the packages it uses need (`ASM-02`)?
 6. Are assigned fields `internal`, with no attribute under Fast IoC, and everything else `private`?
-7. Is every file in the right folder, and is source art outside the feature?
+7. Is every file in the right folder, and is source art outside the feature? When a person still has Unity work to do, is it in the feature's `IMPLEMENTATION.md` (`HAND-07`), and does the response link it instead of repeating it?
 8. Are there lambdas, LINQ, `var`, `?.` on Unity objects, `///` comments on members, or hardcoded text?
 9. Could a deterministic tool have decided this? Does a Model read time or randomness directly?
 10. Is everything that can be unit tested covered by a test, with Model tests written first? When the scope has no tests (`TASK-02`), is the logic still testable, and are the missing tests listed in the report?
@@ -39,7 +39,7 @@ State what changed, which tool verified it, and what wasn't verified. If you cou
 
 - [ ] Strings use localization when the project has a localization system; otherwise they are English
 - [ ] A new screen passed its Play mode check (`TEST-10`)
-- [ ] Any prefab left to a person has a complete [handoff](prefab-handoff.md#prefab-handoff)
+- [ ] Any prefab or setup left to a person has a complete [handoff](prefab-handoff.md#prefab-handoff) in `{Feature}/IMPLEMENTATION.md` (`HAND-07`)
 - [ ] Layout adapts to the target resolutions
 - [ ] Subscriptions, tokens and Addressables are cleaned up
 

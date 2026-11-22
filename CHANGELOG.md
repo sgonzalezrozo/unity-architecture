@@ -4,6 +4,24 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-11-22
+
+### Changed
+
+- Tests compile per feature: `Assets/Client/{Feature}/Tests/Client.{Feature}.Tests.asmdef`, from a template in `FEATURE_STRUCTURE.md`, created by the agent with the feature's first test (`ASM-03`). There's no project-wide `Client.Tests` assembly or `.asmref` any more, and `install.sh` no longer creates one. To migrate, give each feature's `Tests/` folder its own `.asmdef` and delete `Assets/Client/Tests/` and the `.asmref` files.
+- What a person still has to set up in Unity goes to `Assets/Client/{Feature}/IMPLEMENTATION.md`, in fixed sections (code, assets, prefabs, Inspector assignments, first run, Play mode check), and the response links it instead of repeating it (`FEAT-02`, `HAND-07`). A scope without prefabs never builds one (`TASK-02`).
+- Size limits: 18 lines per method, 240 per class, 4 parameters (targets unchanged).
+
+### Added
+
+- Rules that make two runs of the same request build the same feature:
+  - `TASK-05` and a **Feature files** table in `planning.md`: the plan's files come from it, row by row, each with its condition.
+  - `TASK-04`: no command, event or file the approved plan doesn't name.
+  - `MODEL-12`: content data (catalogs, starting items) comes from a configuration asset or backend JSON, never from a C# class of constants. A MonoBehaviour Model may receive an injected configuration asset.
+  - `DI-11`: a feature has `{Feature}Installer` exactly when it binds something, including a configuration asset for a screen-root Model.
+  - `LIST-10`: several sources in one list use `SectionedScroller` with a `SectionedSource`, one section per source.
+- Timing: `.claude/hooks/log-timing.sh` logs prompts, loaded instructions, tool calls, subagents and the Stop hook's verification to `Logs/agent-timing/{session}.tsv`, with the rule documents a shell command reads, and shows each prompt's stages and seconds on screen when it ends (`AGENT_TIMING_SUMMARY=0` hides it). `scripts/timing-report.sh` prints a session step by step. No prompt text, tool arguments or file contents are logged. `install.sh` copies both, and says what to merge into an existing `settings.json`.
+
 ## [0.9.0] - 2026-11-20
 
 ### Changed

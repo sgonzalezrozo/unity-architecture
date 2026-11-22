@@ -17,13 +17,14 @@ A short prompt ("create the player health feature to show the player's health in
 | ID | Rule |
 |---|---|
 | `TASK-01` | Before planning a new feature or screen, the agent MUST ask the user what to deliver, as one question with these choices: **Code only**; **Code and prefabs**; **Code and tests**; **Code, prefabs and tests**. Ask it together with the plan, in the same prompt, with the test scope question (`TEST-13`). Skip it only when the request already says. |
-| `TASK-02` | The agent MUST create only what the chosen scope includes. Without prefabs, it describes them in the [handoff](prefab-handoff.md#prefab-handoff) for the developer instead. Without tests, the code stays testable (logic in Models and plain classes, `TEST-03`) and the report lists the tests that would cover it. |
+| `TASK-02` | The agent MUST create only what the chosen scope includes. Without prefabs, it MUST NOT build any, and it writes everything a person still has to set up in Unity to the feature's `IMPLEMENTATION.md` (`HAND-07`). Without tests, the code stays testable (logic in Models and plain classes, `TEST-03`) and the report lists the tests that would cover it. |
 | `TASK-03` | The agent MUST NOT write analyzers, editor tools, generators, test infrastructure or new shared abstractions unless the user asks for them by name. `DET-04` is for the maintainers of these rules, not for feature tasks. |
-| `TASK-04` | The plan names every file it will create. Start from the smallest feature that does what was asked: for "show the player's health", a Model and a View, and a Controller only if there's input. No backend, service, persistence or Module unless the request asks for it. |
+| `TASK-04` | The plan names every file it will create. Start from the smallest feature that does what was asked: for "show the player's health", a Model and a View, and a Controller only if there's input. No backend, service, persistence or Module unless the request asks for it. The code MUST NOT add a command, event, file or feature the approved plan doesn't name; if one turns out necessary, the agent asks before adding it. |
+| `TASK-05` | The plan's file list MUST come from the [feature files](#feature-files) table, row by row, so two runs of the same request plan the same files. A row's file is in the plan exactly when its condition holds. |
 
 ## Plan
 
-Before planning, read a similar existing feature and the relevant docs. The plan is short:
+Before planning, read a similar existing feature and the relevant docs. The plan is short, and its files come from the [feature files](#feature-files) table:
 
 ```
 Feature: PlayerStats
@@ -37,6 +38,25 @@ New dependencies: none
 Profile: container fast-ioc, list ui-scroller, navigation screen-system, input ui-foundations; editorBridge, verifyScript
 Open questions: list
 ```
+
+## Feature files
+
+Go through every row (`TASK-05`). Write the reason next to each file in the plan.
+
+| File | Condition |
+|---|---|
+| `{Screen}/{Screen}Model.cs` or `{Name}Model.cs` | Always: the feature has state. Where it lives: [Where a Model lives](../mvc/where-a-model-lives.md) |
+| `{Screen}/{Name}View.cs` | Something is shown |
+| `{Screen}/{Action}Controller.cs` | The request names an input (click, drag, typing). None otherwise |
+| `{Screen}/{Name}Data.cs` | Items or records are listed or stored |
+| `{Screen}/{Name}Scroller.cs`, `{Name}SlotModel.cs`, `{Name}SlotView.cs` | A dynamic list or grid. Several sources in one list add a header slot (`LIST-10`) |
+| `{Screen}/{Name}BentoLayout.json` | The request says bento |
+| `Services/{Feature}Config.cs` + its `.asset` | The feature has content data (`MODEL-12`) |
+| `Services/{Feature}Installer.cs` | The feature binds anything (`DI-11`) |
+| `Services/{Feature}Module.cs`, `I{Feature}Connector.cs`, `{Feature}Connector.cs` | The request names a backend |
+| `Tests/{Name}ModelTests.cs` + `Tests/Client.{Feature}.Tests.asmdef` | The scope includes tests (`ASM-03`) |
+| `{Screen}/{Name}.prefab` | The scope includes prefabs |
+| `IMPLEMENTATION.md` | A person still has Unity work to do (`HAND-07`) |
 
 ## Plan approval
 

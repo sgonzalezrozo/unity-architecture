@@ -184,6 +184,8 @@ You should see `editorBridge`, `verifyScript` and `prefabTools` as `true`, a cle
 
 `.claude/settings.json` lets the agent run `verify.sh`, `verify-editor.sh`, read-only `git` commands and the read-only Unity tools (`read_console`, `refresh_unity`, `run_tests`, `get_test_job`) without asking each time. Claude Code still asks before `execute_code`, because it runs any C# in your Editor. To stop the prompts, add `"mcp__unityMCP__execute_code"` to `permissions.allow` yourself, knowing that.
 
+It also adds the timing hooks: each prompt ends with its stages and their seconds on screen, and `Logs/agent-timing/` keeps one log per session, with no prompt text, tool arguments or file contents ([Timing](USAGE.md#timing)). An existing `settings.json` is kept, so merge the `log-timing.sh` hooks from `.ai/templates/claude/settings.json` into it.
+
 ## 8. Commit
 
 ```bash

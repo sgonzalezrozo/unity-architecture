@@ -263,7 +263,7 @@ Assets/Client/TrophyRoom/
 - [ ] Does any Controller touch a visual or check a rule?
 - [ ] Does any event carry data? Is anything pushed that could be pulled?
 - [ ] Any `Button`, `Toggle`, `Slider`, `Dropdown` or `onClick`?
-- [ ] Every method 15 lines or fewer, every class 200 or fewer, 3 parameters at most?
+- [ ] Every method 18 lines or fewer, every class 240 or fewer, 4 parameters at most?
 - [ ] Class layout in the right order?
 - [ ] Subscriptions and tokens cleaned up?
 - [ ] Everything that can be unit tested covered?

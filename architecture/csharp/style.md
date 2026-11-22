@@ -28,9 +28,9 @@ Constants → events → injected fields → serialized fields → public fields
 
 | | Target | Hard limit | At the limit |
 |---|---|---|---|
-| Lines in a method | 12 | 15 | Extract a named method |
-| Lines in a class | 120 | 200 | Split by responsibility |
-| Parameters | 2 | 3 | Create a parameter class |
+| Lines in a method | 12 | 18 | Extract a named method |
+| Lines in a class | 120 | 240 | Split by responsibility |
+| Parameters | 2 | 4 | Create a parameter class |
 | Line width | | 120 characters | Wrap |
 
 A method MUST stay at one level of abstraction: it either coordinates named steps or does one low-level step, not both.

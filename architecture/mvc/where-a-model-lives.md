@@ -37,7 +37,7 @@ LivesScreen.prefab [LivesModel, LivesView]
 | Layer | Serialized field | Injected `internal` field | `GetComponentInParent` | Constructor |
 |---|---|---|---|---|
 | **Pure C# Model** | No | No | No | Yes |
-| **MonoBehaviour Model** | No | Models | Parent Models | No |
+| **MonoBehaviour Model** | No | Models and configuration assets (`MODEL-10`) | Parent Models | No |
 | **View** | Rendering components, state roots, config values | Models, row 2 only | Models, row 1 only | No |
 | **Controller** | Config values | Models, row 2 only | Models, row 1 only | No |
 

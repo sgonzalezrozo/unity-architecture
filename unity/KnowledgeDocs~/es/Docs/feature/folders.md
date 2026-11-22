@@ -9,9 +9,9 @@ Assets/
 │   │   ├── MainRoom/          C# y prefabs de la pantalla, juntos
 │   │   ├── DetailsTrophy/
 │   │   ├── Services/
-│   │   └── Tests/         tests de la feature (Client.Tests.asmref)
-│   ├── Shared/
-│   └── Tests/             Client.Tests.asmdef
+│   │   ├── Tests/         tests de la feature (Client.TrophyRoom.Tests.asmdef)
+│   │   └── IMPLEMENTATION.md  lo que queda por armar en Unity
+│   └── Shared/
 ├── Art/        Arte fuente: texturas, sprites, materiales, VFX
 ├── Audio/      SFX, música, voz
 ├── Scenes/

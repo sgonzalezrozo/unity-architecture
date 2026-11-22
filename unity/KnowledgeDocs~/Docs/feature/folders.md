@@ -9,9 +9,9 @@ Assets/
 │   │   ├── MainRoom/          the screen's C# and prefabs, side by side
 │   │   ├── DetailsTrophy/
 │   │   ├── Services/
-│   │   └── Tests/         the feature's tests (Client.Tests.asmref)
-│   ├── Shared/
-│   └── Tests/             Client.Tests.asmdef
+│   │   ├── Tests/         the feature's tests (Client.TrophyRoom.Tests.asmdef)
+│   │   └── IMPLEMENTATION.md  setup left to you
+│   └── Shared/
 ├── Art/        Source art: textures, sprites, materials, VFX
 ├── Audio/      SFX, music, voice
 ├── Scenes/

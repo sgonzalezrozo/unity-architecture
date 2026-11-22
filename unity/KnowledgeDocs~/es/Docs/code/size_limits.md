@@ -4,9 +4,9 @@
 
 | | Objetivo | Límite | Al llegar |
 |---|:---:|:---:|---|
-| Líneas por método | 12 | <color=#F85149>**15**</color> | Extrae un método con nombre |
-| Líneas por clase | 120 | <color=#F85149>**200**</color> | Divide por responsabilidad |
-| Parámetros | 2 | <color=#F85149>**3**</color> | Crea una clase de parámetros |
+| Líneas por método | 12 | <color=#F85149>**18**</color> | Extrae un método con nombre |
+| Líneas por clase | 120 | <color=#F85149>**240**</color> | Divide por responsabilidad |
+| Parámetros | 2 | <color=#F85149>**4**</color> | Crea una clase de parámetros |
 | Ancho de línea | | <color=#F85149>**120**</color> | Parte la línea |
 
 > [!NOTE] Cómo se cuenta

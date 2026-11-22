@@ -36,3 +36,4 @@ public class LivesModel : MonoBehaviour
 | `MODEL-09` | A Model MUST NOT have serialized fields (`UA0013`). |
 | `MODEL-10` | A value set outside code MUST come from an injected configuration asset or from backend JSON. Everything else is a constant. Without a container, load the asset by address or path. |
 | `MODEL-11` | A Model MUST finish changing state before it fires an event. A subscriber MUST NOT call a command on the Model that fired the event. |
+| `MODEL-12` | Content data, such as an item catalog, starting items, prices or level tables, is set outside code (`MODEL-10`): it MUST come from a configuration asset (a ScriptableObject in the feature's `Services/`) or backend JSON, never from a C# class of constants or sample data in a Model. Sample data the request asks for goes into that asset. |

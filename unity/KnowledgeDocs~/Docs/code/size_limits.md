@@ -4,9 +4,9 @@
 
 | | Target | Limit | At the limit |
 |---|:---:|:---:|---|
-| Lines in a method | 12 | <color=#F85149>**15**</color> | Extract a named method |
-| Lines in a class | 120 | <color=#F85149>**200**</color> | Split by responsibility |
-| Parameters | 2 | <color=#F85149>**3**</color> | Create a parameter class |
+| Lines in a method | 12 | <color=#F85149>**18**</color> | Extract a named method |
+| Lines in a class | 120 | <color=#F85149>**240**</color> | Split by responsibility |
+| Parameters | 2 | <color=#F85149>**4**</color> | Create a parameter class |
 | Line width | | <color=#F85149>**120**</color> | Wrap |
 
 > [!NOTE] Counting

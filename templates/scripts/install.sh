@@ -14,8 +14,9 @@
 #   into compile errors), or --no-analyzers to skip them. Otherwise a first install asks, defaulting to no; once
 #   installed, --update keeps them up to date.
 #
-# It creates Assets/Client/Client.asmdef and Client.cs when Assets/Client doesn't exist yet, and the Client.Tests
-# assembly in Assets/Client/Tests when the project has the Test Framework package.
+# It creates Assets/Client/Client.asmdef and Client.cs when Assets/Client doesn't exist yet. Test assemblies are per
+# feature (Assets/Client/{Feature}/Tests/Client.{Feature}.Tests.asmdef, ASM-03): the agent creates one with the
+# feature's first test, so nothing is created here.
 # AGENTS.md, CLAUDE.md, .claude/settings.json and .mcp.json are never replaced.
 set -u
 
@@ -119,6 +120,8 @@ copy ".cursor/rules/unity-architecture.mdc" "$TEMPLATES/cursor-rule.mdc"
 copy "scripts/verify.sh" "$TEMPLATES/scripts/verify.sh" executable
 copy "scripts/verify-editor.sh" "$TEMPLATES/scripts/verify-editor.sh" executable
 copy "scripts/ai-profile.sh" "$TEMPLATES/scripts/ai-profile.sh" executable
+copy "scripts/timing-report.sh" "$TEMPLATES/scripts/timing-report.sh" executable
+copy ".claude/hooks/log-timing.sh" "$TEMPLATES/claude/hooks/log-timing.sh" executable
 copy ".claude/hooks/verify-on-stop.sh" "$TEMPLATES/claude/hooks/verify-on-stop.sh" executable
 
 # The Editor reporters, which write compile and test results to Logs/verify/ for the hook, used to be copied to
@@ -189,6 +192,9 @@ if [ -e "$ROOT/.claude/settings.json" ]; then
     elif ! grep -q "ai-profile.sh" "$ROOT/.claude/settings.json"; then
         SETTINGS_NOTE="Your .claude/settings.json was kept and has no SessionStart hook for the project profile. Add the SessionStart hook and the ai-profile.sh commands from .ai/templates/claude/settings.json to it, so Claude starts each session with the profile."
     fi
+    if ! grep -q "log-timing.sh" "$ROOT/.claude/settings.json"; then
+        TIMING_NOTE="Your .claude/settings.json was kept without the timing hooks. Merge the log-timing.sh hooks from .ai/templates/claude/settings.json to log each session to Logs/agent-timing/ (read it with scripts/timing-report.sh)."
+    fi
 else
     mkdir -p "$ROOT/.claude"
     cp "$TEMPLATES/claude/settings.json" "$ROOT/.claude/settings.json"
@@ -221,38 +227,6 @@ if [ ! -e "$ROOT/$CLIENT/Client.asmdef" ] && [ -z "$(ls -A "$ROOT/$CLIENT" 2>/de
 }'
     own "$CLIENT/Client.cs" '// The Client assembly (Client.asmdef) holds this project'"'"'s own code. The optional architecture
 // analyzers (install.sh --analyzers) check only this assembly, so third-party code elsewhere in Assets isn'"'"'t checked.'
-fi
-# The project's EditMode tests compile in one assembly, Client.Tests, but live next to the feature they test: each
-# Assets/Client/{Feature}/Tests folder has a Client.Tests.asmref that adds it to this assembly (ASM-03). The Stop hook
-# runs a feature's tests by their namespace, Client.{Feature}. Only with the Test Framework package, which it needs.
-if [ -e "$ROOT/$CLIENT/Client.asmdef" ] && grep -qs '"com.unity.test-framework"' "$ROOT/Packages/manifest.json"; then
-    own "$CLIENT/Tests/Client.Tests.asmdef" '{
-    "name": "Client.Tests",
-    "rootNamespace": "",
-    "references": [
-        "Client",
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": true,
-    "precompiledReferences": [
-        "nunit.framework.dll"
-    ],
-    "autoReferenced": false,
-    "defineConstraints": [
-        "UNITY_INCLUDE_TESTS"
-    ],
-    "versionDefines": [],
-    "noEngineReferences": false
-}'
-    own "$CLIENT/Tests/ClientTests.cs" '// The Client.Tests assembly holds this project'"'"'s EditMode tests. They live next to their feature, in
-// Assets/Client/{Feature}/Tests, with a Client.Tests.asmref that adds the folder to this assembly, and use the
-// namespace Client.{Feature}.Tests, so the Stop hook can run one feature'"'"'s tests. See .ai/architecture/FEATURE_STRUCTURE.md.'
 fi
 
 if [ "$ANALYZERS" = auto ] && [ -e "$ROOT/$CLIENT/Analyzers/$ANALYZER.dll" ]; then
@@ -292,7 +266,7 @@ if [ "$UPDATE" = true ]; then
 else
     print_list "Already there, kept (--update refreshes the copied templates):" ${kept[@]+"${kept[@]}"}
 fi
-for note in "${SETTINGS_NOTE:-}" "${MCP_NOTE:-}" "${ANALYZER_NOTE:-}" "${MANIFEST_NOTE:-}"; do
+for note in "${SETTINGS_NOTE:-}" "${TIMING_NOTE:-}" "${MCP_NOTE:-}" "${ANALYZER_NOTE:-}" "${MANIFEST_NOTE:-}"; do
     if [ -n "$note" ]; then
         echo
         echo "$note"

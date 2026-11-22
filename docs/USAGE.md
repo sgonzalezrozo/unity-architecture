@@ -65,7 +65,7 @@ Build a ClaimTrophyBanner for a new Rewards feature in Assets/Client/Rewards/Cla
 
 What the agent does, in order:
 
-1. It writes the Model, View and Controller in `Assets/Client/Rewards/ClaimTrophyBanner/`, and the Model tests in `Assets/Client/Rewards/Tests/`, with a `Client.Tests.asmref` (`ASM-03`). With UI Foundations installed, the Controller derives from `BaseClickController` (`OPT-02`).
+1. It writes the Model, View and Controller in `Assets/Client/Rewards/ClaimTrophyBanner/`, and the Model tests in `Assets/Client/Rewards/Tests/`, with the feature's `Client.Rewards.Tests.asmdef` (`ASM-03`). With UI Foundations installed, the Controller derives from `BaseClickController` (`OPT-02`).
 2. It compiles (`refresh_unity`) and runs the new tests.
 3. It writes `ClaimTrophyBanner.json`, the handoff as a [prefab spec](../architecture/PREFABS.md#prefab-spec) (`HAND-06`): a `UI Content` with the background, title and icon, and the `Action` next to it (`PREFAB-17`).
 4. It builds the prefab through `execute_code`:
@@ -220,6 +220,22 @@ The .ai rules were updated. Read .ai/CHANGELOG.md and tell me what changed that 
 To scope a task's tests without being asked (`TEST-13`), name the folder in the prompt: `tests: Assets/Client/Rewards`. Without it, the agent asks with the scope question; leave it empty for the whole project.
 
 The hook gives up after three failed attempts in a row and says so. Then read the failure yourself, or ask the agent to continue.
+
+## Timing
+
+While you tune the pipeline, every prompt ends with its stages on screen, from the timing hook:
+
+```
+Timing: 4m 25s
+   46s  Read planning rules (13 calls)
+   37s  Waiting for your answer
+   55s  Read list rules (6 calls)
+   43s  Write Models
+   30s  Compile and check (2 calls)
+   13s  Final answer
+```
+
+A stage's seconds include the time the model spent deciding on each step, not only the tool's run. `scripts/timing-report.sh` prints every step of the latest session, and `scripts/timing-report.sh --last` the last prompt again. The logs are in `Logs/agent-timing/`, one TSV per session, without prompt text, tool arguments or file contents. Set `AGENT_TIMING_SUMMARY=0` in `.claude/settings.json` `"env"` to hide the summary and keep logging.
 
 ## Tips
 

@@ -1041,7 +1041,7 @@
     {
       "id": "code.size_limits",
       "title": "Size limits",
-      "summary": "15 lines per method, 200 per class, 3 parameters",
+      "summary": "18 lines per method, 240 per class, 4 parameters",
       "category": "C# code",
       "color": "orange",
       "keywords": [

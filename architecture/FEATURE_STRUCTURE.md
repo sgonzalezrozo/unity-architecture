@@ -9,6 +9,7 @@ A feature is usually one main screen plus modal popups. It may have several scre
 | ID | Rule |
 |---|---|
 | `FEAT-01` | A feature MUST NOT reference another feature's Views, Controllers or scope internals. It MAY read a Model that moved to a common parent or is injected. |
+| `FEAT-02` | Setup a person still has to do in Unity (`HAND-07`) MUST be written to `IMPLEMENTATION.md` at the feature root, `Assets/Client/{Feature}/IMPLEMENTATION.md`: one file per feature, whatever the number of screens. A later task on the feature updates that file. |
 
 ## Folders
 
@@ -23,12 +24,12 @@ Assets/
 │   │   ├── DetailsTrophy/
 │   │   ├── DetailsTrophySnapshot/
 │   │   ├── Services/
-│   │   └── Tests/      The feature's EditMode tests, with a Client.Tests.asmref
+│   │   ├── Tests/      The feature's EditMode tests and Client.TrophyRoom.Tests.asmdef
+│   │   └── IMPLEMENTATION.md   Setup left to a person, when there is any (FEAT-02)
 │   ├── Store/
 │   ├── Inventory/
 │   ├── HomePage/
-│   ├── Shared/
-│   └── Tests/          Client.Tests.asmdef: the assembly of every feature's tests
+│   └── Shared/
 ├── Art/        Source art: textures, sprites, materials, VFX, animations
 ├── Audio/      Source audio: SFX, Music, Voice
 ├── Fonts/
@@ -57,7 +58,7 @@ A very large screen may use subfolders by section (`Tabs/`, `Members/`), never b
 
 ### Inside `Tests`
 
-The feature's tests and a `Client.Tests.asmref`, which compiles them in the `Client.Tests` assembly (`ASM-03`). It's the one folder named after what it holds: tests stay out of the game build, so they can't sit next to the screen they test. Tests of `Shared/` go in `Shared/Tests` the same way.
+The feature's tests and its own test assembly, `Client.{Feature}.Tests.asmdef` (`ASM-03`). It's the one folder named after what it holds: tests stay out of the game build, so they can't sit next to the screen they test. Tests of `Shared/` go in `Shared/Tests` the same way, with `Client.Shared.Tests.asmdef`.
 
 ### Multi-screen features
 
@@ -136,17 +137,16 @@ Scene transitions MUST go through one project scene loader, never `SceneManager`
 
 ```
 Assets/Client/Client.asmdef                          All client code, Shared/ included
-Assets/Client/Tests/Client.Tests.asmdef              All EditMode tests (Editor only)
-Assets/Client/{Feature}/Tests/Client.Tests.asmref    Adds the feature's tests to Client.Tests
+Assets/Client/{Feature}/Tests/Client.{Feature}.Tests.asmdef   The feature's EditMode tests (Editor only)
 ```
 
 Place an `.asmdef` inside the folder it should compile. An `.asmdef` directly in `Assets/` would capture the whole project.
 
 | ID | Rule |
 |---|---|
-| `ASM-01` | All feature code compiles in `Client.asmdef`. A feature MUST NOT get its own `.asmdef`: the analyzers (`EDIT-03`), the prefab validator and the prefab specs only read the assembly named `Client`. |
-| `ASM-02` | When code uses a package that is already in `Packages/manifest.json`, `Client.asmdef` (and `Client.Tests.asmdef` when tests use it) MUST list every assembly that package names in the **Assembly references** section of its `Documentation~/agent-rules.md` (summary in the table below), in the same change that adds the first `using`. Unity doesn't add them, and without them the build fails with `CS0246`. Check the `references` before compiling, and fix a `CS0246` on a package namespace by adding the reference, never by moving the code out of `Client` (`ASM-01`). The packages' wizards (**New Scroll List**, **New Screen**, **New Layer**, **New MonoInstaller**) add their own to the folder's `.asmdef`; code written by hand still needs this rule. This needs no approval; adding the package itself does (`OPT-03`). |
-| `ASM-03` | A feature's EditMode tests MUST go in `Assets/Client/{Feature}/Tests/`, with a `Client.Tests.asmref` (`{ "reference": "Client.Tests" }`) so they compile in `Client.Tests`, never in `Client`, and in the namespace `Client.{Feature}.Tests`: the Stop hook runs a feature's tests by that namespace. A feature MUST NOT get its own test `.asmdef`. `install.sh` creates `Client.Tests.asmdef` when the project has the Test Framework package; if it's missing, create it as `install.sh` does. PlayMode tests, when a project has them, follow the same pattern with a `Client.PlayModeTests` assembly in `Assets/Client/PlayModeTests/` and `Tests/PlayMode/` folders. |
+| `ASM-01` | All feature code compiles in `Client.asmdef`. A feature's code MUST NOT get its own `.asmdef` (its tests do, `ASM-03`): the analyzers (`EDIT-03`), the prefab validator and the prefab specs only read the assembly named `Client`. |
+| `ASM-02` | When code uses a package that is already in `Packages/manifest.json`, `Client.asmdef` (and the feature's `Client.{Feature}.Tests.asmdef` when its tests use it) MUST list every assembly that package names in the **Assembly references** section of its `Documentation~/agent-rules.md` (summary in the table below), in the same change that adds the first `using`. Unity doesn't add them, and without them the build fails with `CS0246`. Check the `references` before compiling, and fix a `CS0246` on a package namespace by adding the reference, never by moving the code out of `Client` (`ASM-01`). The packages' wizards (**New Scroll List**, **New Screen**, **New Layer**, **New MonoInstaller**) add their own to the folder's `.asmdef`; code written by hand still needs this rule. This needs no approval; adding the package itself does (`OPT-03`). |
+| `ASM-03` | A feature's EditMode tests MUST go in `Assets/Client/{Feature}/Tests/`, in the namespace `Client.{Feature}.Tests` (the Stop hook runs a feature's tests by that namespace), and compile in the feature's own assembly, `Client.{Feature}.Tests.asmdef` in that folder, written as the [template](#test-assembly) below. The agent creates it with the feature's first test: it's part of a tests scope (`TASK-01`), not test infrastructure (`TASK-03`). There is no project-wide test assembly and no `.asmref`. PlayMode tests, when a project has them, go in `{Feature}/Tests/PlayMode/` with `Client.{Feature}.PlayModeTests.asmdef`, the same template without `includePlatforms`. |
 
 Assemblies each capability needs in `Client.asmdef`. The package's own `agent-rules.md` is the source; this table is a summary:
 
@@ -159,3 +159,34 @@ Assemblies each capability needs in `Client.asmdef`. The package's own `agent-ru
 | `uiFoundations` | `UIFoundations` |
 | `com.sgonzalezrozo.ui-tweens` | `UITweens` |
 | `addressables` | `Unity.Addressables`, `Unity.ResourceManager` |
+
+### Test assembly
+
+`Assets/Client/Inventory/Tests/Client.Inventory.Tests.asmdef`. Add to `references` the package assemblies the tests use (`ASM-02`), and to `precompiledReferences` `NSubstitute.dll` when they mock a Connector.
+
+```json
+{
+    "name": "Client.Inventory.Tests",
+    "rootNamespace": "Client.Inventory.Tests",
+    "references": [
+        "Client",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
+```

@@ -38,7 +38,7 @@ PATHSPEC=(Assets Packages ProjectSettings
     ':(exclude,glob)**/*.g.cs'
     ':(exclude,glob)**/*.g.cs.meta')
 
-cat > /dev/null
+HOOK_INPUT="$(cat)"
 cd "$ROOT" || exit 0
 mkdir -p "$STATE"
 
@@ -199,8 +199,17 @@ else
         compile) export VERIFY_COMPILE_ONLY=1 ;;
     esac
 fi
+VERIFY_STARTED="$(date +%s)"
 OUTPUT="$("$VERIFY" 2>&1)"
 CODE=$?
+VERIFY_DURATION_MS=$(( ($(date +%s) - VERIFY_STARTED) * 1000 ))
+if [ -x "$ROOT/.claude/hooks/log-timing.sh" ]; then
+    TIMING_EVENT=Verification \
+    TIMING_TOOL_NAME="$VERIFY" \
+    TIMING_DURATION_MS="$VERIFY_DURATION_MS" \
+        "$ROOT/.claude/hooks/log-timing.sh" <<<"$HOOK_INPUT" ||
+        echo "Could not log verification timing." >&2
+fi
 
 case "$CODE" in
     0)

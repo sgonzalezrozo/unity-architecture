@@ -35,6 +35,7 @@ namespace Client.TrophyRoom
 |---|---|
 | `DI-09` | **Assets > FastIoC > New MonoInstaller** writes a global `[MonoInstaller]` with no namespace in the folder you right-click. Run it on the feature's `Services/` folder, name it `{Feature}Installer`, then add the `Client.{Feature}` namespace, the scene names and the `Priority` from the table above. Leave it global only for bindings every scene needs. The agent writes the installer as a C# file in the same form instead (`EDIT-13`). |
 | `DI-10` | Fast IoC regenerates its code by itself after every compile. The agent MUST NOT run **Tools > FastIoC > Setup** or **Regenerate Code**: they end in a modal dialog (`EDIT-13`). Setup runs once per project, by a person. When generation must run again and `editorBridge` is `true`, the agent calls `FastIoC.Editor.Generation.GenerationCoordinator.GenerateAllRetryingFailedCode()` through the code tool, then reads `GenerationStatus.json` (`EDIT-04`); without a bridge, it reads the status `verify.sh` reports, or reports the step as not verified. |
+| `DI-11` | A feature MUST have `Services/{Feature}Installer.cs` when it binds anything: a configuration asset (`MODEL-12`), a row 2 or 3 Model, a Module or a Connector. A feature that binds nothing MUST NOT have one. Choosing a MonoBehaviour Model on the screen root (row 1) doesn't remove the installer when that Model needs a configuration asset: the asset is still bound there and injected into the Model. |
 
 ## What to bind
 
