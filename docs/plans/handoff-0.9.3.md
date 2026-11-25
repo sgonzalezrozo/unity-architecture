@@ -1,6 +1,6 @@
 # Handoff: after 0.9.2
 
-For the next session working on these rules. 0.9.2 made agents read less and made their output checkable; this is where it stands, what the measurements say, and what to try next. The plan that drove 0.9.2 is [0.9.2.md](0.9.2.md) (in Spanish); the first baseline is [0.9.1-inventory.md](../benchmarks/0.9.1-inventory.md).
+For the next session working on these rules. 0.9.2 made agents read less and made their output checkable; this is where it stands, what the measurements say, and what to try next. The first baseline is [0.9.1-inventory.md](../benchmarks/0.9.1-inventory.md).
 
 ## What 0.9.2 has
 
@@ -46,7 +46,7 @@ The scripts that ran these samples are not in the repository yet (see F8 below).
 9. **Example 04 isn't compiled in Unity:** `ScreenIds.StorePromotionPopup` needs the screen. A fixture project (or the rules' Unity package tests) could compile the examples.
 10. **Two sessions in one project** share `Logs/verify/test-scope` and `Logs/ai/plan.md`; the hook copies them per session only when written during the turn, so a concurrent writer can still leak in. Rare in practice.
 11. **Effort:** compare Haiku at low, medium and high on the Store request (cost per completed task, retries, checker result).
-12. **Housekeeping:** translate or remove `docs/plans/0.9.2.md` (Spanish); refresh `model-prices.json` when prices change; projects need `install.sh --update` for the Copilot, Cursor and Rider copies; `ScreenSystem.Tests.PrefabHandleCacheTests.BundlesAreRetainedOnceForEachAddressThatLoads` failed once in a full run and passes alone (order-dependent, Screen System repository).
+12. **Housekeeping:** refresh `model-prices.json` when prices change; projects need `install.sh --update` for the Copilot, Cursor and Rider copies; `ScreenSystem.Tests.PrefabHandleCacheTests.BundlesAreRetainedOnceForEachAddressThatLoads` failed once in a full run and passes alone (order-dependent, Screen System repository).
 
 ## How to start
 
