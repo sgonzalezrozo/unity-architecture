@@ -132,7 +132,7 @@ markers="$(rule_files | xargs grep -n '<!-- *if' 2>/dev/null)"
 # 6. Rules Guide sources.
 for catalog in unity/KnowledgeDocs~/knowledge.json unity/KnowledgeDocs~/es/knowledge.json; do
     grep -o '"source": *"[^"]*"' "$catalog" | sed 's/.*"\([^"]*\)"$/\1/' | sort -u | while IFS= read -r source; do
-        case "$source" in package:*) continue ;; esac
+        case "$source" in package:*|enforcement:*) continue ;; esac  # another repository's file
         [ -e "${source%%#*}" ] || echo "FAIL  $catalog: source $source doesn't exist"
     done
 done | tee "$SOURCES_FILE"

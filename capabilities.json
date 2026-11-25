@@ -12,7 +12,7 @@
     { "id": "generationStatus", "packages": ["com.sgonzalezrozo.fast-ioc"], "paths": [] },
     { "id": "editorBridge", "packages": ["com.coplaydev.unity-mcp", "com.unity.pipeline", "com.unity.ai.assistant"], "paths": [] },
     { "id": "verifyScript", "packages": [], "paths": ["scripts/verify.sh"] },
-    { "id": "prefabTools", "packages": ["com.sgonzalezrozo.unity-architecture"], "paths": [] }
+    { "id": "prefabTools", "packages": ["com.sgonzalezrozo.unity-architecture-enforcement"], "paths": [] }
   ],
   "forks": [
     { "id": "container", "branches": ["fastIoC:fast-ioc", "otherContainer:other-container", "*:no-container"] },

@@ -9,7 +9,7 @@ A person builds a prefab when the task's scope excludes prefabs (`TASK-02`), or 
 | `HAND-03` | List every serialized field and what to assign to it. |
 | `HAND-04` | List the setup a first run needs, such as TMP Essentials or the EventSystem input module. |
 | `HAND-05` | Say what to test in Play mode, and report Play mode as not verified. |
-| `HAND-06` | With the rules' package, the handoff MAY also be a [prefab spec](../PREFABS.md#prefab-spec): the same table as JSON, listing the whole hierarchy in order. Build it with `PrefabSpecs.BuildFromSpec` and check the prefab with `PrefabSpecs.Compare`, which MUST report no differences. |
+| `HAND-06` | With the enforcement package (`prefabTools`), the handoff MAY also be a [prefab spec](../PREFABS.md#prefab-spec): the same table as JSON, listing the whole hierarchy in order. Build it with `PrefabSpecs.BuildFromSpec` and check the prefab with `PrefabSpecs.Compare`, which MUST report no differences. |
 | `HAND-07` | When a person still has Unity work to do (prefabs, Inspector assignments, scene objects, first-run setup), the agent MUST write the whole handoff to `Assets/Client/{Feature}/IMPLEMENTATION.md` (`FEAT-02`), in the [form](#implementationmd) below, and save any prefab spec (`HAND-06`) beside it. The final response MUST link that file and MUST NOT repeat the setup. With no Unity work left, no file is written. |
 
 ```

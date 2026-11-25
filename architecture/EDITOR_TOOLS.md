@@ -13,11 +13,11 @@ These capabilities come from the [profile](OPTIONAL_PACKAGES.md#the-profile) wit
 | `editorBridge` | The agent has tools that drive a running Unity Editor: the Unity CLI (`unity` command, or its `unity mcp` mode, with `com.unity.pipeline` in the manifest), [MCP for Unity](https://github.com/CoplayDev/unity-mcp) (`com.coplaydev.unity-mcp`) or another Unity MCP server |
 | `verifyScript` | `scripts/verify.sh` exists. It compiles and runs the EditMode tests in batch mode, with the Editor closed |
 | `generationStatus` | `fastIoC` is `true`. `Assets/FastIoC/Generated/GenerationStatus.json` reports missing bindings and cycles |
-| `prefabTools` | `com.sgonzalezrozo.unity-architecture` is in `Packages/manifest.json` (`install.sh` adds it from `.ai/unity`): `PrefabRecipes`, `PrefabSpecs` and `PrefabValidator`, described in [Prefabs](PREFABS.md#building-a-prefab) |
+| `prefabTools` | `com.sgonzalezrozo.unity-architecture-enforcement` is in `Packages/manifest.json` (the enforcement package's install adds it from `.ai-enforcement/unity`): `PrefabRecipes`, `PrefabSpecs` and `PrefabValidator`, described in [Prefabs](PREFABS.md#building-a-prefab) |
 
 Unity's in-Editor MCP server in the AI Assistant package (`com.unity.ai.assistant`) is deprecated by Unity. Treat it as an `editorBridge`, but don't suggest it: the Unity CLI replaces it.
 
-A bridge and the verify script can't both own the project. `verify.sh` needs the Editor closed, and a bridge needs it open. While the Editor is open, the Editor itself writes its compile and test results to `Logs/verify/` (from the reporters in the `.ai/unity` package, which `install.sh` adds), and `scripts/verify-editor.sh` reads them.
+A bridge and the verify script can't both own the project. `verify.sh` needs the Editor closed, and a bridge needs it open. While the Editor is open, the Editor itself writes its compile and test results to `Logs/verify/` (from the reporters in the enforcement package, `.ai-enforcement/unity`), and `scripts/verify-editor.sh` reads them.
 
 ### With MCP for Unity
 
@@ -81,7 +81,7 @@ compile + analyzers → EditMode tests → generation status → Play mode check
 
 ## Automatic verification
 
-The automatic checks that run when an agent finishes belong to the optional enforcement package, not to these rules. Their behavior and their rule IDs are in [Enforcement](../docs/ENFORCEMENT.md).
+The automatic checks that run when an agent finishes belong to the optional enforcement package, not to these rules. Their behavior and their rule IDs are in that package's documentation.
 
 ## Reporting back
 

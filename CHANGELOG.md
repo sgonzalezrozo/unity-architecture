@@ -4,7 +4,18 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-11-25
+
+The rules are documents now, and the repository is **unity-architecture** (it was unity-architecture-agents; GitHub redirects the old address, so existing submodules keep working). What makes an AI read and follow the rules is a separate, optional enforcement package, private for now.
+
 ### Changed
+
+- **The enforcement is a separate package**, installed as `.ai-enforcement`. These rules' install adds only `.editorconfig` and the Rules Guide package, and nothing reads them by default. The enforcement holds everything that makes an AI read and follow them: `AGENTS.md`, `CLAUDE.md`, the Copilot, Cursor and Rider files, the Claude Code hooks and settings, `verify.sh`, `verify-editor.sh`, `check-feature.sh`, the timing scripts, the analyzers, and its own Unity package with the prefab recipes and specs, the asset specs, the prefab validator and the reporters. Its install runs this one first. Moved out of this repository, with their history: `templates/claude/`, the hook, check and instruction templates, `analyzers/`, `unity/Editor`, `unity/Reporters`, `unity/Tests`, their tests in `tools/`, `tools/eval/`, `docs/ENFORCEMENT.md` and `model-prices.json`.
+- The Unity package `com.sgonzalezrozo.unity-architecture` ("Unity Architecture") is only the Rules Guide window, for reading the rules, examples and good practices in the Editor. `prefabTools` now means the enforcement's package, `com.sgonzalezrozo.unity-architecture-enforcement`.
+- A project's own rules go in `PROJECT_RULES.md`. With the enforcement, `AGENTS.md` is the package's and points to `.ai/AGENTS.md` and to `PROJECT_RULES.md`.
+- `update.sh` runs the enforcement's install when `.ai-enforcement` is there, which refreshes its copies and regenerates the AI context for the new rules. The old installer flags (`--enforcement`, `--mcp`...) are ignored, with a note.
+- The generators of the AI context (`ai-profile.sh`, `ai-facts.sh`, `ai-packs.sh`) stay here as utilities; the enforcement copies and runs them. `Logs/ai/` is generated and never committed.
+- The README, the installation guide and the setup reference describe the rules alone, and mention the enforcement briefly.
 
 - The rules describe what must be true, not the enforcement that checks it. The automatic checks (the Stop hook, the feature checker and their rule IDs) moved out of the rules into `docs/ENFORCEMENT.md`, so a project that installs only the rules reads no rule about a tool it doesn't have. `TEST-11`, `TEST-13`, `PLAN-02` and the checklist say what must happen, and `CHK-xx` IDs appear only in `docs/ENFORCEMENT.md`.
 

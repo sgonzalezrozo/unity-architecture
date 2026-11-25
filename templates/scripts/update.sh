@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Updates the rules in one command: gets the latest .ai from GitHub, then refreshes the files install.sh copied
-# to the project root. AGENTS.md, CLAUDE.md and .claude/settings.json are never touched.
+# to the project root. With the enforcement package (.ai-enforcement), it runs its install too, which regenerates
+# the AI context for the new rules. PROJECT_RULES.md is never touched.
 #
 # Usage, from the project root (the folder that holds Assets and .ai):
 #   bash .ai/templates/scripts/update.sh
@@ -33,13 +34,20 @@ main() {
     fi
     echo
 
-    # Runs the install script of the new version.
-    bash "$ai_dir/templates/scripts/install.sh" --update
-    local status=$?
+    # Runs the install script of the new version. With the enforcement package, its install runs too: it refreshes
+    # the AI wiring and copies, and regenerates the AI context (Logs/ai/) for the new rules.
+    # (The enforcement's install runs this package's install first, so it isn't run twice.)
+    local status
+    if [ -f "$root/.ai-enforcement/templates/scripts/install.sh" ]; then
+        bash "$root/.ai-enforcement/templates/scripts/install.sh" --update
+    else
+        bash "$ai_dir/templates/scripts/install.sh" --update
+    fi
+    status=$?
 
     if [ "$before" != "$after" ]; then
         echo
-        echo "Commit the update: git add . && git commit -m \"Update Unity Architecture Agents to $after\""
+        echo "Commit the update: git add . && git commit -m \"Update Unity Architecture to $after\""
     fi
     exit $status
 }

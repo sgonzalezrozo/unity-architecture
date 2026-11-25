@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Unity Architecture Agents is pre-release. Only the latest tagged version gets fixes.
+Unity Architecture is pre-release. Only the latest tagged version gets fixes.
 
 ## Report a vulnerability
 

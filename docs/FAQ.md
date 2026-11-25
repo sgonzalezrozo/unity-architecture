@@ -36,7 +36,7 @@ Start from this repository instead of a blank file. Add it as the `.ai/` submodu
 
 ## Are there Cursor rules for Unity?
 
-Yes. Copy [`templates/cursor-rule.mdc`](../templates/cursor-rule.mdc) to `.cursor/rules/`. It loads the full rule set from `.ai/AGENTS.md`.
+Yes. The optional enforcement package installs a Cursor rule, `.cursor/rules/unity-architecture.mdc`, that points Cursor to the rules in `.ai/AGENTS.md` and to your own in `PROJECT_RULES.md`. Without it, add an always-applied Cursor rule that says to read `.ai/AGENTS.md`.
 
 ## Is it free for commercial use?
 

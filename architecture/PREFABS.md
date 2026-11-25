@@ -61,7 +61,7 @@ With `uiAtom` (the [profile](OPTIONAL_PACKAGES.md#the-profile)), a shaped `Backg
 
 ## Building a prefab
 
-With `prefabTools`, `UnityArchitecture.Prefabs.PrefabRecipes`, in the rules' package, builds the standard pieces already following these rules, so a prefab is a list of calls, not values set by hand. With a Unity MCP server, an agent calls them with `execute_code`; a person can call them from an Editor script.
+With `prefabTools`, `UnityArchitecture.Prefabs.PrefabRecipes`, in the enforcement package, builds the standard pieces already following these rules, so a prefab is a list of calls, not values set by hand. With a Unity MCP server, an agent calls them with `execute_code`; a person can call them from an Editor script.
 
 | Recipe | Builds |
 |---|---|
@@ -119,7 +119,7 @@ The spec lists the whole hierarchy in order: nothing is added that it doesn't na
 
 ## Checking a prefab
 
-The prefab validator (`TEST-12`) is an EditMode test in the rules' package, `com.sgonzalezrozo.unity-architecture`, which `install.sh` adds to `Packages/manifest.json` from `.ai/unity`. It loads the prefabs under `Assets/Client` and fails with the prefab, the object and the rule ID of each error. It has one case per feature folder, named after it: `UnityArchitecture.Prefabs.Tests.ClientPrefabsTests.Inventory` checks the prefabs under `Assets/Client/Inventory`, and `Root` those directly in `Assets/Client`. It runs with the other tests: in `verify.sh`, and in the open Editor through `run_tests`. To run one feature's case, filter by its name (`test_names` with `run_tests`, or `VERIFY_TEST_FILTER` with `verify.sh`); `group_names: ClientPrefabsTests` runs every case with `run_tests`.
+The prefab validator (`TEST-12`) is an EditMode test in the enforcement package, `com.sgonzalezrozo.unity-architecture-enforcement`, which its install adds to `Packages/manifest.json` from `.ai-enforcement/unity`. It loads the prefabs under `Assets/Client` and fails with the prefab, the object and the rule ID of each error. It has one case per feature folder, named after it: `UnityArchitecture.Prefabs.Tests.ClientPrefabsTests.Inventory` checks the prefabs under `Assets/Client/Inventory`, and `Root` those directly in `Assets/Client`. It runs with the other tests: in `verify.sh`, and in the open Editor through `run_tests`. To run one feature's case, filter by its name (`test_names` with `run_tests`, or `VERIFY_TEST_FILTER` with `verify.sh`); `group_names: ClientPrefabsTests` runs every case with `run_tests`.
 
 | Checked | Rules |
 |---|---|

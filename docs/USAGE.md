@@ -1,5 +1,7 @@
 # Usage with Claude Code
 
+This guide is for working with an AI agent, which needs the enforcement package (`.ai-enforcement`) next to the rules: see [Installation](INSTALLATION.md). Without it the rules are documents only.
+
 How to work with Claude Code once the rules are [installed](INSTALLATION.md): prompts that work, what the agent does with each, and what the Stop hook checks before it lets the agent finish.
 
 You don't need to name the rules in your prompts. Claude Code loads `CLAUDE.md`, which loads `.ai/AGENTS.md` and your `AGENTS.md`; the agent reads the documents the routing table selects for the task. Name a rule ID only when you want a specific one applied or explained.
@@ -241,7 +243,7 @@ Turn summary
   To the first file      1m 50s
   Calls before writing   7
   Rule docs read         6
-  Outside packs          1 calls (pkg:unity-architecture-agents/unity/Editor/AssetSpecs.cs)
+  Outside packs          1 calls (pkg:unity-architecture/unity/Editor/AssetSpecs.cs)
 Stages
      3s  Read pack new-feature
      4s  Read package source

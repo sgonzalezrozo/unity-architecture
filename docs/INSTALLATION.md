@@ -2,13 +2,9 @@
 
 Step by step, from a new, empty Unity project to Claude Code building a feature that passes every check. It takes about 20 minutes, most of it waiting for Unity.
 
-When you're done you'll have:
+When you're done you'll have the rules in a `.ai` folder (a Git submodule): the architecture, the examples and the good practices. They're documents: read them in `.ai/`, or in the Editor with **Tools > Unity Architecture > Rules Guide**. Their install adds only `.editorconfig` and the Rules Guide package, and nothing reads them by default.
 
-- The rules in a `.ai` folder (a Git submodule), plus the small entry files that Claude Code, Cursor, Copilot and Rider read.
-- Optionally, the analyzers, which turn the mechanical rules into compile errors in `Assets/Client` (`install.sh --analyzers`).
-- The `com.sgonzalezrozo.unity-architecture` package from `.ai/unity`: the prefab recipes, the specs, the prefab validator, and the reporters that write each compile and test run to `Logs/verify/`.
-- A Claude Code Stop hook that won't let the agent finish with a broken build.
-- Optionally, MCP for Unity, so the agent can also compile, test and build prefabs while the Editor is open. Everything else works without it.
+An AI reads and follows them through a separate, optional enforcement package (private for now), installed next to them as `.ai-enforcement`. It adds the instruction files for Claude Code, Cursor, Copilot and Rider, the hooks, the checks and the prefab tools, and runs this install first. Steps 5 to 9 below are for working with it.
 
 Already have a project? Skip step 1 and start at step 2. For updating, cloning and installing by hand, see the [Setup Reference](REFERENCE.md).
 
@@ -88,10 +84,10 @@ Skip this step if `git status` already works in the project.
 ## 3. Add the rules as a submodule
 
 ```bash
-git submodule add https://github.com/sgonzalezrozo/unity-architecture-agents.git .ai
+git submodule add https://github.com/sgonzalezrozo/unity-architecture.git .ai
 ```
 
-You now have a `.ai` folder next to `Assets`, with `AGENTS.md`, `architecture`, `templates`, `analyzers` and `unity` inside. Unity ignores folders whose names start with a dot, so it never imports `.ai` or creates `.meta` files for it.
+You now have a `.ai` folder next to `Assets`, with `AGENTS.md`, `architecture`, `docs` and `unity` inside. Unity ignores folders whose names start with a dot, so it never imports `.ai` or creates `.meta` files for it.
 
 ## 4. Run the install script
 
@@ -99,23 +95,15 @@ You now have a `.ai` folder next to `Assets`, with `AGENTS.md`, `architecture`, 
 bash .ai/templates/scripts/install.sh
 ```
 
-**On Windows**, run the scripts in Git Bash, or call the `.cmd` launcher from PowerShell or cmd: `.ai\templates\scripts\install.cmd` (same options). A plain `bash` in PowerShell or cmd is WSL's launcher, which fails with "Windows Subsystem for Linux has no installed distributions".
+**On Windows**, run the scripts in Git Bash, or call the `.cmd` launcher from PowerShell or cmd: `.ai\templates\scripts\install.cmd`. A plain `bash` in PowerShell or cmd is WSL's launcher, which fails with "Windows Subsystem for Linux has no installed distributions".
 
-It creates the files assistants read from fixed paths, writes `.claude/settings.json`, and adds the rules' package to `Packages/manifest.json`. It writes `.mcp.json` only for MCP for Unity: with `--mcp`, or when the manifest already has it. The [Setup Reference](REFERENCE.md#what-installsh-creates) lists every file it creates. It asks whether to also install the optional analyzers (default: no); `--analyzers` or `--no-analyzers` answers ahead of time. Files that already exist are kept, so it's safe to run again.
+It adds `.editorconfig` and the Rules Guide package (`com.sgonzalezrozo.unity-architecture`, from `.ai/unity`) to `Packages/manifest.json`. A `.editorconfig` you already have is asked about: `[r]` replaces it (the old one is kept as `.editorconfig.bak`), `[s]` skips it. That's all the rules install: open the project and read them in **Tools > Unity Architecture > Rules Guide**.
 
-At the end it asks: **"Run scripts/verify.sh now?"** Answer `y`. With Unity closed, it opens the project once in batch mode, imports it, compiles it and runs the EditMode tests. The first run can take several minutes; later ones are quick. It ends with an exit code: `0` passed, `1` failed, `2` couldn't run. A new project reports 50 tests: they're the rules' own tests, not your code ([which ones](REFERENCE.md#the-rules-tests)).
-
-- Exit code `2` with "Unity not found": the script looks for the version in `ProjectSettings/ProjectVersion.txt` in Unity Hub's install folder. Set `UNITY_PATH` to the Unity executable and run it again:
-
-```bash
-UNITY_PATH="/Applications/Unity/Hub/Editor/6000.3.0f1/Unity.app/Contents/MacOS/Unity" scripts/verify.sh
-```
-
-- "Analyzers not installed": `Assets/Client` already had code but no `Client.asmdef`. Add the assembly definition and run the script again (see [Feature structure](../architecture/FEATURE_STRUCTURE.md#assembly-definitions)).
-
-That's all the rules need. Go to [step 7](#7-connect-claude-code) to work with the Editor closed: the agent writes code and prefab specs, the hook verifies in batch mode, and you build prefabs from their specs with one click (**Assets > Unity Architecture > Build Prefab From Spec**). Steps 5 and 6 are only for letting the agent work with the Editor open.
+With the enforcement package, run its install instead (`bash .ai-enforcement/templates/scripts/install.sh`): it runs this one first, then adds the instruction files, the hooks and the checks, and its README says the rest. Your project's own rules go in `PROJECT_RULES.md`, which it creates and never changes. The AI context it generates in `Logs/ai/` is never committed: keep `Logs/` in `.gitignore`.
 
 ## 5. Optional: add MCP for Unity
+
+Steps 5 to 9 are for working with an AI agent, through the enforcement package.
 
 The same steps, on one page: [MCP for Unity: installation guide](MCP_FOR_UNITY.md).
 
@@ -193,7 +181,7 @@ git add .
 ```
 
 ```bash
-git commit -m "Add Unity Architecture Agents"
+git commit -m "Add Unity Architecture"
 ```
 
 This commits the entry files, `.gitmodules` (the `.ai` version the project uses), the analyzers, `Assets/Client`, `.claude`, `.mcp.json` if you added MCP for Unity, and the manifest change. `Logs/` stays out: the default Unity `.gitignore` ignores it.

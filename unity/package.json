@@ -1,9 +1,9 @@
 {
   "name": "com.sgonzalezrozo.unity-architecture",
-  "version": "0.9.2",
-  "displayName": "Unity Architecture Agents",
-  "description": "Editor tools for the unity-architecture-agents rules: the Rules Guide window (Tools > Unity Architecture > Rules Guide), the prefab validator, prefab recipes and specs, and the reporters that write compile and test results to Logs/verify/ for the Stop hook. Installed from the .ai submodule by install.sh.",
-  "documentationUrl": "https://github.com/sgonzalezrozo/unity-architecture-agents#readme",
+  "version": "0.9.4",
+  "displayName": "Unity Architecture",
+  "description": "The Rules Guide window for the Unity Architecture rules (Tools > Unity Architecture > Rules Guide): the rules, examples and good practices, to read in the Editor. Installed from the .ai submodule by install.sh.",
+  "documentationUrl": "https://github.com/sgonzalezrozo/unity-architecture#readme",
   "unity": "6000.0",
   "license": "MIT",
   "author": {
@@ -13,19 +13,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sgonzalezrozo/unity-architecture-agents.git"
+    "url": "https://github.com/sgonzalezrozo/unity-architecture.git"
   },
   "keywords": [
-    "unity-architecture-agents",
+    "unity-architecture",
     "ai-agents",
     "agents-md",
     "claude-code",
     "mvc",
     "ugui",
-    "prefab-validator",
     "unity",
     "unity6",
-    "unity-package"
+    "unity-package",
+    "documentation"
   ],
   "dependencies": {
     "com.unity.ugui": "2.0.0"

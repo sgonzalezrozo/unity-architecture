@@ -1,10 +1,10 @@
-# Contributing to Unity Architecture Agents
+# Contributing to Unity Architecture
 
 Thanks for helping out. Bug reports, rule fixes and pull requests are welcome.
 
 ## Before you start
 
-- Search the [existing issues](https://github.com/sgonzalezrozo/unity-architecture-agents/issues) first.
+- Search the [existing issues](https://github.com/sgonzalezrozo/unity-architecture/issues) first.
 - Open an issue before starting a large change, so we can agree on the approach.
 - Keep each pull request focused on one change.
 

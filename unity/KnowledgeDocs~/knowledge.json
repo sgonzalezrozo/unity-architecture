@@ -2404,7 +2404,7 @@
         "errors"
       ],
       "markdownPath": "Docs/agent/analyzers.md",
-      "source": "analyzers/README.md"
+      "source": "enforcement:analyzers/README.md"
     },
     {
       "id": "agent.handoff",

@@ -14,7 +14,7 @@ About 20 minutes, most of it waiting for Unity.
 1. Add the rules as a submodule:
 
 ```bash
-git submodule add https://github.com/sgonzalezrozo/unity-architecture-agents.git .ai
+git submodule add https://github.com/sgonzalezrozo/unity-architecture.git .ai
 ```
 
 4. Run the install script. It creates the entry files and adds this package to the manifest. It asks whether to also install the optional analyzers (default: no).
