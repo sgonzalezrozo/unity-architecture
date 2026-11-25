@@ -62,6 +62,24 @@ printf '{ "name": "Client", "references": [] }\n' > "$P/Assets/Client/Client.asm
 got="$(run_hook "$P" "solo codigo")"
 expect "a whole-project change under solo codigo compiles only" "$got" "COMPILE=1 FILTER= FEATURES="
 
+# Enforcement: a failing check is only reported in advisory mode (the default) and blocks the stop in enforce mode.
+run_failing() {  # run_failing <project> <mode-or-empty>: a failing compile; prints the hook's exit code and output
+    local project="$1" mode="$2" transcript="$TMP/transcript-fail-$RANDOM.jsonl"
+    printf '#!/usr/bin/env bash\necho "compile error CS0246"\nexit 1\n' > "$project/scripts/verify.sh"
+    printf '{"type":"user","message":{"content":"code only"}}\n' > "$transcript"
+    [ -n "$mode" ] && printf '%s\n' "$mode" > "$project/.claude/enforcement.mode"
+    rm -f "$project/Logs/verify/last-passed"
+    local out code
+    out="$(cd "$project" && CLAUDE_PROJECT_DIR="$project" bash "$HOOK" <<< "{\"session_id\":\"s1\",\"transcript_path\":\"$transcript\"}" 2>/dev/null)"; code=$?
+    echo "$code|$out"
+}
+P="$(make_project advisory)"; mkdir -p "$P/.claude"
+got="$(run_failing "$P" "")"
+case "$got" in 0\|*"advisory: not blocking"*) echo "ok    a failing check is reported, not blocking, by default" ;; *) echo "FAIL  advisory default: $got"; FAILURES=$((FAILURES + 1)) ;; esac
+P="$(make_project enforce)"; mkdir -p "$P/.claude"
+got="$(run_failing "$P" enforce)"
+case "$got" in 2\|*) echo "ok    a failing check blocks the stop in enforce mode" ;; *) echo "FAIL  enforce mode: $got"; FAILURES=$((FAILURES + 1)) ;; esac
+
 echo
 [ "$FAILURES" -eq 0 ] && echo "All passed." || echo "$FAILURES failed."
 exit $(( FAILURES > 0 ))

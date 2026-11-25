@@ -83,6 +83,18 @@ features() {
     done
 }
 
+existing_files() {
+    local folder name files
+    [ -d Assets/Client ] || return
+    echo "- Existing screens and prefabs per feature (source: the folders; the agent doesn't create, move or delete them, TASK-06):"
+    for folder in Assets/Client/*/; do
+        name="$(basename "$folder")"
+        case "$name" in Analyzers|Tests|Shared) continue ;; esac
+        files="$(cd "$folder" && find . \( -name '*.asset' -o -name '*.prefab' \) ! -name '*.meta' | sed 's|^\./||' | sort | paste -sd, - | sed 's/,/, /g')"
+        [ -n "$files" ] && echo "  - \`$name\`: $files"
+    done
+}
+
 localization() {
     local installed=no configured=no used=0
     manifest_has com.unity.localization && installed=yes
@@ -128,6 +140,7 @@ facts="$(
     installers
     client_references
     features
+    existing_files
     localization
     forget_helper
     screen_ids

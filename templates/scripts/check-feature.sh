@@ -26,6 +26,7 @@
 #          SCR-12   every screen it opens is a ScreenIds constant, never a string or a constant of its own: a screen that
 #                   doesn't exist yet is an open question for the user
 #   CHK-17 async    no Forget of the feature's own: ToolsCore.TaskExtensions (Tools Core package) is the one helper
+#   CHK-18 TASK-06  a screen or prefab listed in project-facts.md (existing at session start) is still there
 #
 # The Stop hook passes the session's plan (CHECK_PLAN), the approved plan (CHECK_APPROVED_PLAN) and the scope the
 # user chose (CHECK_TASK_SCOPE: code, code+tests, code+prefabs, code+prefabs+tests or unknown). CHECK_OUTSIDE_CHANGED
@@ -303,6 +304,10 @@ check_table() {
     local feature="$1" folder="$2" file name f="$1" subject='([A-Z][A-Za-z0-9]*)?'
     while IFS= read -r file; do
         name="$(basename "$file")"
+        # A controller is named for its action only: {Action}Controller.cs, never with the feature's name in front.
+        case "$name" in
+            "$f"*Controller.cs) fail "CHK-14 TASK-05: $feature/$file names a controller with the feature's name: name it for its action only (for example OpenPromotionController.cs)" ;;
+        esac
         case "$file" in
             IMPLEMENTATION.md) continue ;;
             Tests/*) printf '%s' "$name" | grep -Eq "^($f.*Tests\.cs|Client\.$f\.Tests\.asmdef)\$" && continue ;;
@@ -342,6 +347,18 @@ check_navigation() {
             *) echo "CHK-16 SCR-12: ${match%%:*} opens a screen with $argument instead of a ScreenIds constant: if the screen doesn't exist yet, ask the user to create it first (Open questions)" | sed "s|$CLIENT/||" ;;
         esac
     done
+}
+
+# CHK-18 TASK-06: a screen or prefab that existed when the session started (project-facts.md lists them per feature)
+# is the user's. A check fails when it's gone, unless the plan's delete: line names it (the user asked and confirmed).
+check_existing() {
+    local feature="$1" folder="$2" facts="${CHECK_FACTS:-Logs/ai/project-facts.md}" file
+    [ -f "$facts" ] || return 0
+    grep -F "  - \`$feature\`: " "$facts" | sed "s/^  - \`$feature\`: //" | tr ',' '\n' | sed 's/^ *//' | while IFS= read -r file; do
+        # A file the user asked to delete and confirmed is named in the plan's delete: line (TASK-06).
+        [ -n "$file" ] && [ ! -e "$folder/$file" ] && ! grep -qE "^ *delete:.*$(printf '%s' "$file" | sed 's/[.[]/\\&/g')" "$PLAN" 2>/dev/null && echo "CHK-18 TASK-06: $feature/$file existed when the session started and is gone: restore it, the agent never deletes or moves it"
+    done
+    return 0
 }
 
 check_forget() {
@@ -386,5 +403,6 @@ for feature in "$@"; do
     check_table "$feature" "$folder"
     check_bento "$feature" "$folder"
     check_forget "$feature" "$folder"
+    check_existing "$feature" "$folder"
 done
 exit $(( FAILURES > 0 ))

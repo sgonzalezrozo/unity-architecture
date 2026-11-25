@@ -1,0 +1,4 @@
+Answers to your questions:
+- Scope: code only. Don't write or run tests; compile only, with VERIFY_COMPILE_ONLY=1 scripts/verify.sh.
+- The popup is reached from nowhere yet: no entry point for the Store. Don't add a button or screen that opens it.
+- The plan is approved as written. Continue to the code.

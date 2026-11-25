@@ -235,8 +235,16 @@ outside_changes() {
 }
 
 # A failed check counts as one attempt; after MAX_ATTEMPTS in a row the hook stops asking and says so.
+# Enforcement (ai-agent-enforcement): "advisory" reports a failed check and lets the agent finish; "enforce" sends it
+# back to the agent and blocks the stop. The mode is AI_ENFORCEMENT, else .claude/enforcement.mode, else advisory.
+ENFORCEMENT="${AI_ENFORCEMENT:-$(cat "$ROOT/.claude/enforcement.mode" 2>/dev/null || echo advisory)}"
+ENFORCEMENT="$(printf '%s' "$ENFORCEMENT" | tr -d '[:space:]')"
 fail_attempt() {
     local label="$1" output="$2" attempts
+    if [ "$ENFORCEMENT" != enforce ]; then
+        notify "$label found problems (advisory: not blocking). $(printf '%s' "$output" | head -c 1200)"
+        exit 0
+    fi
     attempts=$(( $(cat "$ATTEMPTS_FILE" 2>/dev/null || echo 0) + 1 ))
     if [ "$attempts" -ge "$MAX_ATTEMPTS" ]; then
         rm -f "$ATTEMPTS_FILE"

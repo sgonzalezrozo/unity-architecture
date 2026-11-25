@@ -152,5 +152,26 @@ printf 'namespace Client.Shop\n{ class NewHelper { } }\n' > "$PIPE/Assets/Client
 out="$(cd "$PIPE" && CHECK_TURN_MARKER="$PIPE/turn" bash "$CHECK" Shop)"
 if grep -q 'NewHelper' <<< "$out"; then echo "ok    a file this turn created is checked"; else echo "FAIL  new file: $out"; FAILURES=$((FAILURES + 1)); fi
 
+# CHK-18: a screen or prefab that existed when the session started and is gone fails.
+EXIST="$TMP/existing"; make_shop "$EXIST"
+printf '# facts\n- Existing screens and prefabs per feature (source: x):\n  - `Shop`: ShopMain/ShopPopup.prefab\n' > "$EXIST/Logs/ai/project-facts.md"
+printf 'prefab\n' > "$EXIST/Assets/Client/Shop/ShopMain/ShopPopup.prefab"
+out="$(cd "$EXIST" && CHECK_FACTS=Logs/ai/project-facts.md bash "$CHECK" Shop)"
+if [ -z "$(grep 'CHK-18' <<< "$out")" ]; then echo "ok    an existing prefab that is still there passes"; else echo "FAIL  existing present: $out"; FAILURES=$((FAILURES + 1)); fi
+rm "$EXIST/Assets/Client/Shop/ShopMain/ShopPopup.prefab"
+out="$(cd "$EXIST" && CHECK_FACTS=Logs/ai/project-facts.md bash "$CHECK" Shop)"
+if grep -q 'CHK-18 TASK-06: Shop/ShopMain/ShopPopup.prefab existed' <<< "$out"; then echo "ok    a deleted existing prefab fails CHK-18"; else echo "FAIL  existing deleted: $out"; FAILURES=$((FAILURES + 1)); fi
+
+# A deletion the user asked for and confirmed is named in the plan's delete: line, and CHK-18 allows it.
+printf '  delete: Assets/Client/Shop/ShopMain/ShopPopup.prefab   # the user asked and confirmed\n' >> "$EXIST/Logs/ai/plan.md"
+out="$(cd "$EXIST" && CHECK_FACTS=Logs/ai/project-facts.md bash "$CHECK" Shop)"
+if [ -z "$(grep 'CHK-18' <<< "$out")" ]; then echo "ok    a deletion the user asked for and confirmed passes"; else echo "FAIL  confirmed delete: $out"; FAILURES=$((FAILURES + 1)); fi
+
+# A controller carries its action's name, not the feature's: the same request always names it the same way.
+expect "a controller named with the feature's name fails" "printf 'namespace Client.Shop\n{ class ShopOpenOfferController { } }\n' > ShopMain/ShopOpenOfferController.cs; sed -i.bak 's|^Open questions:|  ShopMain/ShopOpenOfferController.cs\\
+Open questions:|' ../../../Logs/ai/plan.md" "CHK-14"
+expect "a controller named for its action passes" "printf 'namespace Client.Shop\n{ class OpenOfferController { } }\n' > ShopMain/OpenOfferController.cs; sed -i.bak 's|^Open questions:|  ShopMain/OpenOfferController.cs\\
+Open questions:|' ../../../Logs/ai/plan.md" ""
+
 [ "$FAILURES" -eq 0 ] && echo "All passed." || echo "$FAILURES failed."
 exit $(( FAILURES > 0 ))

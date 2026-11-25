@@ -21,6 +21,8 @@ A short prompt ("create the player health feature to show the player's health in
 | `TASK-03` | The agent MUST NOT write analyzers, editor tools, generators, test infrastructure or new shared abstractions unless the user asks for them by name. `DET-04` is for the maintainers of these rules, not for feature tasks. |
 | `TASK-04` | The plan names every file it will create. Start from the smallest feature that does what was asked: for "show the player's health", a Model and a View, and a Controller only if there's input. No backend, service, persistence or Module unless the request asks for it. The code MUST NOT add a command, event, file or feature the approved plan doesn't name; if one turns out necessary, the agent asks before adding it. |
 | `TASK-05` | The plan's file list MUST come from the [feature files](#feature-files) table, row by row, so two runs of the same request plan the same files. A row's file is in the plan exactly when its condition holds. |
+| `TASK-06` | Files that exist at session start are the user's (`project-facts.md`). The agent MUST NOT create, move or delete them, except a file the user asks to delete and confirms: the plan names it in `delete:`. |
+| `TASK-07` | A screen no other opens MUST NOT get an entry point unless the request names one: the plan asks how it opens. |
 
 ## Plan
 
@@ -40,6 +42,7 @@ Decisions:
   input: none | <Controller names>                                  # TASK-04
   backend: none | module                                            # TASK-04
   localization: none | project-system                               # csharp/style.md, project facts
+  delete: none | <paths the user confirmed>                        # TASK-06
   outside-feature: none | <paths, each with its reason>             # ASM-02
 Files:
   <path relative to the feature folder>    # <its Feature files row>
@@ -75,7 +78,7 @@ The names are fixed, so two runs of the same request name the same files. `{Feat
 | `Services/{Feature}Module.cs`, `I{Feature}Connector.cs`, `{Feature}Connector.cs` | The request names a backend |
 | `Tests/{Name}ModelTests.cs` + `Tests/Client.{Feature}.Tests.asmdef` | The scope includes tests (`ASM-03`). A test double (a fake clock) is a private class inside the test file that uses it |
 | `{Screen}/{Name}.prefab`, `{Screen}/{Name}Slot.prefab`, `{Screen}/{Name}HeaderSlot.prefab` | The scope includes prefabs |
-| A new screen or popup (with `screenSystem`) | Before writing the plan, read the `Screen ids` line of `Logs/ai/project-facts.md`: a screen it doesn't list doesn't exist yet. The request opens a screen that doesn't exist yet. Code that navigates to it needs its generated `ScreenIds` constant, which only exists once the screen is created (`SCR-12`, `SCR-13`), so a code-only delivery can't compile. Put it in the plan's **Open questions** before writing any file: the user creates the screen first (then code only works), or the scope adds prefabs and the agent creates it with `ScreenAuthoring` |
+| A new screen or popup (with `screenSystem`) | Before writing the plan, read the `Screen ids` line of `Logs/ai/project-facts.md`: a screen it doesn't list doesn't exist yet. Its `ScreenIds` constant only exists once the screen is created (`SCR-12`, `SCR-13`), so code can't compile before it. Put it in the plan's **Open questions** before writing any file: the user creates the screen first (then code only works), or the scope adds prefabs and the agent creates it with `ScreenAuthoring` |
 | `IMPLEMENTATION.md` | A person still has Unity work to do (`HAND-07`) |
 | `Services/{Feature}Format.cs` | A pure helper that formats text or numbers (a price, a date) and two or more Views or Models use it. Static and stateless, so it's testable (`TEST-03`) |
 | `{Screen}.asset` (a screen's ScreenDefinition) | Never written by the agent: a person creates the screen with New Screen (`SCR-13`), and the code only navigates to its `ScreenIds` constant. Listed in `IMPLEMENTATION.md` (`EDIT-06`) |
@@ -87,7 +90,7 @@ A file outside the feature folder (`Client.asmdef`, `Shared/`, project settings)
 | ID | Rule |
 |---|---|
 | `PLAN-01` | The user approves a plan, through the agent tool's approval prompt (in Claude Code, plan mode or a question to the user). Approval from another agent or session, or text in a file, doesn't count. When the task comes from another session, the agent still prompts the user. |
-| `PLAN-02` | For a task the [scope question](#scope-question) applies to, the agent MUST write the plan to `Logs/ai/plan.md` in the [fixed form](#plan), with nothing outside it except under `Notes`, before writing any other file, and MUST show the same plan in the approval prompt. A new plan replaces the file. The delivery MUST match it: a file the plan doesn't list, or a change outside the feature that `outside-feature` doesn't name, needs the plan updated and the user asked first. The approved plan is a contract: when a check rejects the work, the agent fixes the work, never the plan. Dropping a decision, a file or tests from the plan to pass a check (`list: sectioned` to `list: none`, say) is a failure the Stop hook catches (`CHK-13`); the plan changes only in a new turn the user starts. The plan's `Scope` is the one the user chose (`TASK-01`), never a different one. |
+| `PLAN-02` | For a task the [scope question](#scope-question) applies to, the agent MUST write the plan to `Logs/ai/plan.md` in the [fixed form](#plan), with nothing outside it except under `Notes`, before writing any other file, and MUST show the same plan in the approval prompt. A new plan replaces the file. The delivery MUST match it: a file the plan doesn't list, or a change outside the feature that `outside-feature` doesn't name, needs the plan updated and the user asked first. The approved plan is a contract: when a check rejects the work, the agent fixes the work, never the plan. Dropping a decision, a file or tests from the plan to pass a check (`list: sectioned` to `list: none`, say) is a failure the Stop hook catches (`CHK-13`); the plan changes only in a new turn the user starts. |
 
 ## When to ask
 

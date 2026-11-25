@@ -10,6 +10,11 @@
 #   add --verify to run scripts/verify.sh at the end without asking, or --no-verify to skip it
 #   add --mcp to register MCP for Unity in .mcp.json, or --no-mcp to never do it. By default .mcp.json is written
 #   only when Packages/manifest.json already has MCP for Unity: everything else works without it.
+#   add --enforcement to install the enforcement (hooks, verify and checker scripts, analyzers): advisory by default,
+#   reports failed checks without blocking; add --enforce to block the stop when a check fails. Without either, only the
+#   rules are installed.
+#   add --replace-instructions to replace existing AGENTS.md, Copilot, Cursor and Rider files (each is backed up as
+#   <file>.bak); the default, --add-instructions, keeps their text and adds the rules in a block.
 #   add --analyzers to install the optional Roslyn analyzers in Assets/Client/Analyzers (they turn the mechanical rules
 #   into compile errors), or --no-analyzers to skip them. Otherwise a first install asks, defaulting to no; once
 #   installed, --update keeps them up to date.
@@ -22,6 +27,8 @@ set -u
 
 UPDATE=false
 VERIFY=ask
+ENFORCEMENT=no
+ENFORCEMENT_MODE=advisory
 MCP=auto
 ANALYZERS=auto
 for arg in "$@"; do
@@ -33,8 +40,12 @@ for arg in "$@"; do
         --no-mcp) MCP=no ;;
         --analyzers) ANALYZERS=yes ;;
         --no-analyzers) ANALYZERS=no ;;
+        --enforcement) ENFORCEMENT=yes ;;
+        --enforce) ENFORCEMENT=yes; ENFORCEMENT_MODE=enforce ;;
+        --replace-instructions) INSTRUCTIONS_MODE=replace ;;
+        --add-instructions) INSTRUCTIONS_MODE=add ;;
         -h|--help) sed -n '2,19p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-        *) echo "Unknown option: $arg (use --update, --verify, --no-verify, --mcp, --no-mcp, --analyzers, --no-analyzers or --help)"; exit 2 ;;
+        *) echo "Unknown option: $arg (use --update, --verify, --no-verify, --mcp, --no-mcp, --analyzers, --no-analyzers, --add-instructions, --replace-instructions, --enforcement, --enforce or --help)"; exit 2 ;;
     esac
 done
 
@@ -49,7 +60,9 @@ if [ ! -d "$ROOT/Assets" ] || [ ! -d "$ROOT/ProjectSettings" ]; then
     exit 2
 fi
 
-created=(); updated=(); kept=(); customized=()
+created=(); updated=(); kept=(); customized=(); added=(); replaced=()
+# The instruction files (AGENTS.md, Copilot, Cursor, Rider): add or replace, see instructions.sh.
+. "$(dirname "$0")/instructions.sh"
 
 # True when <file> has the exact content of an earlier version of <template> in the .ai repository's history,
 # so it's an old copy nobody edited. Without that history, nothing counts as unedited.
@@ -62,28 +75,32 @@ is_unedited_copy() {
     return 1
 }
 
-# copy <destination relative to root> <source file> [executable]
-# A copied template: created when missing. --update refreshes it when it's an unedited earlier version of the
-# template, and keeps it when someone changed it, so project customizations survive updates.
 copy() {
     local dest="$ROOT/$1"
     if [ -e "$dest" ]; then
-        if [ "$UPDATE" = false ] || cmp -s "$2" "$dest"; then
+        if cmp -s "$2" "$dest"; then
             kept+=("$1")
-            return
+        elif is_unedited_copy "$dest" "$2"; then
+            # An earlier version of the template that nobody edited: refreshed without asking.
+            cp "$2" "$dest"
+            updated+=("$1")
+        else
+            # Something else is there, and it differs: ask (replace with a backup, or skip). See instructions.sh.
+            ask_collision "$1" no
+            if [ "$COLLISION" = replace ]; then
+                cp "$dest" "$dest.bak"
+                cp "$2" "$dest"
+                replaced+=("$1 (previous kept as $1.bak)")
+            else
+                customized+=("$1")
+            fi
         fi
-        if ! is_unedited_copy "$dest" "$2"; then
-            customized+=("$1")
-            return
-        fi
-        cp "$2" "$dest"
-        updated+=("$1")
     else
         mkdir -p "$(dirname "$dest")"
         cp "$2" "$dest"
         created+=("$1")
     fi
-    if [ "${3:-}" = "executable" ]; then chmod +x "$dest"; fi
+    if [ "${3:-}" = "executable" ] && [ -e "$dest" ]; then chmod +x "$dest"; fi
 }
 
 # own <destination relative to root> <content>
@@ -99,7 +116,8 @@ own() {
     created+=("$1")
 }
 
-own "AGENTS.md" "# AGENTS.md
+# An existing AGENTS.md or CLAUDE.md keeps its text: the pointer to the rules is added in a block (instructions.sh).
+if [ -e "$ROOT/AGENTS.md" ]; then instructions "AGENTS.md" "$TEMPLATES/agents-pointer.md"; else own "AGENTS.md" "# AGENTS.md
 
 All rules live in the \`.ai\` submodule. Read \`.ai/AGENTS.md\` completely, then open only the document it points to.
 
@@ -107,25 +125,19 @@ If \`.ai/\` is empty, run \`git submodule update --init\`.
 
 ## Rules for this project only
 
-(None yet.)"
+(None yet.)"; fi
 
 # Claude Code loads both: the shared rules, and the project's own rules in AGENTS.md.
-own "CLAUDE.md" "@.ai/AGENTS.md
-@AGENTS.md"
+if [ -e "$ROOT/CLAUDE.md" ]; then instructions "CLAUDE.md" "$TEMPLATES/claude-pointer.md"; else own "CLAUDE.md" "@.ai/AGENTS.md
+@AGENTS.md"; fi
 
 copy ".editorconfig" "$TEMPLATES/.editorconfig"
-copy ".github/copilot-instructions.md" "$TEMPLATES/copilot-instructions.md"
-copy ".aiassistant/rules/project.md" "$TEMPLATES/rider-project-rule.md"
-copy ".cursor/rules/unity-architecture.mdc" "$TEMPLATES/cursor-rule.mdc"
-copy "scripts/verify.sh" "$TEMPLATES/scripts/verify.sh" executable
-copy "scripts/verify-editor.sh" "$TEMPLATES/scripts/verify-editor.sh" executable
+instructions ".github/copilot-instructions.md" "$TEMPLATES/copilot-instructions.md"
+instructions ".aiassistant/rules/project.md" "$TEMPLATES/rider-project-rule.md"
+instructions ".cursor/rules/unity-architecture.mdc" "$TEMPLATES/cursor-rule.mdc"
 copy "scripts/ai-profile.sh" "$TEMPLATES/scripts/ai-profile.sh" executable
 copy "scripts/ai-facts.sh" "$TEMPLATES/scripts/ai-facts.sh" executable
 copy "scripts/ai-packs.sh" "$TEMPLATES/scripts/ai-packs.sh" executable
-copy "scripts/check-feature.sh" "$TEMPLATES/scripts/check-feature.sh" executable
-copy "scripts/timing-report.sh" "$TEMPLATES/scripts/timing-report.sh" executable
-copy ".claude/hooks/log-timing.sh" "$TEMPLATES/claude/hooks/log-timing.sh" executable
-copy ".claude/hooks/verify-on-stop.sh" "$TEMPLATES/claude/hooks/verify-on-stop.sh" executable
 
 # The Editor reporters, which write compile and test results to Logs/verify/ for the hook, used to be copied to
 # Assets/Editor/UnityArchitecture. They're in the .ai/unity package now. Remove the old copies nobody edited.
@@ -164,45 +176,6 @@ elif [ "$MCP" = yes ]; then
     created+=(".mcp.json")
 fi
 
-# The rules' Editor tools (the prefab validator) are a local package in .ai/unity, so they stay on the same
-# version as the rules. It's listed in testables so Unity runs its tests, including the check of Assets/Client.
-MANIFEST="$ROOT/Packages/manifest.json"
-ARCHITECTURE_PACKAGE="com.sgonzalezrozo.unity-architecture"
-add_architecture_package() {
-    local temporary="$MANIFEST.tmp"
-    awk -v name="$ARCHITECTURE_PACKAGE" '
-        { print }
-        /"dependencies"[[:space:]]*:[[:space:]]*\{/ && !dependency { print "    \"" name "\": \"file:../.ai/unity\","; dependency = 1 }
-        /"testables"[[:space:]]*:[[:space:]]*\[/ && !testable { print "    \"" name "\","; testable = 1 }
-    ' "$MANIFEST" > "$temporary" || return 1
-    if ! grep -q '"testables"' "$temporary"; then
-        awk -v name="$ARCHITECTURE_PACKAGE" 'NR == 1 { print; print "  \"testables\": [\n    \"" name "\"\n  ],"; next } { print }' "$temporary" > "$temporary.2" && mv "$temporary.2" "$temporary"
-    fi
-    mv "$temporary" "$MANIFEST"
-}
-if [ -f "$MANIFEST" ] && ! grep -q "\"$ARCHITECTURE_PACKAGE\"" "$MANIFEST"; then
-    if add_architecture_package; then
-        updated+=("Packages/manifest.json (adds $ARCHITECTURE_PACKAGE from .ai/unity)")
-    else
-        MANIFEST_NOTE="Couldn't add $ARCHITECTURE_PACKAGE to Packages/manifest.json. Add \"$ARCHITECTURE_PACKAGE\": \"file:../.ai/unity\" to dependencies and to testables."
-    fi
-fi
-
-if [ -e "$ROOT/.claude/settings.json" ]; then
-    kept+=(".claude/settings.json")
-    if ! grep -q "verify-on-stop.sh" "$ROOT/.claude/settings.json"; then
-        SETTINGS_NOTE="Your .claude/settings.json was kept and has no verify hook. Add the Stop hook and the allowed commands from .ai/templates/claude/settings.json to it."
-    elif ! grep -q "ai-profile.sh" "$ROOT/.claude/settings.json"; then
-        SETTINGS_NOTE="Your .claude/settings.json was kept and has no SessionStart hook for the project profile. Add the SessionStart hook and the ai-profile.sh commands from .ai/templates/claude/settings.json to it, so Claude starts each session with the profile."
-    fi
-    if ! grep -q "log-timing.sh" "$ROOT/.claude/settings.json"; then
-        TIMING_NOTE="Your .claude/settings.json was kept without the timing hooks. Merge the log-timing.sh hooks from .ai/templates/claude/settings.json to log each session to Logs/agent-timing/ (read it with scripts/timing-report.sh)."
-    fi
-else
-    mkdir -p "$ROOT/.claude"
-    cp "$TEMPLATES/claude/settings.json" "$ROOT/.claude/settings.json"
-    created+=(".claude/settings.json")
-fi
 
 # A new project gets Assets/Client/Client.asmdef, with no scripts of its own: the features are the code. When
 # Assets/Client already has code but no Client.asmdef, it's left alone.
@@ -233,6 +206,94 @@ fi
 # The Forget helper the async rules use (async-and-errors) is ToolsCore.TaskExtensions in the Tools Core package
 # (com.sgonzalezrozo.core), which every project installs. install.sh writes no copy of it.
 
+
+echo "Project: $ROOT"
+print_list() {
+    local title="$1"; shift
+    [ $# -eq 0 ] && return
+    echo
+    echo "$title"
+    for f in "$@"; do echo "  $f"; done
+}
+print_list "Created:" ${created[@]+"${created[@]}"}
+print_list "Updated from .ai:" ${updated[@]+"${updated[@]}"}
+print_list "Rules added to existing instruction files (their text is kept):" ${added[@]+"${added[@]}"}
+print_list "Instruction files replaced (previous versions backed up):" ${replaced[@]+"${replaced[@]}"}
+print_list "Removed (moved to the .ai/unity package):" ${removed[@]+"${removed[@]}"}
+print_list "Changed in this project, kept (compare with .ai/templates and merge what you want by hand):" ${customized[@]+"${customized[@]}"}
+if [ "$UPDATE" = true ]; then
+    print_list "Already up to date, or yours to edit:" ${kept[@]+"${kept[@]}"}
+else
+    print_list "Already there, kept (--update refreshes the copied templates):" ${kept[@]+"${kept[@]}"}
+fi
+for note in "${SETTINGS_NOTE:-}" "${TIMING_NOTE:-}" "${MCP_NOTE:-}" "${ANALYZER_NOTE:-}" "${MANIFEST_NOTE:-}"; do
+    if [ -n "$note" ]; then
+        echo
+        echo "$note"
+    fi
+done
+
+
+# Enforcement (ai-agent-enforcement): the hooks, the verify and checker scripts, the settings that register them, the
+# optional analyzers and the first batch compile. It is opt-in: the rules alone install none of it (--enforcement).
+if [ "$ENFORCEMENT" = yes ]; then
+copy "scripts/verify.sh" "$TEMPLATES/scripts/verify.sh" executable
+copy "scripts/verify-editor.sh" "$TEMPLATES/scripts/verify-editor.sh" executable
+copy "scripts/check-feature.sh" "$TEMPLATES/scripts/check-feature.sh" executable
+copy "scripts/timing-report.sh" "$TEMPLATES/scripts/timing-report.sh" executable
+copy ".claude/hooks/log-timing.sh" "$TEMPLATES/claude/hooks/log-timing.sh" executable
+copy ".claude/hooks/verify-on-stop.sh" "$TEMPLATES/claude/hooks/verify-on-stop.sh" executable
+
+# The rules' Editor tools (the prefab validator) are a local package in .ai/unity, so they stay on the same
+# version as the rules. It's listed in testables so Unity runs its tests, including the check of Assets/Client.
+MANIFEST="$ROOT/Packages/manifest.json"
+ARCHITECTURE_PACKAGE="com.sgonzalezrozo.unity-architecture"
+add_architecture_package() {
+    local temporary="$MANIFEST.tmp"
+    awk -v name="$ARCHITECTURE_PACKAGE" '
+        { print }
+        /"dependencies"[[:space:]]*:[[:space:]]*\{/ && !dependency { print "    \"" name "\": \"file:../.ai/unity\","; dependency = 1 }
+        /"testables"[[:space:]]*:[[:space:]]*\[/ && !testable { print "    \"" name "\","; testable = 1 }
+    ' "$MANIFEST" > "$temporary" || return 1
+    if ! grep -q '"testables"' "$temporary"; then
+        awk -v name="$ARCHITECTURE_PACKAGE" 'NR == 1 { print; print "  \"testables\": [\n    \"" name "\"\n  ],"; next } { print }' "$temporary" > "$temporary.2" && mv "$temporary.2" "$temporary"
+    fi
+    mv "$temporary" "$MANIFEST"
+}
+if [ -f "$MANIFEST" ] && ! grep -q "\"$ARCHITECTURE_PACKAGE\"" "$MANIFEST"; then
+    if add_architecture_package; then
+        updated+=("Packages/manifest.json (adds $ARCHITECTURE_PACKAGE from .ai/unity)")
+    else
+        MANIFEST_NOTE="Couldn't add $ARCHITECTURE_PACKAGE to Packages/manifest.json. Add \"$ARCHITECTURE_PACKAGE\": \"file:../.ai/unity\" to dependencies and to testables."
+    fi
+fi
+
+if [ -e "$ROOT/.claude/settings.json" ] && ! cmp -s "$TEMPLATES/claude/settings.json" "$ROOT/.claude/settings.json"; then
+    # It's JSON, so the rules can't be merged into it: replace it (backup as .bak) or skip it. See instructions.sh.
+    ask_collision ".claude/settings.json" no "The hooks and permissions in it are replaced by the template's; your own entries are in the .bak."
+    if [ "$COLLISION" = replace ]; then
+        cp "$ROOT/.claude/settings.json" "$ROOT/.claude/settings.json.bak"
+        cp "$TEMPLATES/claude/settings.json" "$ROOT/.claude/settings.json"
+        replaced+=(".claude/settings.json (previous kept as .claude/settings.json.bak)")
+    else
+        customized+=(".claude/settings.json")
+    fi
+fi
+if [ -e "$ROOT/.claude/settings.json" ] && ! cmp -s "$TEMPLATES/claude/settings.json" "$ROOT/.claude/settings.json"; then
+    if ! grep -q "verify-on-stop.sh" "$ROOT/.claude/settings.json"; then
+        SETTINGS_NOTE="Your .claude/settings.json was kept and has no verify hook. Add the Stop hook and the allowed commands from .ai/templates/claude/settings.json to it."
+    elif ! grep -q "ai-profile.sh" "$ROOT/.claude/settings.json"; then
+        SETTINGS_NOTE="Your .claude/settings.json was kept and has no SessionStart hook for the project profile. Add the SessionStart hook and the ai-profile.sh commands from .ai/templates/claude/settings.json to it, so Claude starts each session with the profile."
+    fi
+    if ! grep -q "log-timing.sh" "$ROOT/.claude/settings.json"; then
+        TIMING_NOTE="Your .claude/settings.json was kept without the timing hooks. Merge the log-timing.sh hooks from .ai/templates/claude/settings.json to log each session to Logs/agent-timing/ (read it with scripts/timing-report.sh)."
+    fi
+elif [ ! -e "$ROOT/.claude/settings.json" ]; then
+    mkdir -p "$ROOT/.claude"
+    cp "$TEMPLATES/claude/settings.json" "$ROOT/.claude/settings.json"
+    created+=(".claude/settings.json")
+fi
+
 if [ "$ANALYZERS" = auto ] && [ -e "$ROOT/$CLIENT/Analyzers/$ANALYZER.dll" ]; then
     ANALYZERS=yes
 fi
@@ -253,37 +314,6 @@ else
     ANALYZER_NOTE="Analyzers not installed: $CLIENT has code but no Client.asmdef. The analyzers check only the assembly named Client, so add $CLIENT/Client.asmdef and run this again. See .ai/architecture/FEATURE_STRUCTURE.md."
 fi
 
-echo "Project: $ROOT"
-print_list() {
-    local title="$1"; shift
-    [ $# -eq 0 ] && return
-    echo
-    echo "$title"
-    for f in "$@"; do echo "  $f"; done
-}
-print_list "Created:" ${created[@]+"${created[@]}"}
-print_list "Updated from .ai:" ${updated[@]+"${updated[@]}"}
-print_list "Removed (moved to the .ai/unity package):" ${removed[@]+"${removed[@]}"}
-print_list "Changed in this project, kept (compare with .ai/templates and merge what you want by hand):" ${customized[@]+"${customized[@]}"}
-if [ "$UPDATE" = true ]; then
-    print_list "Already up to date, or yours to edit:" ${kept[@]+"${kept[@]}"}
-else
-    print_list "Already there, kept (--update refreshes the copied templates):" ${kept[@]+"${kept[@]}"}
-fi
-for note in "${SETTINGS_NOTE:-}" "${TIMING_NOTE:-}" "${MCP_NOTE:-}" "${ANALYZER_NOTE:-}" "${MANIFEST_NOTE:-}"; do
-    if [ -n "$note" ]; then
-        echo
-        echo "$note"
-    fi
-done
-
-# The project profile the agents read (OPT-06): which capabilities are true and which branch each fork resolves to.
-# Claude Code regenerates it on every session start; writing it now also serves Copilot, Cursor and Rider.
-if [ -x "$ROOT/scripts/ai-profile.sh" ] && "$ROOT/scripts/ai-profile.sh" > /dev/null; then
-    echo
-    echo "Project profile: Logs/ai/profile.md"
-fi
-
 # A first batch-mode run imports the whole project, which can take longer than the hook waits.
 # Running it once now makes the hook's checks quick.
 changed=$(( ${#created[@]} + ${#updated[@]} ))
@@ -299,6 +329,19 @@ if [ "$VERIFY" = yes ]; then
     "$ROOT/scripts/verify.sh"
     echo "verify.sh exit code: $? (0 passed, 1 failed, 2 couldn't run)"
 fi
+# The mode the hook reads (advisory reports, enforce blocks). An existing file is kept: change it by hand.
+if [ ! -e "$ROOT/.claude/enforcement.mode" ]; then
+    mkdir -p "$ROOT/.claude"; printf '%s\n' "$ENFORCEMENT_MODE" > "$ROOT/.claude/enforcement.mode"; created+=(".claude/enforcement.mode")
+fi
+fi
+
+# The project profile the agents read (OPT-06): which capabilities are true and which branch each fork resolves to.
+# Claude Code regenerates it on every session start; writing it now also serves Copilot, Cursor and Rider.
+if [ -x "$ROOT/scripts/ai-profile.sh" ] && "$ROOT/scripts/ai-profile.sh" > /dev/null; then
+    echo
+    echo "Project profile: Logs/ai/profile.md"
+fi
+
 
 echo
 echo "Next:"
