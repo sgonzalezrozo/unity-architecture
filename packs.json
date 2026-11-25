@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "maxLines": 1200,
+  "alwaysInContext": [
+    "AGENTS.md"
+  ],
+  "packs": [
+    {
+      "id": "new-feature",
+      "when": "Starting a feature, screen, refactor or anything touching Shared/",
+      "entries": [
+        "architecture/workflow/planning.md",
+        "architecture/FEATURE_STRUCTURE.md",
+        "architecture/mvc/layers.md",
+        "architecture/mvc/where-a-model-lives.md",
+        "architecture/mvc/models.md",
+        "architecture/mvc/views.md",
+        "architecture/DEPENDENCY_INJECTION.md#reference-acquisition",
+        "architecture/DEPENDENCY_INJECTION.md#rules",
+        "fork:container/models.md",
+        "fork:container/installers.md",
+        "package:fastIoC/Documentation~/agent-rules.md#add-a-service",
+        "package:fastIoC/Documentation~/bindings.md#scene-specific-installers",
+        "package:fastIoC/Documentation~/bindings.md#bind-assets"
+      ],
+      "symbols": {
+        "BindingRecorder": "package:fastIoC/Documentation~/agent-rules.md#add-a-service",
+        "MonoInstaller": "package:fastIoC/Documentation~/agent-rules.md#add-a-service",
+        "FromInstance": "package:fastIoC/Documentation~/bindings.md#bind-assets",
+        "AsSingle": "package:fastIoC/Documentation~/bindings.md#bind-assets"
+      }
+    },
+    {
+      "id": "code-and-verify",
+      "when": "Writing C#, verifying, the handoff and the final report (every task that writes code)",
+      "entries": [
+        "architecture/mvc/controllers.md",
+        "architecture/mvc/scopes.md",
+        "architecture/OPTIONAL_PACKAGES.md#rules",
+        "architecture/mvc/violations.md",
+        "architecture/workflow/determinism.md",
+        "architecture/EDITOR_TOOLS.md#rules",
+        "architecture/EDITOR_TOOLS.md#verification-order",
+        "architecture/EDITOR_TOOLS.md#reporting-back",
+        "architecture/csharp/style.md",
+        "architecture/csharp/performance.md",
+        "architecture/workflow/checklist.md",
+        "architecture/workflow/prefab-handoff.md"
+      ],
+      "symbols": {}
+    },
+    {
+      "id": "ui-list",
+      "when": "Lists, grids, bento layouts, sections, carousels",
+      "entries": [
+        "architecture/ui/lists.md",
+        "fork:list/lists.md",
+        "fork:list/lists-layouts.md",
+        "package:uiScroller/Documentation~/agent-rules.md",
+        "package:uiScroller/Documentation~/layouts.md#bento",
+        "package:uiScroller/Documentation~/layouts.md#sections-and-headers",
+        "package:uiScroller/Documentation~/data-and-sizes.md#data-and-updates",
+        "package:uiScroller/Documentation~/api-reference.md#methods-and-properties",
+        "package:uiScroller/Documentation~/api-reference.md#sources-and-slots",
+        "package:uiScroller/Documentation~/examples.md#bento-sections"
+      ],
+      "symbols": {
+        "Scroller<T>": "package:uiScroller/Documentation~/api-reference.md#sources-and-slots",
+        "SectionedScroller<TItem, THeader>": "package:uiScroller/Documentation~/api-reference.md#sources-and-slots",
+        "SectionedSource<TItem, THeader>": "package:uiScroller/Documentation~/api-reference.md#sources-and-slots",
+        "ListSource<T>": "package:uiScroller/Documentation~/api-reference.md#sources-and-slots",
+        "ISlot<T>": "package:uiScroller/Documentation~/api-reference.md#sources-and-slots",
+        "AddSection": "package:uiScroller/Documentation~/api-reference.md#sources-and-slots",
+        "SkipEmptySections": "package:uiScroller/Documentation~/api-reference.md#sources-and-slots",
+        "ISectionedSourceProvider": "package:uiScroller/Documentation~/api-reference.md#sources-and-slots",
+        "SetBentoLayout": "package:uiScroller/Documentation~/layouts.md#bento",
+        "Refresh": "package:uiScroller/Documentation~/api-reference.md#methods-and-properties",
+        "IItemSource<T>": "package:uiScroller/Documentation~/api-reference.md#sources-and-slots",
+        "Recount": "package:uiScroller/Documentation~/api-reference.md#sources-and-slots",
+        "IInstantiable": "package:uiScroller/Documentation~/api-reference.md#sources-and-slots"
+      }
+    },
+    {
+      "id": "example-store",
+      "when": "The closest example for lists of several sources, bento, a countdown or a popup opened from a click",
+      "entries": [
+        "architecture/examples/04_MULTI_SOURCE_BENTO_STORE.md"
+      ],
+      "symbols": {}
+    },
+    {
+      "id": "ui-input",
+      "when": "Clicks, drags, visual states, tabs, layouts",
+      "entries": [
+        "architecture/ui/clicks.md",
+        "fork:input/clicks.md",
+        "architecture/ui/visual-states.md",
+        "fork:input/visual-states.md",
+        "architecture/ui/tabs.md",
+        "architecture/ui/layouts.md",
+        "package:uiFoundations/Documentation~/agent-rules.md#clicks",
+        "package:uiFoundations/Documentation~/agent-rules.md#visual-states"
+      ],
+      "symbols": {}
+    },
+    {
+      "id": "navigation",
+      "when": "Opening screens, popups and layers",
+      "entries": [
+        "fork:navigation/navigation.md",
+        "fork:navigation/authoring.md",
+        "architecture/FEATURE_STRUCTURE.md#modals-and-navigation",
+        "package:screenSystem/Documentation~/agent-rules.md"
+      ],
+      "symbols": {}
+    },
+    {
+      "id": "backend",
+      "when": "Backend calls, Modules and Connectors",
+      "entries": [
+        "architecture/BACKEND_INTEGRATION.md",
+        "architecture/csharp/async-and-errors.md",
+        "architecture/examples/01_BACKEND_FEATURE_TROPHY_ROOM.md"
+      ],
+      "symbols": {}
+    },
+    {
+      "id": "tests",
+      "when": "A scope with tests",
+      "entries": [
+        "architecture/csharp/tests.md",
+        "architecture/FEATURE_STRUCTURE.md#test-assembly"
+      ],
+      "symbols": {}
+    },
+    {
+      "id": "prefab",
+      "when": "A scope with prefabs, or reviewing one",
+      "entries": [
+        "architecture/PREFABS.md",
+        "architecture/workflow/prefab-handoff.md",
+        "architecture/EDITOR_TOOLS.md#editor-capabilities",
+        "architecture/EDITOR_TOOLS.md#rules"
+      ],
+      "symbols": {}
+    }
+  ],
+  "maxBytes": 45000
+}

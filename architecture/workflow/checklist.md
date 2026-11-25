@@ -17,12 +17,12 @@ Run this before returning code. Item numbers are stable: the [analyzers](../../a
 10. Is everything that can be unit tested covered by a test, with Model tests written first? When the scope has no tests (`TASK-02`), is the logic still testable, and are the missing tests listed in the report?
 11. Is each Model and View on its scope root? Does any View render outside its scope?
 12. Do Model dependencies form a cycle? Does any Model have a serialized field?
-13. Is this the minimum that finishes the need, with no unused abstraction and nothing loaded before it's needed?
+13. Is this the minimum that finishes the need, with no unused abstraction and nothing loaded before it's needed? Does the delivery match `Logs/ai/plan.md` file by file, with nothing outside the feature that `outside-feature` doesn't name (`PLAN-02`)?
 14. Did a tool verify the compile, analyzers, tests and generation status (`EDIT-01`)? Is anything reported as verified that no tool checked?
 
 ## Reporting back
 
-State what changed, which tool verified it, and what wasn't verified. If you couldn't compile or run the code, say so.
+State what changed, which tool verified it, and what wasn't verified. If you couldn't compile or run the code, say so. With packs, end with the `Outside packs:` line (`OPT-07`).
 
 ## Definition of Done
 

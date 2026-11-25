@@ -91,6 +91,25 @@ fi
 START_MARKER="$OUT/.started"
 touch "$START_MARKER"
 
+# Data assets described by a spec (EDIT-14) that don't exist yet are built first, in their own batch run, so the main
+# run's compile and the Fast IoC generation already find them. Nothing runs when every spec has its asset.
+MISSING_SPECS="$(find "$ROOT/Assets/Client" -name '*.asset.json' 2>/dev/null | while IFS= read -r spec; do
+    [ -e "${spec%.json}" ] || echo "${spec#"$ROOT"/}"
+done)"
+if [ -n "$MISSING_SPECS" ]; then
+    SPECS_LOG="$OUT/unity-asset-specs.log"
+    "$UNITY" -batchmode -nographics -quit -projectPath "$ROOT" \
+        -executeMethod UnityArchitecture.Prefabs.AssetSpecs.BuildMissingFromCommandLine -logFile "$SPECS_LOG"
+    SPECS_CODE=$?
+    # With compile errors the method can't run: the main run below reports them.
+    if [ "$SPECS_CODE" -ne 0 ] && ! grep -qE 'error [A-Z]{2,}[0-9]{4}' "$SPECS_LOG" 2>/dev/null; then
+        echo "Building data assets from their specs failed (EDIT-14):"
+        cat "$ROOT/Logs/verify/asset-specs.txt" 2>/dev/null || echo "$MISSING_SPECS"
+        summary "failed" "Building data assets from their specs failed"
+        exit 1
+    fi
+fi
+
 # Without the Test Framework package, Unity ignores -runTests and never quits, so only compile.
 COMPILE_ONLY="${VERIFY_COMPILE_ONLY:-0}"
 if [ "$COMPILE_ONLY" != "1" ] && grep -qs '"com.unity.test-framework"' "$ROOT/Packages/manifest.json" "$ROOT/Packages/packages-lock.json"; then

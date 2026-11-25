@@ -62,10 +62,24 @@ input_hash() {
     } | cksum | awk '{ print $1 "-" $2 }'
 }
 
+# After the profile: the project facts and the task packs, each regenerating only what changed. With --print, the
+# SessionStart hook shows the profile, the facts and the packs' index, so the agent starts with all three.
+finish() {
+    [ "$PRINT" = true ] && cat "$PROFILE_MD"
+    local here
+    here="$(dirname "$0")"
+    if [ -x "$here/ai-facts.sh" ]; then
+        if [ "$PRINT" = true ]; then "$here/ai-facts.sh" --print; else "$here/ai-facts.sh"; fi
+    fi
+    if [ -x "$here/ai-packs.sh" ]; then
+        if [ "$PRINT" = true ]; then "$here/ai-packs.sh" --index; else "$here/ai-packs.sh"; fi
+    fi
+    exit 0
+}
+
 HASH="$(input_hash)"
 if [ "$FORCE" = false ] && [ -f "$PROFILE_MD" ] && [ -f "$PROFILE_JSON" ] && [ "$(cat "$HASH_FILE" 2>/dev/null)" = "$HASH" ]; then
-    [ "$PRINT" = true ] && cat "$PROFILE_MD"
-    exit 0
+    finish
 fi
 
 # True when the manifest lists one of the packages, or one of the paths exists.
@@ -144,6 +158,4 @@ $FORK_ROWS
 A rule that names a capability applies only when it's \`true\` (\`OPT-01\`).
 EOF
 echo "$HASH" > "$HASH_FILE"
-
-[ "$PRINT" = true ] && cat "$PROFILE_MD"
-exit 0
+finish

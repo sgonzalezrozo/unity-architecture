@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Puts the files assistants and tools read from fixed paths at the project root, next to the .ai submodule:
 # AGENTS.md, CLAUDE.md, .editorconfig, Copilot, Rider and Cursor rules, scripts/verify.sh, verify-editor.sh and
-# ai-profile.sh, the Claude Code hooks, the .ai/unity package (prefab validator, Editor reporters) and, only when you
+# ai-profile.sh, ai-facts.sh and ai-packs.sh, the Claude Code hooks, the .ai/unity package (prefab validator, Editor reporters) and, only when you
 # use MCP for Unity, its config for Claude Code (.mcp.json).
 #
 # Usage, from the project root (the folder that holds Assets and .ai):
@@ -120,6 +120,9 @@ copy ".cursor/rules/unity-architecture.mdc" "$TEMPLATES/cursor-rule.mdc"
 copy "scripts/verify.sh" "$TEMPLATES/scripts/verify.sh" executable
 copy "scripts/verify-editor.sh" "$TEMPLATES/scripts/verify-editor.sh" executable
 copy "scripts/ai-profile.sh" "$TEMPLATES/scripts/ai-profile.sh" executable
+copy "scripts/ai-facts.sh" "$TEMPLATES/scripts/ai-facts.sh" executable
+copy "scripts/ai-packs.sh" "$TEMPLATES/scripts/ai-packs.sh" executable
+copy "scripts/check-feature.sh" "$TEMPLATES/scripts/check-feature.sh" executable
 copy "scripts/timing-report.sh" "$TEMPLATES/scripts/timing-report.sh" executable
 copy ".claude/hooks/log-timing.sh" "$TEMPLATES/claude/hooks/log-timing.sh" executable
 copy ".claude/hooks/verify-on-stop.sh" "$TEMPLATES/claude/hooks/verify-on-stop.sh" executable
@@ -227,6 +230,39 @@ if [ ! -e "$ROOT/$CLIENT/Client.asmdef" ] && [ -z "$(ls -A "$ROOT/$CLIENT" 2>/de
 }'
     own "$CLIENT/Client.cs" '// The Client assembly (Client.asmdef) holds this project'"'"'s own code. The optional architecture
 // analyzers (install.sh --analyzers) check only this assembly, so third-party code elsewhere in Assets isn'"'"'t checked.'
+fi
+
+# The Forget helper the async rules use to start a task from sync code (async-and-errors). One copy for the project, in
+# Shared/, so no feature writes its own.
+if [ -e "$ROOT/$CLIENT/Client.asmdef" ]; then
+    own "$CLIENT/Shared/TaskExtensions.cs" 'using System;
+using System.Threading.Tasks;
+using UnityEngine;
+
+namespace Client.Shared
+{
+    /// <summary>
+    /// Starts a task from sync code and logs what it throws (async-and-errors). The only async void in the project.
+    /// Created by .ai/templates/scripts/install.sh; every feature uses this one instead of a copy (CHK-17).
+    /// </summary>
+    public static class TaskExtensions
+    {
+        public static async void Forget(this Task task, string context)
+        {
+            try
+            {
+                await task;
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError($"[{context}] Background task failed: {exception}");
+            }
+        }
+    }
+}'
 fi
 
 if [ "$ANALYZERS" = auto ] && [ -e "$ROOT/$CLIENT/Analyzers/$ANALYZER.dll" ]; then

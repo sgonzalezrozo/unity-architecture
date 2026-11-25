@@ -125,6 +125,22 @@ if [ "${ERRORS:-0}" != "0" ]; then
     exit 1
 fi
 
+# A data asset spec without its asset (EDIT-14): the Editor builds it through the bridge, or a person from the menu.
+MISSING_SPECS="$(find "$ROOT/Assets/Client" -name '*.asset.json' 2>/dev/null | while IFS= read -r spec; do
+    [ -e "${spec%.json}" ] || echo "${spec#"$ROOT"/}"
+done)"
+if [ -n "$MISSING_SPECS" ]; then
+    if ! has_bridge; then
+        echo "These data asset specs have no asset yet: select each one and run Assets > Unity Architecture > Build Asset From Spec. $NO_BRIDGE_HINT"
+        echo "$MISSING_SPECS"
+        exit 2
+    fi
+    echo "These data asset specs have no asset yet (EDIT-14):"
+    echo "$MISSING_SPECS"
+    echo "Build them through the Unity MCP's code tool: return UnityArchitecture.Prefabs.AssetSpecs.BuildMissing(\"Assets/Client\"), check every result is empty, then check again."
+    exit 1
+fi
+
 # A changed prefab is checked on every stop, even between test runs: its feature's validator case is one quick test.
 if grep -qs '"com.sgonzalezrozo.unity-architecture"' "$ROOT/Packages/manifest.json"; then
     DUE_PREFABS=""
@@ -206,7 +222,11 @@ elif [ "$COMPILE_ONLY" != "1" ] && grep -qs '"com.unity.test-framework"' "$ROOT/
             echo "The full EditMode suite is due: run it in Window > General > Test Runner. $NO_BRIDGE_HINT"
             exit 2
         fi
-        echo "The full EditMode suite is due, and it hasn't run since the last script change."
+        if [ -f "$TESTS" ] && grep -Eq '"fullRun": *true' "$TESTS"; then
+            echo "The full EditMode suite is due: the last full run started at $(date -r "${TESTED_AT:-0}" '+%H:%M:%S' 2>/dev/null || echo "$TESTED_AT"), and a script changed after it, at $(date -r "$NEWEST_CHANGE" '+%H:%M:%S' 2>/dev/null || echo "$NEWEST_CHANGE"). A run only counts when it starts after the last change."
+        else
+            echo "The full EditMode suite is due, and it hasn't run since the last script change."
+        fi
         echo "Run every EditMode test with run_tests through the Unity MCP (EditMode, no filter), poll get_test_job until it finishes, then check again."
         exit 1
     fi

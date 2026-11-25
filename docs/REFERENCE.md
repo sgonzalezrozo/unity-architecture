@@ -58,6 +58,7 @@ Before returning code, the agent runs the [pre-response checklist](../architectu
 | `PrefabSpecsTests` | 15 | Building a prefab from a JSON spec |
 | `PrefabRecipesTests` | 8 | The prefab recipes |
 | `PrefabSpecCommandsTests` | 4 | The **Build Prefab From Spec** menu item |
+| `AssetSpecsTests` | 6 | Data assets built from a spec: create, update in place, unknown field, unknown type, a value changed by hand, specs that already have their asset (`EDIT-14`) |
 
 Only the first one is about your project, and it's why the package is in `testables`: that's how the Stop hook checks your prefabs. The other 49 check the tools and run in your project as a side effect; they're fast, and only full runs include them: a feature's tests and its prefab validator case run without them. With prefabs in several features, the first one has a case per feature, so the count grows. Your own tests, once the agent writes them, add to this count.
 
@@ -73,9 +74,13 @@ Assistants only read instructions from fixed places in your project, and a submo
 | `.aiassistant/rules/project.md` | Rider AI Assistant | The same, for Rider |
 | `.cursor/rules/unity-architecture.mdc` | Cursor | The same, for Cursor |
 | `.editorconfig` | Rider, Visual Studio | Formatting, `var`, braces and naming |
-| `scripts/verify.sh` | Agents, CI | Compiles in batch mode, runs EditMode tests, checks Fast IoC generation |
+| `scripts/verify.sh` | Agents, CI | Builds the data assets whose spec has no asset yet (`EDIT-14`), then compiles in batch mode, runs EditMode tests, checks Fast IoC generation |
+| `scripts/ai-facts.sh` | `ai-profile.sh` | Writes `Logs/ai/project-facts.md`: scenes in Build Settings, Fast IoC installers, `Client.asmdef` references, features, and localization as three separate facts (installed, configured, used). Each fact names its source file |
+| `scripts/ai-packs.sh` | `ai-profile.sh`, maintainers (`--check`) | Writes the task packs in `Logs/ai/packs/` from `.ai/packs.json`: each task's rules with the forks resolved, the package documentation they rely on and the verified symbols, every section with its source and checksum (`OPT-07`). Needs jq |
 | `scripts/ai-profile.sh` | Agents, the SessionStart hook | Writes the project profile, `Logs/ai/profile.md`: which capabilities are true and which branch each fork in the rules resolves to (`OPT-06`) |
 | `scripts/verify-editor.sh` | Agents, the hook | Checks the project while the Editor is open, from the results the Editor writes |
+| `scripts/check-feature.sh` | The Stop hook, you | Checks a feature folder without Unity or a model: plan and scope, installer, specs, test assembly, handoff, names, table rows, bento, navigation, `Forget` (`CHK-01` to `-17`) |
+| `Assets/Client/Shared/TaskExtensions.cs` | Unity | The project's `Forget` helper for starting a task from sync code (`Client.Shared`), when `Client.asmdef` exists |
 | `scripts/timing-report.sh` | You, the timing hook | Reads `Logs/agent-timing/`: every step of a session, or with `--last` the stages of the last prompt |
 | `.mcp.json` | Claude Code | Registers a local Unity MCP server (MCP for Unity) on `localhost:8080`. Never replaced |
 | `.claude/hooks/verify-on-stop.sh`, `.claude/hooks/log-timing.sh`, `.claude/settings.json` | Claude Code | The Stop hook runs `verify.sh` when the agent finishes and sends failures back; the timing hooks log each prompt, tool call and verification to `Logs/agent-timing/` and show the prompt's stages on screen when it ends (no prompt text, arguments or file contents, only the paths of rule documents a command reads); the SessionStart hook runs `ai-profile.sh --print`, so every session starts with the profile. Also allows `verify.sh`, `ai-profile.sh` and read-only `git` commands, so Claude doesn't ask for each one |

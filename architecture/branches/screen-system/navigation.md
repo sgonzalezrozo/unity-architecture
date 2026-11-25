@@ -8,8 +8,8 @@ All UI lives in one persistent `ScreenSystem` object. A screen is a prefab plus 
 |---|---|
 | Screen shown | `IScreenShow.OnScreenShown()`, on any component of the screen or of one of its layers (`SCR-05`) |
 | Screen hidden | `IScreenHide.OnScreenHidden()` (`SCR-05`) |
-| Open a screen | `await ScreenManager.Instance.GoTo(ScreenIds.ShopMain)`, with the generated `ScreenIds` constants (`SCR-07`, `SCR-12`) |
-| Go back | `await ScreenManager.Instance.GoBack()`; the Escape key does it too |
+| Open a screen | A command on the feature's root Model that calls `ScreenManager.Instance.GoTo(ScreenIds.ShopMain)`, with the generated `ScreenIds` constants (`SCR-07`, `SCR-12`, `SCR-16`) |
+| Go back | A command on the root Model that calls `ScreenManager.Instance.GoBack()`; the Escape key does it too (`SCR-16`) |
 | Popup or confirmation | A screen whose `ScreenDefinition` type is `Modal` (`SCR-09`) |
 | Blocking message (connection lost) | A screen whose type is `Alert`, closed with `DismissAlert()` (`SCR-09`) |
 | Part shared by several screens (top bar, background, navigation bar) | A layer prefab listed in each screen's `LayerDefinition` (`SCR-04`) |
@@ -33,6 +33,34 @@ Pass what the navigation is about (which trophy to show) with `GoTo(screen, valu
 | `SCR-10` | The package has no screen transition or animation API, and none is added: animations are the layers' job. An intro starts from `OnScreenShown()`. An outro plays first and calls `GoTo` when it completes (a sequence or tween's completion callback), since the screen is hidden at once and `OnScreenHidden()` comes too late to be seen. Don't fade out every layer of the fullscreen screen, or the camera background shows through; keep a background opaque. Hidden layers stay loaded until the scene changes, so restore what the outro changed in `OnScreenHidden()` or before the intro. |
 | `SCR-11` | Screen components that need services are injected by the project's container through Tools Core (`fastIoC`: `internal` fields; VContainer: `builder.UseToolsCore()`; Zenject: `ToolsCoreInstaller`). Layers are injected once, before `Awake`, so components MAY rely on their dependencies in `Awake`. Screen System never requires Fast IoC. |
 | `SCR-12` | Navigation MUST use the generated `ScreenIds` constants instead of string literals, so typos and renamed screens fail at compile time. |
+| `SCR-16` | Navigation is a command on the feature's root Model: the MonoBehaviour Model on the screen root, or the injected Model when there's no common parent. A Controller is only the user's trigger: it calls that command like any other (`CTRL-02`), and the command is synchronous, so the Controller never awaits or sees a `Task`. The root Model is the only class that calls `ScreenManager` (`GoTo`, `GoBack`, `CloseWithResult`). It may set state first (the selection), then starts the call from its sync command with `.Forget(context)`. Views, Controllers, slot Models, items Models and mocks MUST NOT reference `ScreenManager` (`CHK-16`). The navigation call isn't unit tested; the state the command sets is. A popup's root Model receives what it shows with `IScreenParameter<T>` and closes itself with a command that calls `GoBack`. |
+
+```csharp
+public class StoreModel : MonoBehaviour
+{
+    public void OpenPromotion(int promotionId)
+    {
+        ScreenManager.Instance.GoTo(ScreenIds.StorePromotionPopup, promotionId).Forget(nameof(StoreModel));
+    }
+}
+
+public class OpenPromotionController : BaseClickController
+{
+    private StoreModel storeModel;
+    private StorePromotionSlotModel promotionSlotModel;
+
+    private void Awake()
+    {
+        storeModel = GetComponentInParent<StoreModel>();
+        promotionSlotModel = GetComponentInParent<StorePromotionSlotModel>();
+    }
+
+    protected override void OnClick()
+    {
+        storeModel.OpenPromotion(promotionSlotModel.PromotionId);
+    }
+}
+```
 
 The package ships its own agent rules in `Documentation~/agent-rules.md` (under `Packages/com.sgonzalezrozo.screen-system/` once installed). Read them before using an API not listed here.
 

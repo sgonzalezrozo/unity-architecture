@@ -22,7 +22,7 @@ The architecture rules cover all client code except gameplay simulation, which i
 | Unity, C#, uGUI, TextMeshPro | Required runtime |
 | Fast IoC, UI Scroller, Screen System, UI Foundations, Addressables | **Optional.** They change the implementation, never the architecture |
 
-Take the capabilities and forks from the [project profile](architecture/OPTIONAL_PACKAGES.md#the-profile), `Logs/ai/profile.md` (`OPT-06`). In Claude Code it's already in your context from the session start; otherwise read it, and run `bash scripts/ai-profile.sh` when it's missing. Never detect packages from the manifest yourself.
+Take the capabilities and forks from the [project profile](architecture/OPTIONAL_PACKAGES.md#the-profile), `Logs/ai/profile.md` (`OPT-06`). In Claude Code it's already in your context from the session start; otherwise read it, and run `bash scripts/ai-profile.sh` when it's missing. Never detect packages from the manifest yourself. The same session start gives the [project facts](architecture/OPTIONAL_PACKAGES.md#rules) (`Logs/ai/project-facts.md`: scenes, installers, `Client.asmdef` references, features, localization) and the index of task packs.
 
 Where a rule depends on a package, the document has a **fork**: a block that lists one file per branch. Open only the file of the branch the profile names, never the others.
 
@@ -32,7 +32,7 @@ Strict MVC. Code that violates an invariant is incorrect even if it compiles and
 
 | ID | Rule | Enforced by |
 |---|---|---|
-| `ARCH-01` | Dependencies are one-way. A Model MAY reference only Models and configuration assets. A View MAY reference only Models, rendering components and its inner Views (`VIEW-03`). A Controller MAY reference only Models and input interfaces. Views and Controllers MUST NOT reference each other. | `UA0001` |
+| `ARCH-01` | Dependencies are one-way. A Model MAY reference only Models and configuration assets; a feature's root Model also calls the navigation package (`SCR-16`). A View MAY reference only Models, rendering components and its inner Views (`VIEW-03`). A Controller MAY reference only Models and input interfaces. Views and Controllers MUST NOT reference each other. | `UA0001` |
 | `ARCH-02` | Models own all data and state. Views and Controllers MUST hold no state beyond cached references. | Review |
 | `ARCH-03` | Views render and Controllers receive input. A View MUST NOT handle input or call a Model command. A Controller MUST NOT change anything visual. | `UA0002`, `UA0003`, review |
 | `ARCH-04` | State flows by pull. If A references B, A reads from B and B never sends data to A. If A knows B, A MUST do all the work to get what it needs from B, and B MUST NOT prepare, format or deliver data for A. Events MUST have no parameters: they signal a change, and the listener reads the Model. | `UA0004`, review |
@@ -50,23 +50,25 @@ Input event → Controller → Model command → state change → parameterless 
 
 ## Document routing
 
+**With packs** (`Logs/ai/packs/` exists): read the pack of each part of the task, all in one call, and nothing else (`OPT-07`). A pack holds those rules with the forks resolved, the package documentation they rely on and the verified symbols. The Load column is for projects without packs.
+
 Open only the parts the task needs. Each index ([MVC](architecture/MVC.md), [UI patterns](architecture/UI_PATTERNS.md), [C# standards](architecture/CSHARP_STANDARDS.md), [Agent workflow](architecture/AGENT_WORKFLOW.md)) lists its parts, if a task isn't in this table.
 
-| Task | Load |
-|---|---|
-| Starting a feature, screen, refactor or anything touching `Shared/` | [Planning a task](architecture/workflow/planning.md) |
-| A Model, View or Controller | [Layers](architecture/mvc/layers.md), [Where a Model lives](architecture/mvc/where-a-model-lives.md), then the layer's rules: [Models](architecture/mvc/models.md), [Views](architecture/mvc/views.md), [Controllers](architecture/mvc/controllers.md) |
-| Scopes, what a prefab root holds | [Scopes](architecture/mvc/scopes.md) |
-| Clicks, visual states, tabs, lists, layouts | The part of [UI patterns](architecture/UI_PATTERNS.md): [clicks](architecture/ui/clicks.md), [visual states](architecture/ui/visual-states.md), [tabs](architecture/ui/tabs.md), [lists](architecture/ui/lists.md), [layouts](architecture/ui/layouts.md) |
-| New feature or screen, file location, naming, prefab hierarchy, navigation, `.asmdef` | [Feature structure](architecture/FEATURE_STRUCTURE.md) |
-| Building, reviewing or describing a UI prefab | [Prefabs](architecture/PREFABS.md), and [Prefab handoff](architecture/workflow/prefab-handoff.md) when a person builds it |
-| Reference acquisition, injection, installers | [Dependency injection](architecture/DEPENDENCY_INJECTION.md) |
-| Backend calls | [Backend integration](architecture/BACKEND_INTEGRATION.md) |
-| Writing or reviewing C# | [Code style](architecture/csharp/style.md); [performance](architecture/csharp/performance.md) for loading or allocations; [async and errors](architecture/csharp/async-and-errors.md) for `Task`, exceptions or logging |
-| Tests | [Tests](architecture/csharp/tests.md) |
-| Verifying a change, Unity MCP or Unity CLI tools, `verify.sh` | [Editor tools](architecture/EDITOR_TOOLS.md) |
-| Finishing a task | [Checklist and Definition of Done](architecture/workflow/checklist.md) |
-| Git | [Git](architecture/workflow/git.md) |
+| Task | Pack | Load |
+|---|---|---|
+| Starting a feature, screen, refactor or anything touching `Shared/` | `new-feature`, `code-and-verify` | [Planning a task](architecture/workflow/planning.md) |
+| A Model, View or Controller | `new-feature` | [Layers](architecture/mvc/layers.md), [Where a Model lives](architecture/mvc/where-a-model-lives.md), then the layer's rules: [Models](architecture/mvc/models.md), [Views](architecture/mvc/views.md), [Controllers](architecture/mvc/controllers.md) |
+| Scopes, what a prefab root holds | `new-feature` | [Scopes](architecture/mvc/scopes.md) |
+| Clicks, visual states, tabs, lists, layouts | `ui-input`, `ui-list`, `example-store` | The part of [UI patterns](architecture/UI_PATTERNS.md): [clicks](architecture/ui/clicks.md), [visual states](architecture/ui/visual-states.md), [tabs](architecture/ui/tabs.md), [lists](architecture/ui/lists.md), [layouts](architecture/ui/layouts.md) |
+| New feature or screen, file location, naming, prefab hierarchy, navigation, `.asmdef` | `new-feature`, `navigation` | [Feature structure](architecture/FEATURE_STRUCTURE.md) |
+| Building, reviewing or describing a UI prefab | `prefab` | [Prefabs](architecture/PREFABS.md), and [Prefab handoff](architecture/workflow/prefab-handoff.md) when a person builds it |
+| Reference acquisition, injection, installers | `new-feature` | [Dependency injection](architecture/DEPENDENCY_INJECTION.md) |
+| Backend calls | `backend` | [Backend integration](architecture/BACKEND_INTEGRATION.md) |
+| Writing or reviewing C# | `code-and-verify` | [Code style](architecture/csharp/style.md); [performance](architecture/csharp/performance.md) for loading or allocations; [async and errors](architecture/csharp/async-and-errors.md) for `Task`, exceptions or logging |
+| Tests | `tests` | [Tests](architecture/csharp/tests.md) |
+| Verifying a change, Unity MCP or Unity CLI tools, `verify.sh` | `code-and-verify` | [Editor tools](architecture/EDITOR_TOOLS.md) |
+| Finishing a task | `code-and-verify` | [Checklist and Definition of Done](architecture/workflow/checklist.md) |
+| Git | | [Git](architecture/workflow/git.md) |
 
 Read the closest example before generating a feature. They use one profile ([which](architecture/OPTIONAL_PACKAGES.md#forks)): adapt them with your branches.
 
@@ -75,6 +77,7 @@ Read the closest example before generating a feature. They use one profile ([whi
 | [Backend feature](architecture/examples/01_BACKEND_FEATURE_TROPHY_ROOM.md) | Folder layout, Module, Connector, list, async command, timer, tests |
 | [Custom input](architecture/examples/02_CUSTOM_INPUT_SETTINGS.md) | `Toggle` and `Slider` replacements, reusable prefab, drag input |
 | [Filtered list](architecture/examples/03_FILTERED_LIST_INVENTORY.md) | Tabs, filtered list, selection, details panel, no backend |
+| [Multi-source bento store](architecture/examples/04_MULTI_SOURCE_BENTO_STORE.md) | Several sources as sections, bento JSON, mock and items Model, clock and countdown, navigation from the root Model, popup with its ID, handoff |
 
 ## Completion
 

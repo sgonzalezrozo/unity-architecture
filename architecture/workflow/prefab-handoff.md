@@ -30,7 +30,8 @@ The same sections, in this order, every time. Leave a section out only when it h
 One line per file created or changed, with its role (Model, View, Controller, Scroller, Installer, data, config).
 
 ## Assets to create
-Configuration assets and the path each one goes to, such as a ScriptableObject that an installer binds.
+Only assets without a spec. A data asset with a spec (EDIT-14) is built by the tool: name the spec and whether
+it was built, so the person knows whether to run Build Asset From Spec.
 
 ## Prefabs
 Per prefab: the hierarchy (FEATURE_STRUCTURE notation), then the handoff table (HAND-01, HAND-02).

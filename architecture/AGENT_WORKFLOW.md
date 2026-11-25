@@ -4,7 +4,7 @@
 
 | Part | Covers | Rule IDs |
 |---|---|---|
-| [Planning a task](workflow/planning.md) | Task classification, the scope question, the plan and its approval, when to ask | `TASK-01` to `-05`, `PLAN-01`, `DATA-01` |
+| [Planning a task](workflow/planning.md) | Task classification, the scope question, the plan and its approval, when to ask | `TASK-01` to `-05`, `PLAN-01`, `-02`, `DATA-01` |
 | [Determinism and working in Unity](workflow/determinism.md) | Tools over judgment, reproducible logic, Unity files | `DET-01` to `-07` |
 | [Checklist and Definition of Done](workflow/checklist.md) | The pre-response checklist, reporting back, when a task is done | |
 | [Prefab handoff](workflow/prefab-handoff.md) | Instructions for a prefab a person builds, or the spec the agent checks | `HAND-01` to `-07` |

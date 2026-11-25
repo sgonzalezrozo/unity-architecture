@@ -6,6 +6,7 @@
 #   4. Every relative link in the Markdown files resolves, anchors included.
 #   5. No <!-- if: --> markers in the rules: those are for the Rules Guide's docs; the rules use forks.
 #   6. Every "source" in the Rules Guide's knowledge.json points to a file that exists.
+#   7. packs.json: entries resolve in every branch, symbols cite their pack, every rule file is in a pack (ai-packs.sh).
 # Usage: bash tools/lint-rules.sh. Exit code 0 when everything passes, 1 otherwise.
 set -u
 
@@ -136,6 +137,15 @@ for catalog in unity/KnowledgeDocs~/knowledge.json unity/KnowledgeDocs~/es/knowl
     done
 done | tee "$SOURCES_FILE"
 [ -s "$SOURCES_FILE" ] && FAILURES=$((FAILURES + $(wc -l < "$SOURCES_FILE"))) || echo "ok    every Rules Guide source exists"
+
+# 7. Task packs: every entry resolves in every branch, symbols cite their pack, every rule file is in a pack, sizes fit.
+if command -v jq > /dev/null 2>&1; then
+    PACK_OUTPUT="$(bash templates/scripts/ai-packs.sh --check)"
+    printf '%s\n' "$PACK_OUTPUT"
+    FAILURES=$((FAILURES + $(printf '%s\n' "$PACK_OUTPUT" | grep -c '^FAIL')))
+else
+    echo "skip  task packs: jq not installed"
+fi
 
 echo
 [ "$FAILURES" -eq 0 ] && echo "All checks passed." || echo "$FAILURES problem(s)."

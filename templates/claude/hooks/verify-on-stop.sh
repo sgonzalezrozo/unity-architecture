@@ -42,6 +42,52 @@ HOOK_INPUT="$(cat)"
 cd "$ROOT" || exit 0
 mkdir -p "$STATE"
 
+# Each session keeps its own task state, so two sessions in one project never check each other's work. The timing hook
+# marks the start of a turn (Logs/verify/turn-<session>, a timestamp); the mark goes when this hook lets the turn end.
+# The test scope and the plan an agent writes during its turn are copied to Logs/verify/session-<session>/, and the
+# first plan of a turn is kept as the approved one: a plan rewritten later in the same turn, after a rejection, is
+# compared with it (PLAN-02), so an agent can't pass a check by dropping what the check asked for.
+SESSION_ID="$(printf '%s' "$HOOK_INPUT" | sed -n 's/.*"session_id" *: *"\([A-Za-z0-9_-]*\)".*/\1/p' | head -1)"
+TURN_MARKER="$STATE/turn-${SESSION_ID:-unknown}"
+SESSION_DIR="$STATE/session-${SESSION_ID:-unknown}"
+mkdir -p "$SESSION_DIR"
+trap 'code=$?; [ "$code" -eq 0 ] && rm -f "$TURN_MARKER"' EXIT
+written_this_turn() {
+    [ -f "$1" ] && [ -f "$TURN_MARKER" ] && [ "$1" -nt "$TURN_MARKER" ]
+}
+if written_this_turn "$STATE/test-scope"; then
+    cp "$STATE/test-scope" "$SESSION_DIR/test-scope"
+fi
+if written_this_turn "Logs/ai/plan.md"; then
+    cp "Logs/ai/plan.md" "$SESSION_DIR/plan.md"
+    if [ "$(cat "$SESSION_DIR/plan.approved.turn" 2>/dev/null)" != "$(cat "$TURN_MARKER")" ]; then
+        cp "Logs/ai/plan.md" "$SESSION_DIR/plan.approved.md"
+        cat "$TURN_MARKER" > "$SESSION_DIR/plan.approved.turn"
+    fi
+fi
+SCOPE_FILE="$SESSION_DIR/test-scope"
+ATTEMPTS_FILE="$SESSION_DIR/attempts"
+
+# What the user chose to deliver (TASK-01), read from the session's transcript: only what the user typed and the
+# answers to the agent's questions (never tool output, which can quote the rules). The last scope answer or scope named
+# in a prompt wins, in English or Spanish. Unknown when neither says.
+task_scope() {
+    local transcript
+    transcript="$(printf '%s' "$HOOK_INPUT" | sed -n 's/.*"transcript_path" *: *"\([^"]*\)".*/\1/p' | head -1)"
+    [ -f "$transcript" ] && command -v jq > /dev/null 2>&1 || { echo unknown; return; }
+    jq -rs '
+        [ .[] | select(.type == "user" and .isMeta != true)
+          | ( (.message.content | if type == "string" then . else (.[]? | select(.type == "text") | .text) end),
+              (.toolUseResult | objects | .answers // {} | to_entries[] | .value | tostring) ) ]
+        | join(" ") | ascii_downcase | gsub("ó"; "o") as $text
+        | [ { scope: "code+prefabs+tests", at: ([$text | rindex("code, prefabs and tests"), rindex("codigo, prefabs y tests")] | map(. // -1) | max) },
+            { scope: "code+tests", at: ([$text | rindex("code and tests"), rindex("codigo y tests")] | map(. // -1) | max) },
+            { scope: "code+prefabs", at: ([$text | rindex("code and prefabs"), rindex("codigo y prefabs")] | map(. // -1) | max) },
+            { scope: "code", at: ([$text | rindex("code only"), rindex("solo codigo")] | map(. // -1) | max) } ]
+        | map(select(.at >= 0)) | if length == 0 then "unknown" else (max_by(.at) | .scope) end
+    ' "$transcript" 2>/dev/null || echo unknown
+}
+
 # Unity holds Temp/UnityLockfile while the project is open. lsof tells a live lock from one left by a crash.
 editor_open() {
     local lock="$ROOT/Temp/UnityLockfile"
@@ -172,6 +218,60 @@ if [ "$CURRENT" = "$(cat "$PASSED_FILE" 2>/dev/null)" ]; then
     fi
 fi
 
+# The features to check: the folders the user named for the task (Logs/verify/test-scope, TEST-13), the same ones
+# whose tests run. With the whole project in scope, only the features this turn changed: files under Assets/Client
+# written after the turn began (the timing hook marks it in Logs/verify/turn-<session>, and the mark goes when the
+# hook lets the turn end), or without a mark, every feature with pending changes. Another task's unfinished feature
+# never blocks this one.
+turn_features() {
+    if [ -f "$SCOPE_FILE" ]; then
+        grep -v '^[[:space:]]*$' "$SCOPE_FILE" | tr -d '\r'
+    elif [ -f "$TURN_MARKER" ]; then
+        find "$CLIENT" -mindepth 2 -type f ! -name '*.meta' -newer "$TURN_MARKER" 2>/dev/null
+    else
+        changed_paths
+    fi | while IFS= read -r path; do feature_of "$path"; done | grep -vxF "$ALL" | grep -v '^$' | sort -u
+}
+
+# A failed check counts as one attempt; after MAX_ATTEMPTS in a row the hook stops asking and says so.
+fail_attempt() {
+    local label="$1" output="$2" attempts
+    attempts=$(( $(cat "$ATTEMPTS_FILE" 2>/dev/null || echo 0) + 1 ))
+    if [ "$attempts" -ge "$MAX_ATTEMPTS" ]; then
+        rm -f "$ATTEMPTS_FILE"
+        notify "$label still fails after $MAX_ATTEMPTS attempts. Check Logs/verify/."
+        exit 0
+    fi
+    echo "$attempts" > "$ATTEMPTS_FILE"
+    {
+        echo "$label failed (attempt $attempts of $MAX_ATTEMPTS). Fix this before finishing:"
+        echo "$output"
+    } >&2
+    exit 2
+}
+
+# The feature rules a tool can check (scripts/check-feature.sh: names, namespaces, plan, installer, specs, tests,
+# handoff), for every feature the change touched or the task is scoped to, before compiling. It needs no Unity and
+# gives the same result whatever agent or model wrote the code.
+if [ -x scripts/check-feature.sh ]; then
+    CHECKED_FEATURES="$(turn_features | tr '\n' ' ')"
+    if [ -n "${CHECKED_FEATURES// /}" ] && ! CHECK_OUTPUT="$(CHECK_PLAN="$SESSION_DIR/plan.md" CHECK_APPROVED_PLAN="$SESSION_DIR/plan.approved.md" \
+        CHECK_TASK_SCOPE="$(task_scope)" scripts/check-feature.sh $CHECKED_FEATURES 2>&1)"; then
+        fail_attempt "scripts/check-feature.sh" "$(printf '%s\n' "$CHECK_OUTPUT" | grep -v '^warning ')"
+    fi
+fi
+
+# OPT-07: with task packs, the final report of a feature task ends with "Outside packs:" and what was read outside them.
+if [ -d Logs/ai/packs ] && [ -n "${CHECKED_FEATURES// /}" ] && command -v jq > /dev/null 2>&1; then
+    TRANSCRIPT_PATH="$(printf '%s' "$HOOK_INPUT" | jq -r '.transcript_path // empty' 2>/dev/null)"
+    if [ -f "$TRANSCRIPT_PATH" ]; then
+        LAST_REPORT="$(jq -rs '[ .[] | select(.type == "assistant") | .message.content[]? | select(.type == "text") | .text ] | last // ""' "$TRANSCRIPT_PATH" 2>/dev/null)"
+        if [ -n "$LAST_REPORT" ] && ! grep -q 'Outside packs:' <<< "$LAST_REPORT"; then
+            fail_attempt "The final report" "It has no \"Outside packs:\" line (OPT-07). End the report with Outside packs: and every rule, package or source file you opened that no pack included, or none."
+        fi
+    fi
+fi
+
 if editor_open && [ -x scripts/verify-editor.sh ]; then
     VERIFY="scripts/verify-editor.sh"
 else
@@ -228,19 +328,7 @@ case "$CODE" in
         exit 0
         ;;
     1)
-        ATTEMPTS=$(( $(cat "$ATTEMPTS_FILE" 2>/dev/null || echo 0) + 1 ))
-        if [ "$ATTEMPTS" -ge "$MAX_ATTEMPTS" ]; then
-            rm -f "$ATTEMPTS_FILE"
-            notify "Verify still fails after $MAX_ATTEMPTS attempts. Check Logs/verify/."
-            exit 0
-        fi
-
-        echo "$ATTEMPTS" > "$ATTEMPTS_FILE"
-        {
-            echo "$VERIFY failed (attempt $ATTEMPTS of $MAX_ATTEMPTS). Fix this before finishing:"
-            echo "$OUTPUT"
-        } >&2
-        exit 2
+        fail_attempt "$VERIFY" "$OUTPUT"
         ;;
     *)
         notify "$VERIFY couldn't check this change: $(echo "$OUTPUT" | head -1 | tr -d '"')"

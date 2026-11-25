@@ -19,8 +19,8 @@ MCP for Unity is optional. Without it, work with the Editor closed: everything i
 
 ## What happens on every task
 
-1. The agent classifies the request ([Agent workflow](../architecture/workflow/planning.md#task-classification)). A question gets an answer, a small change gets made, and a new feature, screen or refactor gets the [scope question](../architecture/workflow/planning.md#scope-question) (code only, with prefabs, with tests) and a plan first. Say the scope in your prompt to skip the question.
-2. It takes the forks from the [project profile](../architecture/OPTIONAL_PACKAGES.md#the-profile), which the SessionStart hook put in its context, and opens only the branch each one names: its code uses Fast IoC, UI Scroller, Screen System or UI Foundations only when they're installed, and it never reads the rules for the ones that aren't.
+1. The agent classifies the request ([Agent workflow](../architecture/workflow/planning.md#task-classification)). A question gets an answer, a small change gets made, and a new feature, screen or refactor gets the [scope question](../architecture/workflow/planning.md#scope-question) (code only, with prefabs, with tests) and a plan first. Say the scope in your prompt to skip the question. The plan is written to `Logs/ai/plan.md` in a fixed form, with each decision taken from a closed list, so you can compare two runs and the delivery with it (`PLAN-02`).
+2. It takes the forks from the [project profile](../architecture/OPTIONAL_PACKAGES.md#the-profile), which the SessionStart hook put in its context, and opens only the branch each one names: its code uses Fast IoC, UI Scroller, Screen System or UI Foundations only when they're installed, and it never reads the rules for the ones that aren't. The same hook gives it the project facts (scenes, installers, `Client.asmdef` references, features, localization) and the index of task packs: it reads the pack of each part of the task in one call, with the forks already resolved and the package documentation it needs, instead of walking the rule files (`OPT-07`).
 3. It writes what the scope includes: the code, and the prefabs and tests when you chose them, with Model tests first (`TEST-08`).
 4. It compiles, reads every error and warning (`EDIT-02`), and fixes compile and (if installed) analyzer errors in the code, never by suppressing them (`EDIT-03`).
 5. It runs the tests related to the change (`TEST-11`).
@@ -209,6 +209,7 @@ The .ai rules were updated. Read .ai/CHANGELOG.md and tell me what changed that 
 
 | Message | What the agent does |
 |---|---|
+| `scripts/check-feature.sh failed`, with `CHK-..` lines | Fixes each line (a name, a namespace, a file not in the plan, a missing installer, spec, test assembly or handoff section), then stops again |
 | "Unity hasn't compiled the latest script changes" | Calls `refresh_unity`, reads the Console and stops again |
 | "Prefabs of Rewards changed after the prefab validator last checked them" | Runs that feature's `ClientPrefabsTests` case with `run_tests` and stops again |
 | "The tests of Rewards are due" | Runs that feature's tests with `run_tests` (`group_names`) and stops again. This happens on every stop while the task is scoped to the feature |
@@ -223,19 +224,33 @@ The hook gives up after three failed attempts in a row and says so. Then read th
 
 ## Timing
 
-While you tune the pipeline, every prompt ends with its stages on screen, from the timing hook:
+While you tune the pipeline, every prompt ends with one line on screen from the timing hook, short so the app doesn't cut it:
 
 ```
-Timing: 4m 25s
-   46s  Read planning rules (13 calls)
-   37s  Waiting for your answer
-   55s  Read list rules (6 calls)
-   43s  Write Models
-   30s  Compile and check (2 calls)
-   13s  Final answer
+Timing: 4m 05s · first file 1m 50s after 7 calls (6 rule docs) · outside packs 1 · claude-opus-5-5 (14 calls) · tokens 1.1M / 18k · ~$1.23 · details: scripts/timing-report.sh --last
 ```
 
-A stage's seconds include the time the model spent deciding on each step, not only the tool's run. `scripts/timing-report.sh` prints every step of the latest session, and `scripts/timing-report.sh --last` the last prompt again. The logs are in `Logs/agent-timing/`, one TSV per session, without prompt text, tool arguments or file contents. Set `AGENT_TIMING_SUMMARY=0` in `.claude/settings.json` `"env"` to hide the summary and keep logging.
+`scripts/timing-report.sh --last` prints the whole summary of that prompt:
+
+```
+Turn summary
+  Model                  claude-opus-5-5 (14 calls)
+  API calls              14
+  Tokens in / out        1.1M / 18k (cache read 1.1M)
+  Cost (list prices)     $1.23 (claude-opus-5-5 $1.23)
+  Total                  4m 05s
+  To the first file      1m 50s
+  Calls before writing   7
+  Rule docs read         6
+  Outside packs          1 calls (pkg:unity-architecture-agents/unity/Editor/AssetSpecs.cs)
+Stages
+     3s  Read pack new-feature
+     4s  Read package source
+    46s  Write other code
+    24s  Compile and check
+```
+
+The model, API calls and tokens come from the session's transcript, subagents included, so a run with a subagent on a smaller model lists both. The cost is an estimate at the API list prices in `.ai/model-prices.json` (input, output, cache reads, and cache writes at 1.25x or 2x, Haiku's long-context rate above 100K input tokens); a model missing there shows as unpriced. On a subscription you aren't billed per token, but it still compares runs and models. Update the file when prices change. A stage's seconds include the time the model spent deciding on each step, not only the tool's run. **Outside packs** lists the rule files and package files read after a pack (`OPT-07`). `scripts/timing-report.sh` prints every step of the latest session, and `scripts/timing-report.sh --last` the last prompt again. The logs are in `Logs/agent-timing/`, one TSV per session, without prompt text, tool arguments or file contents. Set `AGENT_TIMING_SUMMARY=0` in `.claude/settings.json` `"env"` to hide the summary and keep logging.
 
 ## Tips
 
