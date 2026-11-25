@@ -4,7 +4,7 @@
 
 **Request:** a Store with three independent sources in one vertical bento list: discounts (a reduced price and an expiry countdown), promotions (featured banners) and packs (bundles). A click on a promotion opens a popup with its details, a claim button and a close button that returns to the Store. Scope: code only. Test scope: `Assets/Client/Store`.
 
-Capability profile: `fastIoC`, `uiScroller`, `screenSystem` and `uiFoundations` are `true`. Every file name starts with `Store` (`TASK-05`), every file is a row of the Feature files table (`TASK-05`).
+Capability profile: `fastIoC`, `uiScroller`, `screenSystem` and `uiFoundations` are `true`. Every file is a row of the Feature files table, and its name comes from that row (`TASK-05`): a controller is named for its action only, such as `OpenPromotionController`, never with the feature's name in front.
 
 **Demonstrates:** `SectionedSource` with one section per source (`LIST-10`), a bento layout in JSON (`LIST-08`), runtime data from a mock behind a pure C# items Model (`MODEL-12`, `MODEL-13`), a clock behind an interface for the countdown (`DET-06`), a throttled countdown in a slot View (`VIEW-06`), navigation as a command on the root Model (`SCR-16`), a popup that receives its ID (`IScreenParameter<T>`), and the handoff (`HAND-07`).
 
