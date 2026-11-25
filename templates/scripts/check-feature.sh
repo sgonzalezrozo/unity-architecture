@@ -4,6 +4,7 @@
 # sends the failures back to the agent. Each failure names its check and the rule it enforces.
 #
 #   CHK-01 PLAN-02  the files match Logs/ai/plan.md, when the plan is for this feature
+#   CHK-02 PLAN-02  a change outside every feature (CHECK_OUTSIDE_CHANGED) is named in the plan's outside-feature
 #   CHK-03 DI-11    an installer exactly when the feature binds something
 #   CHK-04 EDIT-14  every FromInstance("X") has X.asset or X.asset.json in the feature
 #   CHK-05 ASM-03   tests compile in Tests/Client.{Feature}.Tests.asmdef, and there is no .asmref
@@ -24,10 +25,12 @@
 #   CHK-16 SCR-16   only a screen's root Model calls ScreenManager: never a View, Controller, slot, items Model or mock;
 #          SCR-12   every screen it opens is a ScreenIds constant, never a string or a constant of its own: a screen that
 #                   doesn't exist yet is an open question for the user
-#   CHK-17 async    no Forget of the feature's own: Client.Shared.TaskExtensions is the project's
+#   CHK-17 async    no Forget of the feature's own: ToolsCore.TaskExtensions (Tools Core package) is the one helper
 #
 # The Stop hook passes the session's plan (CHECK_PLAN), the approved plan (CHECK_APPROVED_PLAN) and the scope the
-# user chose (CHECK_TASK_SCOPE: code, code+tests, code+prefabs, code+prefabs+tests or unknown).
+# user chose (CHECK_TASK_SCOPE: code, code+tests, code+prefabs, code+prefabs+tests or unknown). CHECK_OUTSIDE_CHANGED
+# lists the project files changed this turn outside every feature, one per line; the hook leaves it empty when the
+# turn has no mark, and then CHK-02 doesn't run.
 #
 # Usage, from the project root: scripts/check-feature.sh <Feature> [<Feature>...]
 # Exit code 0 when every feature passes (warnings don't fail), 1 otherwise.
@@ -39,6 +42,9 @@ PLAN="Logs/ai/plan.md"
 APPROVED="${CHECK_APPROVED_PLAN:-}"
 TASK_SCOPE="${CHECK_TASK_SCOPE:-unknown}"
 FAILURES=0
+# The turn mark (CHECK_TURN_MARKER, set by the Stop hook). A manual run uses the newest Logs/verify/turn-* mark.
+TURN_MARK="${CHECK_TURN_MARKER:-}"
+[ -n "$TURN_MARK" ] || TURN_MARK="$(ls -t Logs/verify/turn-* 2>/dev/null | head -1)"
 
 fail() {
     echo "$1"
@@ -49,10 +55,20 @@ warn() {
     echo "warning $1"
 }
 
-# The C#, JSON, Markdown and spec files of a feature, relative to its folder, without .meta files or built assets.
+# Success when the file was created or changed this turn (newer than the turn mark). Without a mark, every file counts.
+turn_touched() {
+    [ -n "$TURN_MARK" ] && [ -f "$TURN_MARK" ] || return 0
+    [ "$1" -nt "$TURN_MARK" ]
+}
+
+# The C#, JSON, Markdown and spec files of a feature that this turn created or changed, relative to its folder. Files
+# that were there before the turn (the user's, or other features') aren't part of the pipeline. Without .meta files.
 feature_files() {
+    local f
     (cd "$1" && find . -type f \( -name '*.cs' -o -name '*.json' -o -name '*.md' -o -name '*.asmdef' -o -name '*.prefab' \) \
-        | sed 's|^\./||' | sort)
+        | sed 's|^\./||' | sort) | while IFS= read -r f; do
+        turn_touched "$1/$f" && echo "$f"
+    done
 }
 
 # The files the plan lists under Files:, when its Folder: is this feature.
@@ -89,11 +105,11 @@ plan_folder_is() {
 check_plan() {
     local feature="$1" folder="$2" planned actual
     planned="$(plan_files "$feature")" || return 0
-    actual="$(feature_files "$folder" | grep -v '\.asset\.json$\|\.prefab$' || true)"
-    actual="$(printf '%s\n%s\n' "$actual" "$(feature_files "$folder" | grep '\.asset\.json$' || true)" | sed '/^$/d' | sort -u)"
-    comm -23 <(printf '%s\n' "$planned") <(printf '%s\n' "$actual") | while IFS= read -r missing; do
-        [ -n "$missing" ] && echo "CHK-01 PLAN-02: $feature/$missing is in the plan but doesn't exist"
-    done
+    # A planned file is missing when it isn't on disk, whether or not this turn touched it.
+    while IFS= read -r missing; do
+        [ -n "$missing" ] && [ ! -e "$folder/$missing" ] && echo "CHK-01 PLAN-02: $feature/$missing is in the plan but doesn't exist"
+    done <<< "$planned"
+    actual="$(feature_files "$folder" | sort -u)"
     comm -13 <(printf '%s\n' "$planned") <(printf '%s\n' "$actual") | while IFS= read -r extra; do
         [ -n "$extra" ] && echo "CHK-01 PLAN-02: $feature/$extra isn't in the plan: add it to Logs/ai/plan.md and ask, or remove it"
     done
@@ -235,6 +251,17 @@ check_lazy_queries() {
     done < <(cd "$folder" && find . -name '*Model.cs' | sed 's|^\./||')
 }
 
+# A prefab made this turn. With the turn mark (CHECK_TURN_MARKER), prefabs that were there before the turn don't count:
+# the user's own prefabs, such as one made with Screen System before the task, aren't the task's scope. Without the mark,
+# any prefab counts.
+made_prefab() {
+    if [ -n "$TURN_MARK" ] && [ -f "$TURN_MARK" ]; then
+        [ -n "$(find "$1" -name '*.prefab' -newer "$TURN_MARK" 2>/dev/null | head -1)" ]
+    else
+        has_file "$1" ".prefab"
+    fi
+}
+
 check_contract() {
     local feature="$1" folder="$2" scope layout list
     if [ -f "$APPROVED" ] && plan_folder_is "$APPROVED" "$feature"; then
@@ -263,7 +290,7 @@ check_contract() {
     [ "$TASK_SCOPE" != unknown ] && scope="$TASK_SCOPE"
     if [ -n "${scope:-}" ]; then
         case "$scope" in *tests*) ;; *) [ -d "$folder/Tests" ] && echo "CHK-13 TASK-02: $feature has Tests/, but the scope is $scope: remove them and list the tests in the report" ;; esac
-        case "$scope" in *prefabs*) ;; *) has_file "$folder" ".prefab" && echo "CHK-13 TASK-02: $feature has prefabs, but the scope is $scope: describe them in IMPLEMENTATION.md" ;; esac
+        case "$scope" in *prefabs*) ;; *) made_prefab "$folder" && echo "CHK-13 TASK-02: $feature has prefabs made this turn, but the scope is $scope: describe them in IMPLEMENTATION.md" ;; esac
     fi
     if plan_folder_is "$PLAN" "$feature"; then
         layout="$(plan_value layout)"; list="$(plan_value list)"
@@ -280,7 +307,7 @@ check_table() {
             IMPLEMENTATION.md) continue ;;
             Tests/*) printf '%s' "$name" | grep -Eq "^($f.*Tests\.cs|Client\.$f\.Tests\.asmdef)\$" && continue ;;
             Services/Resources/*) printf '%s' "$name" | grep -Eq "^$f${subject}Config\.asset\.json\$" && continue ;;
-            Services/*) printf '%s' "$name" | grep -Eq "^($f${subject}(ItemsModel|Config|Installer|Module|Connector|Data|SystemClock)|Mock$f${subject}Items|I$f${subject}(Connector|Clock))\.cs\$" && continue ;;
+            Services/*) printf '%s' "$name" | grep -Eq "^($f${subject}(ItemsModel|Config|Installer|Module|Connector|Data|SystemClock|Format)|Mock$f${subject}Items|I$f${subject}(Connector|Clock))\.cs\$" && continue ;;
             */*) printf '%s' "$name" | grep -Eq "^($f${subject}(Model|View|ListView|Scroller|SlotModel|SlotView|ItemData|SectionData|HeaderSlotModel|HeaderSlotView)\.cs|[A-Z][A-Za-z0-9]*Controller\.cs|$f${subject}BentoLayout\.json|$f${subject}(Slot|HeaderSlot)?\.prefab|$f${subject}(Slot|HeaderSlot)?\.json)\$" && continue ;;
         esac
         fail "CHK-14 TASK-05: $feature/$file isn't a row of the Feature files table (planning.md): fold it into a listed file, or ask before adding a new kind"
@@ -320,10 +347,27 @@ check_navigation() {
 check_forget() {
     local feature="$1" folder="$2"
     grep -rqE 'static +(async +)?void +Forget *\(' "$folder" --include='*.cs' 2>/dev/null &&
-        fail "CHK-17 async: $feature defines its own Forget: use Client.Shared.TaskExtensions (Assets/Client/Shared/TaskExtensions.cs, created by install.sh)"
+        fail "CHK-17 async: $feature defines its own Forget: use ToolsCore.TaskExtensions.Forget from the Tools Core package"
 }
 
-[ $# -gt 0 ] || { sed -n '2,37p' "$0"; exit 2; }
+# CHK-02: a change outside the features is declared in the plan's outside-feature line, with its reason. The line is
+# matched by path, so "outside-feature: Client.asmdef (adds Fast IoC.Core)" declares Client.asmdef.
+check_outside() {
+    [ -n "${CHECK_OUTSIDE_CHANGED:-}" ] || return 0
+    local declared path
+    # The plan's decision line sits under Decisions (indented) in the fixed form, or at column 0 in older plans.
+    declared="$(grep -E '^[[:space:]]*outside-feature:' "$PLAN" 2>/dev/null | sed 's/^[[:space:]]*outside-feature://')"
+    while IFS= read -r path; do
+        [ -n "$path" ] || continue
+        case "$declared" in
+            *"$path"*) ;;
+            *) fail "CHK-02 PLAN-02: $path changed outside the features and outside-feature doesn't name it: name it with its reason after asking the user, or revert it" ;;
+        esac
+    done <<< "$CHECK_OUTSIDE_CHANGED"
+}
+
+[ $# -gt 0 ] || { sed -n '2,36p' "$0"; exit 2; }
+check_outside
 for feature in "$@"; do
     folder="$CLIENT/$feature"
     [ -d "$folder" ] || continue

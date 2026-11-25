@@ -66,13 +66,15 @@ UNITY="${UNITY_PATH:-$(default_unity_path)}"
 
 mkdir -p "$OUT"
 rm -f "$LOG" "$RESULTS" "$SUMMARY_JSON"
+# When this run started: a summary older than the newest script change is stale, and says so.
+RUN_STARTED="$(date +%s)"
 
 # Writes the machine-readable result: summary <result> <message> [total] [failed]
 summary() {
     local message="${2//\\/\\\\}"
     message="${message//\"/\\\"}"
-    printf '{"result": "%s", "message": "%s", "unityVersion": "%s", "testsTotal": %s, "testsFailed": %s}\n' \
-        "$1" "$message" "$VERSION" "${3:-null}" "${4:-null}" > "$SUMMARY_JSON"
+    printf '{"result": "%s", "message": "%s", "unityVersion": "%s", "testsTotal": %s, "testsFailed": %s, "startedAtUnixSeconds": %s}\n' \
+        "$1" "$message" "$VERSION" "${3:-null}" "${4:-null}" "$RUN_STARTED" > "$SUMMARY_JSON"
 }
 
 if [ ! -x "$UNITY" ]; then

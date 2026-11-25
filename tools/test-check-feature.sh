@@ -99,6 +99,8 @@ Scope: code+tests|' "$FIX/Logs/ai/plan.md"; cp "$FIX/Logs/ai/plan.md" "$FIX/appr
 rm -rf "$FIX/Assets/Client/Shop/Tests"; sed -i.bak -e 's|^Scope: code+tests|Scope: code|' -e '/Tests\//d' "$FIX/Logs/ai/plan.md"
 out="$(cd "$FIX" && CHECK_APPROVED_PLAN=approved.md CHECK_TASK_SCOPE=code bash "$CHECK" Shop)"
 if [ -z "$(grep '^CHK' <<< "$out")" ]; then echo "ok    moving the plan to the user's scope passes"; else echo "FAIL  scope fix: $out"; FAILURES=$((FAILURES + 1)); fi
+expect "a formatting helper in Services is a table row" "printf 'namespace Client.Shop\n{ static class ShopFormat { } }\n' > Services/ShopFormat.cs; sed -i.bak 's|^Open questions:|  Services/ShopFormat.cs\\
+Open questions:|' ../../../Logs/ai/plan.md" ""
 expect "a clock behind an interface is a table row" "printf 'namespace Client.Shop\n{ interface IShopClock { } }\n' > Services/IShopClock.cs; printf 'namespace Client.Shop\n{ class ShopSystemClock { } }\n' > Services/ShopSystemClock.cs; sed -i.bak 's|^Open questions:|  Services/IShopClock.cs\\
   Services/ShopSystemClock.cs\\
 Open questions:|' ../../../Logs/ai/plan.md" ""
@@ -116,6 +118,39 @@ WARN="$TMP/warn"; make_shop "$WARN"
 printf 'namespace Client.Shop\n{\n    class ShopModel { System.Collections.Generic.List<string> names = new List<string> { "Sword" }; }\n}\n' > "$WARN/Assets/Client/Shop/ShopMain/ShopModel.cs"
 if out="$(cd "$WARN" && bash "$CHECK" Shop)" && grep -q '^warning CHK-10' <<< "$out"; then echo "ok    a list of literals outside the mock warns without failing"; else echo "FAIL  literals warning: $out"; FAILURES=$((FAILURES + 1)); fi
 
+# CHK-02: a change outside the features fails unless the plan's outside-feature names it.
+OUTSIDE="$TMP/outside"; make_shop "$OUTSIDE"
+out="$(cd "$OUTSIDE" && CHECK_OUTSIDE_CHANGED="Assets/Client/Shared/Helper.cs" bash "$CHECK" Shop)"
+if grep -q '^CHK-02 PLAN-02: Assets/Client/Shared/Helper.cs changed outside' <<< "$out"; then echo "ok    a change outside the features that the plan doesn't name fails"; else echo "FAIL  CHK-02: $out"; FAILURES=$((FAILURES + 1)); fi
+printf 'outside-feature: Assets/Client/Shared/Helper.cs (the shared helper)\n' >> "$OUTSIDE/Logs/ai/plan.md"
+out="$(cd "$OUTSIDE" && CHECK_OUTSIDE_CHANGED="Assets/Client/Shared/Helper.cs" bash "$CHECK" Shop)"
+# The fixed plan form puts outside-feature under Decisions, indented: the same declaration counts.
+INDENT="$TMP/outside-indent"; make_shop "$INDENT"
+printf '  outside-feature: Assets/Client/Shared/Helper.cs (the shared helper)\n' >> "$INDENT/Logs/ai/plan.md"
+out="$(cd "$INDENT" && CHECK_OUTSIDE_CHANGED="Assets/Client/Shared/Helper.cs" bash "$CHECK" Shop)"
+if [ -z "$(grep '^CHK-02' <<< "$out")" ]; then echo "ok    an indented outside-feature under Decisions counts"; else echo "FAIL  indented outside-feature: $out"; FAILURES=$((FAILURES + 1)); fi
+if [ -z "$(grep '^CHK-02' <<< "$out")" ]; then echo "ok    a change outside the features that outside-feature names passes"; else echo "FAIL  CHK-02 declared: $out"; FAILURES=$((FAILURES + 1)); fi
+
+# Prefabs that were there before the turn don't break a code-only scope; one made this turn does.
+PREF="$TMP/prefab-turn"; make_shop "$PREF"
+printf 'prefab\n' > "$PREF/Assets/Client/Shop/ShopMain/ShopOld.prefab"; touch -t 202001010000 "$PREF/Assets/Client/Shop/ShopMain/ShopOld.prefab"
+touch -t 202501010000 "$PREF/turn"
+out="$(cd "$PREF" && CHECK_TASK_SCOPE=code CHECK_TURN_MARKER="$PREF/turn" bash "$CHECK" Shop)"
+if [ -z "$(grep 'prefabs made this turn' <<< "$out")" ]; then echo "ok    a prefab from before the turn is outside a code-only scope's check"; else echo "FAIL  old prefab: $out"; FAILURES=$((FAILURES + 1)); fi
+printf 'prefab\n' > "$PREF/Assets/Client/Shop/ShopMain/ShopNew.prefab"
+out="$(cd "$PREF" && CHECK_TASK_SCOPE=code CHECK_TURN_MARKER="$PREF/turn" bash "$CHECK" Shop)"
+if grep -q 'prefabs made this turn' <<< "$out"; then echo "ok    a prefab made this turn fails a code-only scope"; else echo "FAIL  new prefab: $out"; FAILURES=$((FAILURES + 1)); fi
+
 echo
+# The pipeline checks only what this turn created or changed: an untouched file that breaks a rule is not this turn's.
+PIPE="$TMP/pipeline"; make_shop "$PIPE"
+printf 'namespace Client.Shop\n{ class OldHelper { } }\n' > "$PIPE/Assets/Client/Shop/ShopMain/OldHelper.cs"; touch -t 202001010000 "$PIPE/Assets/Client/Shop/ShopMain/OldHelper.cs"
+touch -t 202501010000 "$PIPE/turn"
+out="$(cd "$PIPE" && CHECK_TURN_MARKER="$PIPE/turn" bash "$CHECK" Shop)"
+if [ -z "$(grep 'OldHelper' <<< "$out")" ]; then echo "ok    an untouched file that breaks a rule is not checked this turn"; else echo "FAIL  untouched file: $out"; FAILURES=$((FAILURES + 1)); fi
+printf 'namespace Client.Shop\n{ class NewHelper { } }\n' > "$PIPE/Assets/Client/Shop/ShopMain/NewHelper.cs"
+out="$(cd "$PIPE" && CHECK_TURN_MARKER="$PIPE/turn" bash "$CHECK" Shop)"
+if grep -q 'NewHelper' <<< "$out"; then echo "ok    a file this turn created is checked"; else echo "FAIL  new file: $out"; FAILURES=$((FAILURES + 1)); fi
+
 [ "$FAILURES" -eq 0 ] && echo "All passed." || echo "$FAILURES failed."
 exit $(( FAILURES > 0 ))

@@ -283,7 +283,7 @@ The root Model reads the injected items Model and holds the navigation command (
 
 ```csharp
 using System;
-using Client.Shared;
+using ToolsCore;
 using ScreenSystem;
 using UIScroller;
 using UnityEngine;
@@ -310,7 +310,7 @@ namespace Client.Store
 }
 ```
 
-`Forget` is the project's helper, `Client.Shared.TaskExtensions`, which `install.sh` creates ([async and errors](../csharp/async-and-errors.md)); a feature never writes its own (`CHK-17`). `ScreenIds.StorePromotionPopup` exists only once a person creates the popup screen ([Screen System authoring](../branches/screen-system/authoring.md)), so the plan asks for it first: navigating with a string instead fails `CHK-16`.
+`Forget` is the Tools Core helper, `ToolsCore.TaskExtensions`, from the package every project installs ([async and errors](../csharp/async-and-errors.md)); a feature never writes its own (`CHK-17`). `ScreenIds.StorePromotionPopup` exists only once a person creates the popup screen ([Screen System authoring](../branches/screen-system/authoring.md)), so the plan asks for it first: navigating with a string instead fails `CHK-16`.
 
 ```csharp
 using UnityEngine;
@@ -547,7 +547,7 @@ StorePromotionPopup [StorePromotionPopupModel, StorePromotionPopupView]
 
 ```csharp
 using System;
-using Client.Shared;
+using ToolsCore;
 using ScreenSystem;
 using UnityEngine;
 

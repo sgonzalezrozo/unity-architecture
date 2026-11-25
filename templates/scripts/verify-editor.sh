@@ -211,35 +211,7 @@ if [ "$COMPILE_ONLY" != "1" ] && [ -n "$TEST_FEATURES" ]; then
         exit 1
     fi
     FEATURES_TESTED=true
-elif [ "$COMPILE_ONLY" != "1" ] && grep -qs '"com.unity.test-framework"' "$ROOT/Packages/manifest.json" "$ROOT/Packages/packages-lock.json"; then
-    # Compared with the newest script change, not the last compile: Unity also compiles after a test run, with no
-    # script changed. A run that started after the change tested the code as it is.
-    TESTED_AT="$(json_number startedAtUnixSeconds "$TESTS" 2>/dev/null)"
-    [ -n "$TESTED_AT" ] || TESTED_AT="$(json_number finishedAtUnixSeconds "$TESTS" 2>/dev/null)"
-    # Only a full run counts: the related tests or the prefab validator alone (a filtered run) aren't the suite.
-    if [ ! -f "$TESTS" ] || [ "${TESTED_AT:-0}" -lt "$NEWEST_CHANGE" ] || ! grep -Eq '"fullRun": *true' "$TESTS"; then
-        if ! has_bridge; then
-            echo "The full EditMode suite is due: run it in Window > General > Test Runner. $NO_BRIDGE_HINT"
-            exit 2
-        fi
-        if [ -f "$TESTS" ] && grep -Eq '"fullRun": *true' "$TESTS"; then
-            echo "The full EditMode suite is due: the last full run started at $(date -r "${TESTED_AT:-0}" '+%H:%M:%S' 2>/dev/null || echo "$TESTED_AT"), and a script changed after it, at $(date -r "$NEWEST_CHANGE" '+%H:%M:%S' 2>/dev/null || echo "$NEWEST_CHANGE"). A run only counts when it starts after the last change."
-        else
-            echo "The full EditMode suite is due, and it hasn't run since the last script change."
-        fi
-        echo "Run every EditMode test with run_tests through the Unity MCP (EditMode, no filter), poll get_test_job until it finishes, then check again."
-        exit 1
-    fi
-
-    FAILED="$(json_number failed "$TESTS")"
-    if [ "${FAILED:-0}" != "0" ]; then
-        echo "Tests failed: $FAILED of $(json_number total "$TESTS"):"
-        json_list failures "$TESTS"
-        exit 1
-    fi
-    TOTAL="$(json_number total "$TESTS")"
 fi
-
 # A failed Fast IoC generation doesn't stop the compile, so check its status file.
 if [ -f "$GENERATION_STATUS" ] && grep -Eq '"status": *1' "$GENERATION_STATUS"; then
     echo "Fast IoC code generation failed. Fix the installers or constructors, not the generated code:"
@@ -254,6 +226,6 @@ elif [ "${FEATURES_TESTED:-false}" = true ]; then
 elif [ -n "${TOTAL:-}" ]; then
     echo "Verify passed in the open Editor: compiled, ${TOTAL} tests."
 else
-    echo "Verify passed in the open Editor: compiled. No tests ran: the Test Framework package isn't installed."
+    echo "Verify passed in the open Editor: compiled. No tests ran: the Stop hook runs no full suite (run_tests does, by hand)."
 fi
 exit 0

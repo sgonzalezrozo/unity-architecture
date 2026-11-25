@@ -14,7 +14,7 @@
 #   into compile errors), or --no-analyzers to skip them. Otherwise a first install asks, defaulting to no; once
 #   installed, --update keeps them up to date.
 #
-# It creates Assets/Client/Client.asmdef and Client.cs when Assets/Client doesn't exist yet. Test assemblies are per
+# It creates Assets/Client/Client.asmdef when Assets/Client doesn't exist yet. Test assemblies are per
 # feature (Assets/Client/{Feature}/Tests/Client.{Feature}.Tests.asmdef, ASM-03): the agent creates one with the
 # feature's first test, so nothing is created here.
 # AGENTS.md, CLAUDE.md, .claude/settings.json and .mcp.json are never replaced.
@@ -204,8 +204,8 @@ else
     created+=(".claude/settings.json")
 fi
 
-# A new project gets Assets/Client/Client.asmdef with Client.cs, a note that keeps Unity from warning about an assembly
-# definition with no scripts. When Assets/Client already has code but no Client.asmdef, it's left alone.
+# A new project gets Assets/Client/Client.asmdef, with no scripts of its own: the features are the code. When
+# Assets/Client already has code but no Client.asmdef, it's left alone.
 # The optional analyzers turn the mechanical rules into compile errors in that assembly. They're installed with
 # --analyzers, and kept up to date afterwards when they're already in the project.
 ANALYZER="UnityArchitecture.Analyzers"
@@ -228,42 +228,10 @@ if [ ! -e "$ROOT/$CLIENT/Client.asmdef" ] && [ -z "$(ls -A "$ROOT/$CLIENT" 2>/de
     "versionDefines": [],
     "noEngineReferences": false
 }'
-    own "$CLIENT/Client.cs" '// The Client assembly (Client.asmdef) holds this project'"'"'s own code. The optional architecture
-// analyzers (install.sh --analyzers) check only this assembly, so third-party code elsewhere in Assets isn'"'"'t checked.'
 fi
 
-# The Forget helper the async rules use to start a task from sync code (async-and-errors). One copy for the project, in
-# Shared/, so no feature writes its own.
-if [ -e "$ROOT/$CLIENT/Client.asmdef" ]; then
-    own "$CLIENT/Shared/TaskExtensions.cs" 'using System;
-using System.Threading.Tasks;
-using UnityEngine;
-
-namespace Client.Shared
-{
-    /// <summary>
-    /// Starts a task from sync code and logs what it throws (async-and-errors). The only async void in the project.
-    /// Created by .ai/templates/scripts/install.sh; every feature uses this one instead of a copy (CHK-17).
-    /// </summary>
-    public static class TaskExtensions
-    {
-        public static async void Forget(this Task task, string context)
-        {
-            try
-            {
-                await task;
-            }
-            catch (OperationCanceledException)
-            {
-            }
-            catch (Exception exception)
-            {
-                Debug.LogError($"[{context}] Background task failed: {exception}");
-            }
-        }
-    }
-}'
-fi
+# The Forget helper the async rules use (async-and-errors) is ToolsCore.TaskExtensions in the Tools Core package
+# (com.sgonzalezrozo.core), which every project installs. install.sh writes no copy of it.
 
 if [ "$ANALYZERS" = auto ] && [ -e "$ROOT/$CLIENT/Analyzers/$ANALYZER.dll" ]; then
     ANALYZERS=yes

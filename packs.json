@@ -45,9 +45,14 @@
         "architecture/csharp/style.md",
         "architecture/csharp/performance.md",
         "architecture/workflow/checklist.md",
-        "architecture/workflow/prefab-handoff.md"
+        "architecture/workflow/prefab-handoff.md",
+        "architecture/csharp/async-and-errors.md#async",
+        "package:fastIoC/Documentation~/injection.md#instantiating-prefabs"
       ],
-      "symbols": {}
+      "symbols": {
+        "Forget": "architecture/csharp/async-and-errors.md#async",
+        "IInstantiator": "package:fastIoC/Documentation~/injection.md#instantiating-prefabs"
+      }
     },
     {
       "id": "ui-list",
@@ -99,9 +104,12 @@
         "architecture/ui/tabs.md",
         "architecture/ui/layouts.md",
         "package:uiFoundations/Documentation~/agent-rules.md#clicks",
-        "package:uiFoundations/Documentation~/agent-rules.md#visual-states"
+        "package:uiFoundations/Documentation~/agent-rules.md#visual-states",
+        "package:uiFoundations/Documentation~/api-reference.md#baseclickcontroller"
       ],
-      "symbols": {}
+      "symbols": {
+        "BaseClickController": "package:uiFoundations/Documentation~/api-reference.md#baseclickcontroller"
+      }
     },
     {
       "id": "navigation",
@@ -110,9 +118,14 @@
         "fork:navigation/navigation.md",
         "fork:navigation/authoring.md",
         "architecture/FEATURE_STRUCTURE.md#modals-and-navigation",
-        "package:screenSystem/Documentation~/agent-rules.md"
+        "package:screenSystem/Documentation~/agent-rules.md",
+        "package:screenSystem/Documentation~/api-reference.md#lifecycle-interfaces",
+        "package:screenSystem/Documentation~/api-reference.md#screenmanager"
       ],
-      "symbols": {}
+      "symbols": {
+        "IScreenParameter<T>": "package:screenSystem/Documentation~/api-reference.md#lifecycle-interfaces",
+        "GoTo<T>": "package:screenSystem/Documentation~/api-reference.md#screenmanager"
+      }
     },
     {
       "id": "backend",
@@ -145,5 +158,5 @@
       "symbols": {}
     }
   ],
-  "maxBytes": 45000
+  "maxBytes": 46000
 }

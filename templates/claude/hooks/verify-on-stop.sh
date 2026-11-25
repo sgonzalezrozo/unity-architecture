@@ -20,14 +20,8 @@ ATTEMPTS_FILE="$STATE/attempts"
 SCOPE_FILE="$STATE/test-scope"
 CLIENT="Assets/Client"
 ALL="*"
-# Compiling is quick and runs on every stop. The full suite is slow, so it runs at most every
-# VERIFY_TESTS_EVERY_SECONDS (2 hours by default) when the scope is the whole project, and every
-# VERIFY_FULL_TESTS_EVERY_SECONDS (24 hours by default) while it's a few features, whose tests run on every stop.
-# Either way, only for changes that haven't passed it yet.
-TESTS_EVERY="${VERIFY_TESTS_EVERY_SECONDS:-7200}"
-FULL_TESTS_EVERY="${VERIFY_FULL_TESTS_EVERY_SECONDS:-86400}"
-LAST_TESTS_FILE="$STATE/last-tests"
-TESTS_PENDING_FILE="$STATE/tests-pending"
+# Every stop compiles, and runs the tests of the features the task is scoped to and the changed features, when the scope
+# owes tests (see TESTS_WANTED below). The whole suite is never run by the hook: a run of every test is started by hand.
 # The prefab validator (TEST-12) has one case per feature folder under Assets/Client, named after it.
 PREFAB_CASE_PREFIX="UnityArchitecture.Prefabs.Tests.ClientPrefabsTests."
 # Unity files the agent can change. Code generators' output doesn't count: Fast IoC writes Assets/FastIoC/Generated and
@@ -182,40 +176,38 @@ test_filter() {
     echo "${filter#;}"
 }
 
-# Unix time of the last full test run that passed, one this hook asked for. A run in the Editor doesn't count: it may
-# be filtered (the related tests, or the prefab validator), and it would keep pushing the full run back.
-last_tests_time() {
-    cat "$LAST_TESTS_FILE" 2>/dev/null || echo 0
-}
-
 # Nothing to check: no pending changes, or the same files already passed.
 if [ -z "$(git status --porcelain -- "${PATHSPEC[@]}" 2>/dev/null)" ]; then
     exit 0
 fi
 
+# Which tests the task owes, by the scope the user chose (TASK-01). "Solo codigo" (code) and code with prefabs owe no
+# Unity unit tests: no feature tests and no prefab validator, whatever the scope file says. Compiling and the feature
+# checks (check-feature.sh) still run. Unknown keeps the scope file's tests.
+TASK_SCOPE="$(task_scope)"
+case "$TASK_SCOPE" in
+    code|code+prefabs) TESTS_WANTED=no ;;
+    *) TESTS_WANTED=yes ;;
+esac
+
 CURRENT="$(fingerprint)"
 SCOPED="$(scoped_features)"
 if printf '%s\n' "$SCOPED" | grep -qxF "$ALL"; then
     FEATURES=""
-    UNTIL_TESTS=$(( $(last_tests_time) + TESTS_EVERY - $(date +%s) ))
 else
     FEATURES="$(features_with_tests $SCOPED | tr '\n' ' ')"
     FEATURES="${FEATURES% }"
-    UNTIL_TESTS=$(( $(last_tests_time) + FULL_TESTS_EVERY - $(date +%s) ))
 fi
-if [ "$UNTIL_TESTS" -le 0 ]; then
-    MODE=tests
-elif [ -n "$FEATURES" ]; then
+[ "$TESTS_WANTED" = yes ] || FEATURES=""
+if [ -n "$FEATURES" ]; then
     MODE=features
 else
     MODE=compile
 fi
 
-# These files already passed. Check them again only for the full suite they still owe, once it's due.
+# These files already passed: nothing new to check.
 if [ "$CURRENT" = "$(cat "$PASSED_FILE" 2>/dev/null)" ]; then
-    if [ "$MODE" != tests ] || [ ! -f "$TESTS_PENDING_FILE" ]; then
-        exit 0
-    fi
+    exit 0
 fi
 
 # The features to check: the folders the user named for the task (Logs/verify/test-scope, TEST-13), the same ones
@@ -231,6 +223,15 @@ turn_features() {
     else
         changed_paths
     fi | while IFS= read -r path; do feature_of "$path"; done | grep -vxF "$ALL" | grep -v '^$' | sort -u
+}
+
+# CHK-02: the project files this turn changed outside every feature (Shared/, Client.asmdef, the test assemblies,
+# anything else under Assets/). Empty without a turn mark, since the turn's changes can't be told apart then.
+outside_changes() {
+    [ -f "$TURN_MARKER" ] || return 0
+    find Assets -type f ! -name '*.meta' -newer "$TURN_MARKER" 2>/dev/null | while IFS= read -r path; do
+        [ "$(feature_of "$path")" = "$ALL" ] && echo "$path"
+    done | sort -u
 }
 
 # A failed check counts as one attempt; after MAX_ATTEMPTS in a row the hook stops asking and says so.
@@ -256,7 +257,7 @@ fail_attempt() {
 if [ -x scripts/check-feature.sh ]; then
     CHECKED_FEATURES="$(turn_features | tr '\n' ' ')"
     if [ -n "${CHECKED_FEATURES// /}" ] && ! CHECK_OUTPUT="$(CHECK_PLAN="$SESSION_DIR/plan.md" CHECK_APPROVED_PLAN="$SESSION_DIR/plan.approved.md" \
-        CHECK_TASK_SCOPE="$(task_scope)" scripts/check-feature.sh $CHECKED_FEATURES 2>&1)"; then
+        CHECK_TASK_SCOPE="$(task_scope)" CHECK_OUTSIDE_CHANGED="$(outside_changes)" CHECK_TURN_MARKER="$TURN_MARKER" scripts/check-feature.sh $CHECKED_FEATURES 2>&1)"; then
         fail_attempt "scripts/check-feature.sh" "$(printf '%s\n' "$CHECK_OUTPUT" | grep -v '^warning ')"
     fi
 fi
@@ -268,6 +269,9 @@ if [ -d Logs/ai/packs ] && [ -n "${CHECKED_FEATURES// /}" ] && command -v jq > /
         LAST_REPORT="$(jq -rs '[ .[] | select(.type == "assistant") | .message.content[]? | select(.type == "text") | .text ] | last // ""' "$TRANSCRIPT_PATH" 2>/dev/null)"
         if [ -n "$LAST_REPORT" ] && ! grep -q 'Outside packs:' <<< "$LAST_REPORT"; then
             fail_attempt "The final report" "It has no \"Outside packs:\" line (OPT-07). End the report with Outside packs: and every rule, package or source file you opened that no pack included, or none."
+        fi
+        if [ -n "$LAST_REPORT" ] && ! grep -q 'Table gaps' <<< "$LAST_REPORT"; then
+            fail_attempt "The final report" "It has no \"Table gaps\" section (planning.md). Add it: every file or kind the feature files table doesn't list, with the suggestion you used, or none."
         fi
     fi
 fi
@@ -282,6 +286,7 @@ fi
 # With the Editor open, verify-editor.sh asks the agent to run it; with it closed, verify.sh runs it with the filter.
 PREFAB_FEATURES="$(prefab_features | tr '\n' ' ')"
 PREFAB_FEATURES="${PREFAB_FEATURES% }"
+[ "$TESTS_WANTED" = yes ] || PREFAB_FEATURES=""
 
 if [ "$VERIFY" = "scripts/verify.sh" ]; then
     case "$MODE" in
@@ -315,16 +320,9 @@ case "$CODE" in
     0)
         echo "$CURRENT" > "$PASSED_FILE"
         rm -f "$ATTEMPTS_FILE"
-        if [ "$MODE" = tests ]; then
-            date +%s > "$LAST_TESTS_FILE"
-            rm -f "$TESTS_PENDING_FILE"
-            notify "$(echo "$OUTPUT" | tail -1)"
-        else
-            touch "$TESTS_PENDING_FILE"
-            SCOPE_NOTE=""
-            [ "$MODE" = features ] && SCOPE_NOTE=" Tests of $FEATURES ran."
-            notify "$(echo "$OUTPUT" | tail -1)$SCOPE_NOTE The full suite runs when it's due, in $(( (UNTIL_TESTS + 59) / 60 )) min."
-        fi
+        SCOPE_NOTE=""
+        [ "$MODE" = features ] && SCOPE_NOTE=" Tests of $FEATURES ran."
+        notify "$(echo "$OUTPUT" | tail -1)$SCOPE_NOTE"
         exit 0
         ;;
     1)

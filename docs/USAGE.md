@@ -213,7 +213,6 @@ The .ai rules were updated. Read .ai/CHANGELOG.md and tell me what changed that 
 | "Unity hasn't compiled the latest script changes" | Calls `refresh_unity`, reads the Console and stops again |
 | "Prefabs of Rewards changed after the prefab validator last checked them" | Runs that feature's `ClientPrefabsTests` case with `run_tests` and stops again |
 | "The tests of Rewards are due" | Runs that feature's tests with `run_tests` (`group_names`) and stops again. This happens on every stop while the task is scoped to the feature |
-| "The full EditMode suite is due" | Runs every EditMode test with `run_tests` (no filter). This happens at most every two hours, or every 24 hours while the task is scoped to features |
 | A prefab error with a rule ID | Rebuilds or fixes the prefab, and runs the validator again |
 | A compile or analyzer error (`CS...`, `UA00..`) | Fixes the code |
 | "Verify passed" | Nothing: the agent can finish |

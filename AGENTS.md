@@ -50,7 +50,7 @@ Input event → Controller → Model command → state change → parameterless 
 
 ## Document routing
 
-**With packs** (`Logs/ai/packs/` exists): read the pack of each part of the task, all in one call, and nothing else (`OPT-07`). A pack holds those rules with the forks resolved, the package documentation they rely on and the verified symbols. The Load column is for projects without packs.
+**With packs** (`Logs/ai/packs/` exists): the first step of a task is one message with a parallel `Read` of the pack of each part of the task and of `Logs/ai/project-facts.md`, all in that message. Don't list directories or `cat` files first, and don't read `Packages/manifest.json` (`OPT-06`). Then read nothing else (`OPT-07`). A pack holds those rules with the forks resolved, the package documentation they rely on and the verified symbols. The Load column is for projects without packs.
 
 Open only the parts the task needs. Each index ([MVC](architecture/MVC.md), [UI patterns](architecture/UI_PATTERNS.md), [C# standards](architecture/CSHARP_STANDARDS.md), [Agent workflow](architecture/AGENT_WORKFLOW.md)) lists its parts, if a task isn't in this table.
 

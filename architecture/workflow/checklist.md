@@ -22,7 +22,7 @@ Run this before returning code. Item numbers are stable: the [analyzers](../../a
 
 ## Reporting back
 
-State what changed, which tool verified it, and what wasn't verified. If you couldn't compile or run the code, say so. With packs, end with the `Outside packs:` line (`OPT-07`).
+State what changed, which tool verified it, and what wasn't verified. If you couldn't compile or run the code, say so. Name every file or kind the feature files table doesn't list, with the suggestion used, under **Table gaps**, so the table can grow (`planning.md`). With packs, end with the `Outside packs:` line (`OPT-07`).
 
 ## Definition of Done
 
@@ -31,7 +31,7 @@ State what changed, which tool verified it, and what wasn't verified. If you cou
 - [ ] Follows `AGENTS.md` and the checklist above
 - [ ] Compiles with no new warnings or analyzer errors, checked by a tool (`EDIT-02`)
 - [ ] Only what the chosen scope includes was created (`TASK-02`)
-- [ ] When the scope includes tests: everything that can be unit tested has tests, and the tests directly related to the change, existing and new, pass (`TEST-11`). Without tests in the scope, the existing related tests still pass. The Stop hook runs the tests of the scoped and changed features on every stop, and the full suite at most every two hours (every 24 hours while the task is scoped to features); until the full suite has run, report it as not verified
+- [ ] When the scope includes tests: everything that can be unit tested has tests, and the tests directly related to the change, existing and new, pass (`TEST-11`). Without tests in the scope, the existing related tests still pass. The Stop hook runs the tests of the scoped and changed features on every stop, and never the full suite; unless you ran it by hand, report the full suite as not verified. With "solo codigo" the scope has no tests: run none, and say so
 - [ ] A bug fix includes a test that fails without the fix
 - [ ] No unused code, no debug logs
 

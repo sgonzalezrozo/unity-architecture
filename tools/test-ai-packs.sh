@@ -81,7 +81,7 @@ EditorBuildSettings:
   m_configObjects:
     com.unity.addressableassets: {fileID: 1}
 EOF
-printf '{ "dependencies": { "com.unity.localization": "1.5.9" } }\n' > "$FACTS_PROJECT/Packages/manifest.json"
+printf '{ "dependencies": { "com.unity.localization": "1.5.9", "com.sgonzalezrozo.core": "file:../../Packages/unity-tools-core" } }\n' > "$FACTS_PROJECT/Packages/manifest.json"
 printf '{ "name": "Client", "references": ["UIScroller", "FastIoC"] }\n' > "$FACTS_PROJECT/Assets/Client/Client.asmdef"
 printf '[MonoInstaller("Menu", Priority = 200)]\npublic class ShopInstaller {}\n' > "$FACTS_PROJECT/Assets/Client/Shop/Services/ShopInstaller.cs"
 printf 'class ShopModelTests {}\n' > "$FACTS_PROJECT/Assets/Client/Shop/Tests/ShopModelTests.cs"
@@ -93,6 +93,10 @@ check "facts: Client references" "grep -q '\`UIScroller\`, \`FastIoC\` (source: 
 check "facts: a feature with tests and an installer" "grep -q '\`Shop\` (tests, installer)' '$FACTS_FILE'"
 check "facts: localization installed is not configured" "grep -q 'package installed: yes' '$FACTS_FILE' && grep -q 'settings asset configured: no' '$FACTS_FILE'"
 check "facts: localization use is counted, not assumed" "grep -q 'Client code that uses it: 0 files' '$FACTS_FILE'"
+printf 'public static class ScreenIds\n{\n    public const string ShopOffer = "ShopOffer";\n    public static readonly string Menu = "Menu";\n}\n' > "$FACTS_PROJECT/Assets/Client/Shop/Services/ScreenIds.cs"
+(cd "$FACTS_PROJECT" && bash "$FACTS" > /dev/null)
+check "facts: the Forget helper is the Tools Core one" "grep -q 'Forget helper (async-and-errors): ToolsCore.TaskExtensions.Forget in the Tools Core package' '$FACTS_FILE'"
+check "facts: screen ids are listed with their source" "grep -q 'Screen ids (ScreenIds, SCR-12): \`ShopOffer\`, \`Menu\` (source: Assets/Client/Shop/Services/ScreenIds.cs)' '$FACTS_FILE'"
 
 echo
 [ "$FAILURES" -eq 0 ] && echo "All passed." || echo "$FAILURES failed."

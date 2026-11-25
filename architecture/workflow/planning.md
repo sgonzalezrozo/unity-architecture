@@ -55,12 +55,13 @@ A case the lists don't cover is an open question for the user, never a new value
 
 Go through every row (`TASK-05`). Write the reason next to each file in the plan.
 
-The names are fixed, so two runs of the same request name the same files. `{Feature}` is the feature folder; `{Screen}` is the screen folder, which for a feature with one screen is `{Feature}Main/`; `{Name}` is `{Feature}`, or `{Feature}{Subject}` when the feature has several Models or lists (`ShopWeapon`, `ShopOffer`): every file starts with the feature's name, except `{Action}Controller.cs`, `Mock{Feature}Items.cs` and `IMPLEMENTATION.md`. The namespace is always `Client.{Feature}`, also when another feature has similar names. `scripts/check-feature.sh` checks it (`CHK-07`, `CHK-09`).
+The names are fixed, so two runs of the same request name the same files. `{Feature}` is the feature folder; `{Screen}` is the screen folder, which for a feature with one screen is `{Feature}Main/`; `{Name}` is `{Feature}`, or `{Feature}{Subject}` when the feature has several Models or lists (`ShopWeapon`, `ShopOffer`): every file starts with the feature's name, except `{Action}Controller.cs`, `Mock{Feature}Items.cs`, `I{Feature}Clock.cs` and `IMPLEMENTATION.md`. The namespace is always `Client.{Feature}`, also when another feature has similar names. `scripts/check-feature.sh` checks it (`CHK-07`, `CHK-09`).
 
 | File | Condition |
 |---|---|
 | `{Screen}/{Name}Model.cs` | Always: the feature has state. Where it lives: [Where a Model lives](../mvc/where-a-model-lives.md) |
 | `{Screen}/{Name}View.cs` | Something is shown, and it isn't a list (then the list View is the root View) |
+| `{Screen}/{Name}{Part}View.cs` | A slot shows one part of its data in its own inner View (`VIEW-03`), such as a price |
 | `{Screen}/{Action}Controller.cs` | The request names an input (click, drag, typing). None otherwise |
 | `{Screen}/{Name}ItemData.cs` | Items or records are listed or stored |
 | `{Screen}/{Name}ListView.cs`, `{Name}Scroller.cs`, `{Name}SlotModel.cs`, `{Name}SlotView.cs` | A dynamic list or grid |
@@ -74,10 +75,12 @@ The names are fixed, so two runs of the same request name the same files. `{Feat
 | `Services/{Feature}Module.cs`, `I{Feature}Connector.cs`, `{Feature}Connector.cs` | The request names a backend |
 | `Tests/{Name}ModelTests.cs` + `Tests/Client.{Feature}.Tests.asmdef` | The scope includes tests (`ASM-03`). A test double (a fake clock) is a private class inside the test file that uses it |
 | `{Screen}/{Name}.prefab`, `{Screen}/{Name}Slot.prefab`, `{Screen}/{Name}HeaderSlot.prefab` | The scope includes prefabs |
-| A new screen or popup (with `screenSystem`) | The request opens a screen that doesn't exist yet. Code that navigates to it needs its generated `ScreenIds` constant, which only exists once the screen is created (`SCR-12`, `SCR-13`), so a code-only delivery can't compile. Put it in the plan's **Open questions** before writing any file: the user creates the screen first (then code only works), or the scope adds prefabs and the agent creates it with `ScreenAuthoring` |
+| A new screen or popup (with `screenSystem`) | Before writing the plan, read the `Screen ids` line of `Logs/ai/project-facts.md`: a screen it doesn't list doesn't exist yet. The request opens a screen that doesn't exist yet. Code that navigates to it needs its generated `ScreenIds` constant, which only exists once the screen is created (`SCR-12`, `SCR-13`), so a code-only delivery can't compile. Put it in the plan's **Open questions** before writing any file: the user creates the screen first (then code only works), or the scope adds prefabs and the agent creates it with `ScreenAuthoring` |
 | `IMPLEMENTATION.md` | A person still has Unity work to do (`HAND-07`) |
+| `Services/{Feature}Format.cs` | A pure helper that formats text or numbers (a price, a date) and two or more Views or Models use it. Static and stateless, so it's testable (`TEST-03`) |
+| `{Screen}.asset` (a screen's ScreenDefinition) | Never written by the agent: a person creates the screen with New Screen (`SCR-13`), and the code only navigates to its `ScreenIds` constant. Listed in `IMPLEMENTATION.md` (`EDIT-06`) |
 
-A file outside the feature folder (`Client.asmdef`, `Shared/`, project settings) isn't in this table: name it in the plan with its reason, and ask before changing it (`ASM-02`).
+A file outside the feature folder (`Client.asmdef`, `Shared/`, project settings) isn't in this table: name it in the plan with its reason.
 
 ## Plan approval
 
@@ -106,6 +109,8 @@ Agents MUST NOT ask what a rule already decides. In particular, never ask:
 - Whether to add commands, inputs or features the request doesn't name: they're left out (`TASK-04`).
 - Where data comes from, or whether there's an installer: `MODEL-12`, `MODEL-13`, `DI-11`.
 - Anything the project facts answer (scenes, installers, references, localization).
+- A reference a used package requires (`ASM-02`): add it and name it in `outside-feature`.
+- A file the table doesn't list: use the closest suggestion, and name it under **Table gaps**.
 
 The only questions of a feature task are the scope and test scope (`TASK-01`, `TEST-13`), the approval of the plan (`PLAN-01`) and the plan's open questions.
 

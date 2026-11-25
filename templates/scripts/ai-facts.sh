@@ -96,12 +96,22 @@ localization() {
 }
 
 forget_helper() {
-    local helper="Assets/Client/Shared/TaskExtensions.cs"
-    if [ -f "$helper" ] && grep -q 'Forget(' "$helper"; then
-        echo "- Forget helper (async-and-errors): Client.Shared.TaskExtensions.Forget (source: $helper)"
+    if manifest_has com.sgonzalezrozo.core; then
+        echo "- Forget helper (async-and-errors): ToolsCore.TaskExtensions.Forget in the Tools Core package (source: $MANIFEST)"
     else
-        echo "- Forget helper (async-and-errors): missing; run .ai/templates/scripts/install.sh to create $helper (source: no file)"
+        echo "- Forget helper (async-and-errors): Tools Core package not installed, so no Forget helper (source: $MANIFEST)"
     fi
+}
+
+screen_ids() {
+    local file names
+    file="$(grep -rl --include='*.cs' 'class ScreenIds' Assets 2>/dev/null | head -1)"
+    if [ -z "$file" ]; then
+        echo "- Screen ids (ScreenIds, SCR-12): no ScreenIds class in Assets: a screen that doesn't exist yet is an open question (source: grep of class ScreenIds in Assets)"
+        return
+    fi
+    names="$(grep -oE '(const|readonly) +string +[A-Za-z0-9_]+' "$file" | awk '{ print "`" $NF "`" }' | paste -sd, - | sed 's/,/, /g')"
+    echo "- Screen ids (ScreenIds, SCR-12): ${names:-none} (source: $file)"
 }
 
 test_framework() {
@@ -120,6 +130,7 @@ facts="$(
     features
     localization
     forget_helper
+    screen_ids
     test_framework
 )"
 

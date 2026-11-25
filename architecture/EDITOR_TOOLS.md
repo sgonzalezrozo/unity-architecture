@@ -87,12 +87,13 @@ Before compiling, it runs `scripts/check-feature.sh` on the folders the task is 
 
 Compiling is quick, so the hook checks it on every stop. Which tests it runs depends on the task's scope (`TEST-13`):
 
-| Scope | On every stop | The full suite |
-|---|---|---|
-| Features: `Logs/verify/test-scope` names feature folders | Compiles, and runs the EditMode tests of those features and of every feature the change touched: the namespace `Client.{Feature}` (`ASM-03`) | At most every 24 hours (`VERIFY_FULL_TESTS_EVERY_SECONDS`) |
-| The whole project: no scope file, or a change that can affect any feature (`Shared/`, `Client.asmdef`, `Client/Tests`, `Packages`, `ProjectSettings` or anything outside `Assets/Client`) | Compiles | At most every two hours (`VERIFY_TESTS_EVERY_SECONDS`) |
+| Scope | On every stop |
+|---|---|
+| "Solo codigo" (`code`) or code with prefabs (`code+prefabs`), as the user chose it (`TASK-01`) | Compiles and runs the feature checks. No Unity unit tests: no feature tests and no prefab validator, whatever the scope file says |
+| Features: `Logs/verify/test-scope` names feature folders, and the scope has tests | Compiles, and runs the EditMode tests of those features and of every feature the change touched: the namespace `Client.{Feature}` (`ASM-03`) |
+| The whole project: no scope file, or a change that can affect any feature (`Shared/`, `Client.asmdef`, `Client/Tests`, `Packages`, `ProjectSettings` or anything outside `Assets/Client`) | Compiles |
 
-The full suite runs only when something changed since it last passed, and only a full run the hook asked for resets its interval: a filtered run, such as the related tests, doesn't. The hook's message says which features' tests ran and when the full suite is due. The scope file can only add tests: the features a change touched are always tested, so naming the wrong folder never skips any.
+The hook never starts the full suite on its own: there's no periodic run. A full run is started by hand (`run_tests` with no filter), and the checklist reports it as not verified until someone runs it. The hook's message says which features' tests ran. The scope file can only add tests: the features a change touched are always tested, so naming the wrong folder never skips any. `tools/test-verify-hook.sh` checks these rules with a stub `verify.sh`.
 
 A changed prefab under `Assets/Client` gets its feature's prefab validator case (`TEST-12`) on every stop, whatever the scope: the validator has one case per feature folder, `UnityArchitecture.Prefabs.Tests.ClientPrefabsTests.{Feature}` (`Root` for prefabs directly in `Assets/Client`). With the Editor open, the hook asks the agent to run it through `run_tests`; with it closed, `verify.sh` runs it with a filter. The tests related to a change (`TEST-11`) run on every change: with the Editor open through `run_tests` with a filter, and with it closed through `VERIFY_TEST_FILTER="<names or regex>" scripts/verify.sh`, which passes the filter to Unity's `-testFilter`.
 
