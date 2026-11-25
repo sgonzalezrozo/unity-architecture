@@ -6,7 +6,7 @@ Packages change the implementation. The [architecture](../AGENTS.md#architecture
 
 ## The profile
 
-`Logs/ai/profile.md` says which capabilities are `true` in this project and which branch each fork resolves to. `scripts/ai-profile.sh` writes it from `Packages/manifest.json` and the table in [`capabilities.json`](../capabilities.json), the single list of capabilities that the agents, the Stop hook's tools and the Rules Guide window share. The script regenerates the profile only when the manifest, the table or a path it checks changed.
+`Logs/ai/profile.md` says which capabilities are `true` in this project and which branch each fork resolves to. `scripts/ai-profile.sh` writes it from `Packages/manifest.json` and the table in [`capabilities.json`](../capabilities.json), the single list of capabilities that the agents, the enforcement tools and the Rules Guide window share. The script regenerates the profile only when the manifest, the table or a path it checks changed.
 
 In Claude Code, a SessionStart hook runs the script and puts the profile in the agent's context, so the agent reads nothing to get it. Other agents read `Logs/ai/profile.md`, and run `bash scripts/ai-profile.sh` when it's missing.
 

@@ -4,7 +4,7 @@
 
 **Request:** a Store with three independent sources in one vertical bento list: discounts (a reduced price and an expiry countdown), promotions (featured banners) and packs (bundles). A click on a promotion opens a popup with its details, a claim button and a close button that returns to the Store. Scope: code only. Test scope: `Assets/Client/Store`.
 
-Capability profile: `fastIoC`, `uiScroller`, `screenSystem` and `uiFoundations` are `true`. Every file name starts with `Store` (`TASK-05`), every file is a row of the Feature files table (`CHK-14`), and `scripts/check-feature.sh Store` passes.
+Capability profile: `fastIoC`, `uiScroller`, `screenSystem` and `uiFoundations` are `true`. Every file name starts with `Store` (`TASK-05`), every file is a row of the Feature files table (`TASK-05`).
 
 **Demonstrates:** `SectionedSource` with one section per source (`LIST-10`), a bento layout in JSON (`LIST-08`), runtime data from a mock behind a pure C# items Model (`MODEL-12`, `MODEL-13`), a clock behind an interface for the countdown (`DET-06`), a throttled countdown in a slot View (`VIEW-06`), navigation as a command on the root Model (`SCR-16`), a popup that receives its ID (`IScreenParameter<T>`), and the handoff (`HAND-07`).
 
@@ -310,7 +310,7 @@ namespace Client.Store
 }
 ```
 
-`Forget` is the Tools Core helper, `ToolsCore.TaskExtensions`, from the package every project installs ([async and errors](../csharp/async-and-errors.md)); a feature never writes its own (`CHK-17`). `ScreenIds.StorePromotionPopup` exists only once a person creates the popup screen ([Screen System authoring](../branches/screen-system/authoring.md)), so the plan asks for it first: navigating with a string instead fails `CHK-16`.
+`Forget` is the Tools Core helper, `ToolsCore.TaskExtensions`, from the package every project installs ([async and errors](../csharp/async-and-errors.md)); a feature never writes its own. `ScreenIds.StorePromotionPopup` exists only once a person creates the popup screen ([Screen System authoring](../branches/screen-system/authoring.md)), so the plan asks for it first: navigating with a string is refused by the rules.
 
 ```csharp
 using UnityEngine;
@@ -353,7 +353,7 @@ namespace Client.Store
 }
 ```
 
-The View reads the screen Model with `GetComponentInParent`, never the injected items Model (`ROOT-06`, `CHK-11`).
+The View reads the screen Model with `GetComponentInParent`, never the injected items Model (`ROOT-06`).
 
 The slot Model gets the items Model through `IInjectableForChildren` (`LIST-01`) and exposes the values its Views draw (`LIST-05`).
 

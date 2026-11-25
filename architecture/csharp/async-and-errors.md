@@ -5,7 +5,7 @@
 - `async Task` always. The only `async void` in the project is `Forget` itself.
 - Never `.Result` or `.Wait()`.
 - Accept a `CancellationToken` in anything that can outlive its screen.
-- Start from sync code with `.Forget("Context")`, never `_ = Task`. The helper is `ToolsCore.TaskExtensions.Forget` in the Tools Core package (`com.sgonzalezrozo.core`, which every project installs and which is auto-referenced, so no `.asmdef` reference is needed; the project facts say whether it's there). A feature MUST use it and MUST NOT define its own `Forget` (`CHK-17`). The package's code is the rule: read it there, don't copy it:
+- Start from sync code with `.Forget("Context")`, never `_ = Task`. The helper is `ToolsCore.TaskExtensions.Forget` in the Tools Core package (`com.sgonzalezrozo.core`, which every project installs and which is auto-referenced, so no `.asmdef` reference is needed; the project facts say whether it's there). A feature MUST use it and MUST NOT define its own `Forget`. The package's code is the rule: read it there, don't copy it:
 
 ```csharp
 public static async void Forget(this Task task, string context)

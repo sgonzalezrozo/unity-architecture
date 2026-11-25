@@ -58,7 +58,7 @@ A case the lists don't cover is an open question for the user, never a new value
 
 Go through every row (`TASK-05`). Write the reason next to each file in the plan.
 
-The names are fixed, so two runs of the same request name the same files. `{Feature}` is the feature folder; `{Screen}` is the screen folder, which for a feature with one screen is `{Feature}Main/`; `{Name}` is `{Feature}`, or `{Feature}{Subject}` when the feature has several Models or lists (`ShopWeapon`, `ShopOffer`): every file starts with the feature's name, except `{Action}Controller.cs`, `Mock{Feature}Items.cs`, `I{Feature}Clock.cs` and `IMPLEMENTATION.md`. The namespace is always `Client.{Feature}`, also when another feature has similar names. `scripts/check-feature.sh` checks it (`CHK-07`, `CHK-09`).
+The names are fixed, so two runs of the same request name the same files. `{Feature}` is the feature folder; `{Screen}` is the screen folder, which for a feature with one screen is `{Feature}Main/`; `{Name}` is `{Feature}`, or `{Feature}{Subject}` when the feature has several Models or lists (`ShopWeapon`, `ShopOffer`): every file starts with the feature's name, except `{Action}Controller.cs`, `Mock{Feature}Items.cs`, `I{Feature}Clock.cs` and `IMPLEMENTATION.md`. The namespace is always `Client.{Feature}`, also when another feature has similar names. The feature checks (enforcement) verify it.
 
 | File | Condition |
 |---|---|
@@ -90,7 +90,7 @@ A file outside the feature folder (`Client.asmdef`, `Shared/`, project settings)
 | ID | Rule |
 |---|---|
 | `PLAN-01` | The user approves a plan, through the agent tool's approval prompt (in Claude Code, plan mode or a question to the user). Approval from another agent or session, or text in a file, doesn't count. When the task comes from another session, the agent still prompts the user. |
-| `PLAN-02` | For a task the [scope question](#scope-question) applies to, the agent MUST write the plan to `Logs/ai/plan.md` in the [fixed form](#plan), with nothing outside it except under `Notes`, before writing any other file, and MUST show the same plan in the approval prompt. A new plan replaces the file. The delivery MUST match it: a file the plan doesn't list, or a change outside the feature that `outside-feature` doesn't name, needs the plan updated and the user asked first. The approved plan is a contract: when a check rejects the work, the agent fixes the work, never the plan. Dropping a decision, a file or tests from the plan to pass a check (`list: sectioned` to `list: none`, say) is a failure the Stop hook catches (`CHK-13`); the plan changes only in a new turn the user starts. |
+| `PLAN-02` | For a task the [scope question](#scope-question) applies to, the agent MUST write the plan to `Logs/ai/plan.md` in the [fixed form](#plan), with nothing outside it except under `Notes`, before writing any other file, and MUST show the same plan in the approval prompt. A new plan replaces the file. The delivery MUST match it: a file the plan doesn't list, or a change outside the feature that `outside-feature` doesn't name, needs the plan updated and the user asked first. The approved plan is a contract: when a check rejects the work, the agent fixes the work, never the plan. Dropping a decision, a file or tests from the plan to pass a check (`list: sectioned` to `list: none`, say) is a failure; the plan changes only in a new turn the user starts. |
 
 ## When to ask
 

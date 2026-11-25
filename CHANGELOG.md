@@ -4,6 +4,10 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- The rules describe what must be true, not the enforcement that checks it. The automatic checks (the Stop hook, the feature checker and their rule IDs) moved out of the rules into `docs/ENFORCEMENT.md`, so a project that installs only the rules reads no rule about a tool it doesn't have. `TEST-11`, `TEST-13`, `PLAN-02` and the checklist say what must happen, and `CHK-xx` IDs appear only in `docs/ENFORCEMENT.md`.
+
 ### Added
 
 - `uiAtom` capability (`com.sgonzalezrozo.ui-atom`). With it, the `prefab` pack includes UI Atom's agent rules and UI Foundations' gradient rules, with `UIAtomAuthoring`, `UIAtomSpec`, `UIAtomValidator`, `UIGradientGroup`, `GradientShape` and `IgnoreGroupGradient` as verified symbols.

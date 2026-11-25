@@ -31,7 +31,7 @@ State what changed, which tool verified it, and what wasn't verified. If you cou
 - [ ] Follows `AGENTS.md` and the checklist above
 - [ ] Compiles with no new warnings or analyzer errors, checked by a tool (`EDIT-02`)
 - [ ] Only what the chosen scope includes was created (`TASK-02`)
-- [ ] When the scope includes tests: everything that can be unit tested has tests, and the tests directly related to the change, existing and new, pass (`TEST-11`). Without tests in the scope, the existing related tests still pass. The Stop hook runs the tests of the scoped and changed features on every stop, and never the full suite; unless you ran it by hand, report the full suite as not verified. With "solo codigo" the scope has no tests: run none, and say so
+- [ ] When the scope includes tests: everything that can be unit tested has tests, and the tests directly related to the change, existing and new, pass (`TEST-11`). Without tests in the scope, the existing related tests still pass. The tests of the scoped and changed features run where the scope asks, and never the full suite; unless you ran it by hand, report the full suite as not verified. With "solo codigo" the scope has no tests: run none, and say so
 - [ ] A bug fix includes a test that fails without the fix
 - [ ] No unused code, no debug logs
 
