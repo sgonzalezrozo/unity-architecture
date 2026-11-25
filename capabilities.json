@@ -7,6 +7,7 @@
     { "id": "screenSystem", "packages": ["com.sgonzalezrozo.screen-system"], "paths": [] },
     { "id": "uiFoundations", "packages": ["com.sgonzalezrozo.ui-foundations"], "paths": [] },
     { "id": "uiTweens", "packages": ["com.sgonzalezrozo.ui-tweens"], "paths": [] },
+    { "id": "uiAtom", "packages": ["com.sgonzalezrozo.ui-atom"], "paths": [] },
     { "id": "addressables", "packages": ["com.unity.addressables"], "paths": [] },
     { "id": "generationStatus", "packages": ["com.sgonzalezrozo.fast-ioc"], "paths": [] },
     { "id": "editorBridge", "packages": ["com.coplaydev.unity-mcp", "com.unity.pipeline", "com.unity.ai.assistant"], "paths": [] },

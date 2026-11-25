@@ -153,9 +153,18 @@
         "architecture/PREFABS.md",
         "architecture/workflow/prefab-handoff.md",
         "architecture/EDITOR_TOOLS.md#editor-capabilities",
-        "architecture/EDITOR_TOOLS.md#rules"
+        "architecture/EDITOR_TOOLS.md#rules",
+        "package:uiAtom/Documentation~/agent-rules.md",
+        "package:uiFoundations/Documentation~/agent-rules.md#gradients"
       ],
-      "symbols": {}
+      "symbols": {
+        "UIAtomAuthoring": "package:uiAtom/Documentation~/agent-rules.md",
+        "UIAtomSpec": "package:uiAtom/Documentation~/agent-rules.md",
+        "UIAtomValidator": "package:uiAtom/Documentation~/agent-rules.md",
+        "UIGradientGroup": "package:uiFoundations/Documentation~/agent-rules.md#gradients",
+        "GradientShape": "package:uiFoundations/Documentation~/agent-rules.md#gradients",
+        "IgnoreGroupGradient": "package:uiFoundations/Documentation~/agent-rules.md#gradients"
+      }
     }
   ],
   "maxBytes": 46000

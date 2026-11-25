@@ -20,7 +20,7 @@ The architecture rules cover all client code except gameplay simulation, which i
 | [MVC](architecture/MVC.md) layer rules | **Mandatory in every project** |
 | [C# standards](architecture/CSHARP_STANDARDS.md): code form, style and format | **Mandatory in every project** |
 | Unity, C#, uGUI, TextMeshPro | Required runtime |
-| Fast IoC, UI Scroller, Screen System, UI Foundations, Addressables | **Optional.** They change the implementation, never the architecture |
+| Fast IoC, UI Scroller, Screen System, UI Foundations, UI Atom, Addressables | **Optional.** They change the implementation, never the architecture |
 
 Take the capabilities and forks from the [project profile](architecture/OPTIONAL_PACKAGES.md#the-profile), `Logs/ai/profile.md` (`OPT-06`). In Claude Code it's already in your context from the session start; otherwise read it, and run `bash scripts/ai-profile.sh` when it's missing. Never detect packages from the manifest yourself. The same session start gives the [project facts](architecture/OPTIONAL_PACKAGES.md#rules) (`Logs/ai/project-facts.md`: scenes, installers, `Client.asmdef` references, features, localization) and the index of task packs.
 

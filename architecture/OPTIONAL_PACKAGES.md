@@ -18,6 +18,7 @@ In Claude Code, a SessionStart hook runs the script and puts the profile in the 
 | `screenSystem` | `com.sgonzalezrozo.screen-system` |
 | `uiFoundations` | `com.sgonzalezrozo.ui-foundations` |
 | `uiTweens` | `com.sgonzalezrozo.ui-tweens` |
+| `uiAtom` | `com.sgonzalezrozo.ui-atom` |
 | `addressables` | `com.unity.addressables` |
 | `editorBridge`, `verifyScript`, `generationStatus`, `prefabTools` | The editor tools in [Editor capabilities](EDITOR_TOOLS.md#editor-capabilities) |
 

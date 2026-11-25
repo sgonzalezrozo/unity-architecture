@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- `uiAtom` capability (`com.sgonzalezrozo.ui-atom`). With it, the `prefab` pack includes UI Atom's agent rules and UI Foundations' gradient rules, with `UIAtomAuthoring`, `UIAtomSpec`, `UIAtomValidator`, `UIGradientGroup`, `GradientShape` and `IgnoreGroupGradient` as verified symbols.
+- `PREFABS.md`: with `uiAtom`, shaped backgrounds and panels are UI Atoms built with `UIAtomAuthoring` and checked with `UIAtomValidator`; an atom that is a blocking `Background` adds a transparent raycast `Image` (`PREFAB-14`); gradients are the atom's modules.
+
 ## [0.9.3] - 2026-11-25
 
 ### Added

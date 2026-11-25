@@ -57,6 +57,8 @@ The punch follows the MVC flow: the click calls a Model command, and the View th
 
 With `uiFoundations` (the [profile](OPTIONAL_PACKAGES.md#the-profile)), every click Controller on an `Action` derives from `BaseClickController` (`OPT-02`), not `MonoBehaviour, IPointerClickHandler`. It's a transparent `Graphic`, so it's its own raycast target: `AddAction` and a spec's `action` give it no `Image`. The `Client` assembly definition references `UIFoundations`. See [Click input](OPTIONAL_PACKAGES.md#forks).
 
+With `uiAtom` (the [profile](OPTIONAL_PACKAGES.md#the-profile)), a shaped `Background` or panel (a pill, tag, badge or bubble: ends that aren't straight, an outline, a drop shadow or a pointer) SHOULD be a UI Atom (`OPT-02`), not a sprite drawn for it. Build it in the Editor with `UIAtomAuthoring` from a spec, and check it with `UIAtomValidator` next to `SaveAndValidate`; the package's agent rules have both. An atom's Images have Raycast Target off, so an atom that is a blocking `Background` (`PREFAB-14`) also gets an `Image` with alpha 0 and Cull Transparent Mesh on its own object. Its text and icons are children of the atom, after `Base`. Its gradients are the atom's modules (`baseGradient`, `border.gradient`, `shadow.gradient`), never a `UIGradientGroup` added to one of its layers. No runtime code references an atom: a state that changes its look is one atom per state root (`PREFAB-05`).
+
 ## Building a prefab
 
 With `prefabTools`, `UnityArchitecture.Prefabs.PrefabRecipes`, in the rules' package, builds the standard pieces already following these rules, so a prefab is a list of calls, not values set by hand. With a Unity MCP server, an agent calls them with `execute_code`; a person can call them from an Editor script.
