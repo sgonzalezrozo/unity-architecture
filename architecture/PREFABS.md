@@ -79,6 +79,16 @@ With `prefabTools`, `UnityArchitecture.Prefabs.PrefabRecipes`, in the enforcemen
 
 With Screen System, create the screen or layer first with `ScreenAuthoring` (`SCR-13`) and build its content with the recipes. `PREFAB-03` (pivot) and `PREFAB-12` (nested Canvas) still depend on the content, so set them where the handoff says.
 
+### Opening and closing what you build
+
+A build that leaves a prefab open, or temporary objects in the scene, makes Unity ask "save changes?" or "changed on disk while in Prefab Mode" the first time a person opens the prefab. The build MUST:
+
+- Before writing a prefab, check that no prefab stage is open (`PrefabStageUtility.GetCurrentPrefabStage()`). If one is open, close it (`StageUtility.GoToMainStage()`) when it has no unsaved changes; if it has, stop and ask the person.
+- Put every `LoadPrefabContents` in `try`/`finally`, and close the stage in the `finally` when it's still open. An exception in the middle must not leave a prefab open.
+- Destroy the temporary root made in the scene (for example one from `CreateSlotRoot`) after saving it.
+- After writing, reload the asset with `AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate)`, and check that the scene has no object left with the feature's name and no prefab stage is open.
+- Before creating a screen or a folder with `ScreenAuthoring` (or any tool that creates one), check that the folder, the screen's `ScreenDefinition` and its prefab don't exist yet. Create only what's missing, and after creating check that the tool didn't add a duplicate such as `{Name} 1`.
+
 ## Prefab spec
 
 The [handoff](workflow/prefab-handoff.md#prefab-handoff) table can also be written as a JSON spec (`HAND-06`). `PrefabSpecs.BuildFromSpec(json, path)` builds it with the recipes, saves it and returns the validator's result (`List<PrefabViolation>`, empty when it passes), and `PrefabSpecs.Compare(json, path)` lists every difference (`List<string>`, empty when they match) between the spec and the prefab, so the same spec always builds the same prefab and a change made by hand shows up. Without an editor bridge, a person selects the spec in the Project window and runs **Assets > Unity Architecture > Build Prefab From Spec**: it builds the prefab next to the spec (or rebuilds the one prefab under `Assets/Client` with the spec's name), validates it and compares it, and shows the result in the Console.
