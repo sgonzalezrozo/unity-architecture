@@ -86,16 +86,16 @@ With Screen System, create the screen or layer first with `ScreenAuthoring` (`SC
 Almost every prefab with a visible layout has this shape. The root holds the Model and the View and no layout. Everything under it is stretched to its parent unless a rule below says otherwise:
 
 ```
-root                                  Model, View; no layout
-├── Content                           VerticalLayoutGroup: control child width AND height, force expand OFF; no LayoutElement
-│   ├── Visuals                       a UI Atom or Image that paints the background; stretched; LayoutElement with ignore layout ON
-│   └── UI Content                    stretched; LayoutElement with ignore layout ON; VerticalLayoutGroup: control child width AND height, force expand OFF
-│       ├── <child>                   LayoutElement with ignore layout ON; anchors, size and position set by hand
-│       └── <group>                   a container with a HorizontalLayoutGroup or VerticalLayoutGroup: control child size only (no force expand)
-└── Action                            Controller (a BaseClickController); last child of root, above Content; stretched; LayoutElement with ignore layout ON
+root                                  Model, View; no layout; Content is its only child
+└── Content                           VerticalLayoutGroup: control child width AND height, force expand OFF; no LayoutElement
+    ├── Visuals                       a UI Atom or Image that paints the background; stretched; LayoutElement with ignore layout ON
+    ├── UI Content                    stretched; LayoutElement with ignore layout ON; VerticalLayoutGroup: control child width AND height, force expand OFF
+    │   ├── <child>                   LayoutElement with ignore layout ON; anchors, size and position set by hand
+    │   └── <group>                   a container with a HorizontalLayoutGroup or VerticalLayoutGroup: control child size only (no force expand)
+    └── Action                        Controller (a BaseClickController); last child of Content; stretched; LayoutElement with ignore layout ON
 ```
 
-- `UI Content` groups the card's texts and content under `Content`. `Action` is the root's last child, so it sits above `Content` and gets the touch first (`INPUT-02`).
+- `Content` is the root's only child. `Visuals`, `UI Content` and `Action` are its three children, in that order: images, then texts and content, then the `Action` on top, so it gets the touch first (`INPUT-02`).
 - A child of a layout group that's positioned by hand (`UI Content` children, `Action`) takes ignore layout, so the group doesn't size it. A child that the group stacks (a row of labels, a price line) doesn't.
 - Don't put a layout group on the scroller's Content or on a slot's root: UI Scroller sets those sizes itself.
 - The `Visuals` atom is stretched AND has a `LayoutElement` with ignore layout ON. Measured: without ignore layout the group gives a child with no preferred size a size of 0 x 0, so the background vanishes; with it, the atom fills its parent. Check the rect after the build. In this build, anchors set by `ApplyStretch` on a freshly created atom didn't stay in the saved prefab: set the `Visuals` anchors on the saved prefab (`LoadPrefabContents`, set, save) and measure again.
