@@ -12,7 +12,7 @@ QuitGameAlert                 root: Model and root View (SCOPE-02), scale 1, rot
 ├── Title (TextMeshProUGUI)
 ├── Message (TextMeshProUGUI)
 ├── Cancel
-│   ├── UI Content            everything the Action hits; a press tween punches it (PREFAB-17)
+│   ├── UI Content            the card's texts and content; a press tween can punch them as one
 │   │   ├── Background        raycast on: it has an Action (PREFAB-14)
 │   │   └── Text (TextMeshProUGUI)
 │   └── Action                Image alpha 0, Cull Transparent Mesh, last child [CancelController]
@@ -29,13 +29,13 @@ QuitGameAlert                 root: Model and root View (SCOPE-02), scale 1, rot
 
 - Each prefab is a scope with one root View on its root (`VIEW-03`). A nested prefab is another scope: nothing outside it references what's inside, its root View included.
 - A View has at most 5 serialized fields. With more, it delegates to inner Views placed near the components they set (`VIEW-07`).
-- Every input object is called `Action`; its class is named after what it does (`INPUT-01`). Its only sibling is `UI Content` (`PREFAB-17`).
+- Every input object is called `Action`; its class is named after what it does (`INPUT-01`). It is the last child of its parent, so it sits above what it covers (`INPUT-02`); its siblings are not restricted (`PREFAB-17`).
 
 ## Rules
 
 | ID | Rule |
 |---|---|
-| `PREFAB-01` | The root of a prefab MUST have scale `(1,1,1)` and rotation `0`. A visual scale or rotation goes on a `Visuals` child, which is what tweens animate; a press punch goes on `UI Content` (`PREFAB-17`). |
+| `PREFAB-01` | The root of a prefab MUST have scale `(1,1,1)` and rotation `0`. A visual scale or rotation goes on a `Visuals` child, which is what tweens animate; a press punch goes on the group of content it moves. |
 | `PREFAB-02` | An element that fills its container MUST use stretch anchors (0,0 to 1,1) with offsets or a layout's padding. A fixed-size element uses a point anchor. Fractional anchors (0.2 to 0.8) MUST NOT be used, except for a deliberate proportional split noted in the handoff. |
 | `PREFAB-03` | An element with dynamic content MUST set its pivot toward where it grows: Y `1` if it grows down, `0.5, 0.5` if it grows from the center. |
 | `PREFAB-04` | Text MUST be `TextMeshProUGUI`; `UnityEngine.UI.Text` MUST NOT be used. The prefab's own look (a sprite, a font, a material) is set on its components in the prefab, never through a View field (`VIEW-07`). An asset that depends on data, such as an item's icon, comes from the Model. |
@@ -47,10 +47,10 @@ QuitGameAlert                 root: Model and root View (SCOPE-02), scale 1, rot
 | `PREFAB-10` | A screen or layer has this shape: a stretch root, an optional `Background` and a `Content` inside the safe area. With Screen System, visibility belongs to the package. Without it, turn off the screen's own `Canvas`. `CanvasGroup` is only for fades and interaction. |
 | `PREFAB-11` | A modal blocks what's behind it: with Screen System, through its background; without it, through a dimming `Background` with raycast on. Closing on a tap outside is an `Action` that stretches between the `Background` and the `Window`, with a `CloseController`; the `Window` blocks touches with its own `Background`, so only taps outside it close the modal. |
 | `PREFAB-12` | Anything that animates or changes often MUST have its own nested `Canvas`, so the static part isn't rebuilt (`ARCH-11`). |
-| `PREFAB-13` | A prefab SHOULD NOT go deeper than about 5 levels under its root. Justify it in the handoff when it does. |
+| `PREFAB-13` | Six levels or fewer under the root is the ideal. Deeper is allowed: there is no hard limit, the validator warns, and flattening is preferred when it's easy. |
 | `PREFAB-14` | The `Background` of an element with an `Action` MUST have raycast on, so a touch doesn't reach what's under it. So does the `Background` of a screen, but not the one of each layer. This is the exception to `INPUT-03`. |
 | `PREFAB-15` | Every serialized reference a Model, View or Controller declares MUST be assigned in the prefab. An empty one fails at runtime, after the prefab looked right. |
-| `PREFAB-17` | An element with an `Action` MUST wrap everything the `Action` hits (its `Background`, `Visuals` and `Content`) in one child called `UI Content`, the `Action`'s only sibling. A press tween (a punch) scales `UI Content`, so what was hit moves as one, while the `Action` stays still and its hit area doesn't change under the finger. A layout group that places the element's content goes on `UI Content` or inside it. The exception is a modal's close `Action` (`PREFAB-11`), next to the `Window`: nothing punches the dimming `Background`. |
+| `PREFAB-17` | An `Action`'s siblings are not restricted. The `Action` MUST be the last child of its parent, above what it covers (`INPUT-02`), so it receives the touch. A press tween (a punch) moves a group of content, such as `UI Content`, and the `Action` stays still. |
 | `PREFAB-16` | Inside a parent with a layout group, such as a measured list slot, the `Background`, the `Action` and any overlay that fills the parent MUST ignore the layout (`LayoutElement` with Ignore Layout on), so the layout group only places the content. |
 
 The punch follows the MVC flow: the click calls a Model command, and the View that reacts to the Model's event starts the tween on `UI Content` (`PREFAB-05`, `ARCH-03`), with the project's tween package if it has one; `UI Content` is required either way. Feedback while the finger is still down, such as staying scaled while pressed, has no rule yet: UI Foundations' `BaseClickController` handles only the click.
@@ -71,7 +71,7 @@ With `prefabTools`, `UnityArchitecture.Prefabs.PrefabRecipes`, in the enforcemen
 | `CreateScreenRoot(name, components)` | A root, a blocking `Background` and a `Content` |
 | `CreateModalRoot(name, windowSize, closeController, components)` | A dimming `Background`, an optional close `Action`, and a centered `Window` with its own `Background` |
 | `CreateSlotRoot(name, size, components)` | A list slot with a fixed size; UI Scroller sets its anchors |
-| `AddUIContent(parent)` | The `UI Content` child that wraps everything an `Action` hits (`PREFAB-17`) |
+| `AddUIContent(parent)` | The `UI Content` child that groups a card's texts and content |
 | `AddBackground`, `AddVisuals`, `AddContainer`, `AddImage`, `AddText` | The pieces, with Raycast Target off on visuals and on in a `Background`. A `Background` or `Action` under a layout group ignores it (`PREFAB-16`) |
 | `AddAction(parent, controllerType)` | `Action`, last, with an invisible `Image` and Cull Transparent Mesh, or no `Image` when the Controller is its own `Graphic` |
 | `AddStateRoots(parent, states)` | One `{State}Root` per state |
@@ -87,21 +87,21 @@ Almost every prefab with a visible layout has this shape. The root holds the Mod
 
 ```
 root                                  Model, View; no layout
-└── Content                           VerticalLayoutGroup: control child width AND height, force expand OFF; no LayoutElement
-    ├── Visuals                       a UI Atom or Image that paints the background; stretched; no LayoutElement
-    ├── UI Content                    stretched; LayoutElement with ignore layout ON; VerticalLayoutGroup: control child width AND height, force expand OFF
-    │   ├── <child>                   LayoutElement with ignore layout ON; anchors, size and position set by hand
-    │   └── <group>                   a container with a HorizontalLayoutGroup or VerticalLayoutGroup: control child size only (no force expand)
-    └── Action                        Controller (a BaseClickController); stretched; LayoutElement with ignore layout ON
+├── Content                           VerticalLayoutGroup: control child width AND height, force expand OFF; no LayoutElement
+│   ├── Visuals                       a UI Atom or Image that paints the background; stretched; LayoutElement with ignore layout ON
+│   └── UI Content                    stretched; LayoutElement with ignore layout ON; VerticalLayoutGroup: control child width AND height, force expand OFF
+│       ├── <child>                   LayoutElement with ignore layout ON; anchors, size and position set by hand
+│       └── <group>                   a container with a HorizontalLayoutGroup or VerticalLayoutGroup: control child size only (no force expand)
+└── Action                            Controller (a BaseClickController); last child of root, above Content; stretched; LayoutElement with ignore layout ON
 ```
 
-- `UI Content` is the container everything an `Action` hits is wrapped by (`PREFAB-17`): a sibling of the `Action`, under the same `Content`.
+- `UI Content` groups the card's texts and content under `Content`. `Action` is the root's last child, so it sits above `Content` and gets the touch first (`INPUT-02`).
 - A child of a layout group that's positioned by hand (`UI Content` children, `Action`) takes ignore layout, so the group doesn't size it. A child that the group stacks (a row of labels, a price line) doesn't.
 - Don't put a layout group on the scroller's Content or on a slot's root: UI Scroller sets those sizes itself.
 - The `Visuals` atom is stretched AND has a `LayoutElement` with ignore layout ON. Measured: without ignore layout the group gives a child with no preferred size a size of 0 x 0, so the background vanishes; with it, the atom fills its parent. Check the rect after the build. In this build, anchors set by `ApplyStretch` on a freshly created atom didn't stay in the saved prefab: set the `Visuals` anchors on the saved prefab (`LoadPrefabContents`, set, save) and measure again.
 - A group child that doesn't stretch (a text or a container in a stacked group) needs `childForceExpandWidth` on its group, or it takes only its own text width.
-- Open conflicts with the validator: `PREFAB-17` says an `Action`'s only sibling is its `UI Content`, but this structure also has a `Visuals` next to the `Action`. `PREFAB-13` (five levels) counts the atom's own `Base` and `Middle` as levels, so a button `Visuals` placed two levels under a container goes past five.
-- Five levels from the root at most (`PREFAB-13`): the structure above uses four.
+- For an element with ignore layout that fills its parent, set Ignore Layout first, then the stretch (anchors (0,0) to (1,1), offsets zero), in that order.
+- Six levels from the root or fewer is the ideal (`PREFAB-13`); there is no hard limit. The atom's own `Base` and `Middle` count as levels.
 
 ### Saving a prefab as the Editor would leave it
 
@@ -122,7 +122,7 @@ The spec lists the whole hierarchy in order: nothing is added that it doesn't na
 | Field | Meaning |
 |---|---|
 | `name` | The object's name. `background`, `visuals`, `uiContent` and `action` have fixed names; a `prefab` defaults to the asset's |
-| `type` | `container`, `background` (Image, raycast on), `visuals`, `uiContent` (`UI Content`, `PREFAB-17`), `image` (raycast off), `text` (TextMeshProUGUI), `action` or `prefab`. The root has none |
+| `type` | `container`, `background` (Image, raycast on), `visuals`, `uiContent` (`UI Content`), `image` (raycast off), `text` (TextMeshProUGUI), `action` or `prefab`. The root has none |
 | `components` | Class names in the `Client` assembly, such as the root's Model and View, or an inner View, and Unity's UI components, such as `VerticalLayoutGroup`, `ContentSizeFitter` or `Canvas` |
 | `fields` | The serialized fields of this object's components and the object each points to, by path under it: `{"amountText": "Amount"}`, or `"."` for the object itself (`HAND-03`, `PREFAB-15`) |
 | `ignoreLayout` | `true` for an overlay that fills a parent with a layout group (`PREFAB-16`) |

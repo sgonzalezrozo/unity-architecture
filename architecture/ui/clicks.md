@@ -14,7 +14,7 @@
 
 ```
 CloseButton
-├── UI Content (what the Action hits; a press tween punches it: PREFAB-17)
+├── UI Content (the card's texts and content; a press tween can punch them: PREFAB-17)
 │   └── Visuals
 │       ├── Background (Image, raycastTarget on: blocks what's under it)
 │       └── Label (TextMeshProUGUI, raycastTarget off)
