@@ -98,7 +98,9 @@ root                                  Model, View; no layout
 - `UI Content` is the container everything an `Action` hits is wrapped by (`PREFAB-17`): a sibling of the `Action`, under the same `Content`.
 - A child of a layout group that's positioned by hand (`UI Content` children, `Action`) takes ignore layout, so the group doesn't size it. A child that the group stacks (a row of labels, a price line) doesn't.
 - Don't put a layout group on the scroller's Content or on a slot's root: UI Scroller sets those sizes itself.
-- The `Visuals` atom is stretched and has no `LayoutElement`: the group sizes it to its own preferred size, so check the rect after the build (a zero height means it isn't laid out as intended; fix the group, don't add ignore layout to `Visuals`).
+- The `Visuals` atom is stretched AND has a `LayoutElement` with ignore layout ON. Measured: without ignore layout the group gives a child with no preferred size a size of 0 x 0, so the background vanishes; with it, the atom fills its parent. Check the rect after the build. In this build, anchors set by `ApplyStretch` on a freshly created atom didn't stay in the saved prefab: set the `Visuals` anchors on the saved prefab (`LoadPrefabContents`, set, save) and measure again.
+- A group child that doesn't stretch (a text or a container in a stacked group) needs `childForceExpandWidth` on its group, or it takes only its own text width.
+- Open conflicts with the validator: `PREFAB-17` says an `Action`'s only sibling is its `UI Content`, but this structure also has a `Visuals` next to the `Action`. `PREFAB-13` (five levels) counts the atom's own `Base` and `Middle` as levels, so a button `Visuals` placed two levels under a container goes past five.
 - Five levels from the root at most (`PREFAB-13`): the structure above uses four.
 
 ### Saving a prefab as the Editor would leave it
