@@ -79,15 +79,15 @@ With `prefabTools`, `UnityArchitecture.Prefabs.PrefabRecipes`, in the enforcemen
 
 With Screen System, create the screen or layer first with `ScreenAuthoring` (`SCR-13`) and build its content with the recipes. `PREFAB-03` (pivot) and `PREFAB-12` (nested Canvas) still depend on the content, so set them where the handoff says.
 
-### Opening and closing what you build
+### Saving a prefab as the Editor would leave it
 
-A build that leaves a prefab open, or temporary objects in the scene, makes Unity ask "save changes?" or "changed on disk while in Prefab Mode" the first time a person opens the prefab. The build MUST:
+A prefab is saved in the state the Editor leaves it in when a person opens it. When an inspector or an `OnValidate` changes a component the first time the prefab is shown, it marks that component dirty, the next asset save rewrites the file, and Unity asks to keep or discard changes in Prefab Mode. With Screen System, create a screen with `ScreenAuthoring`, which saves its `LayerDefinition` with the SCREEN separator its inspector would add (Screen System after 0.7.2); don't build a screen root by hand. The build MUST:
 
-- Before writing a prefab, check that no prefab stage is open (`PrefabStageUtility.GetCurrentPrefabStage()`). If one is open, close it (`StageUtility.GoToMainStage()`) when it has no unsaved changes; if it has, stop and ask the person.
-- Put every `LoadPrefabContents` in `try`/`finally`, and close the stage in the `finally` when it's still open. An exception in the middle must not leave a prefab open.
-- Destroy the temporary root made in the scene (for example one from `CreateSlotRoot`) after saving it.
-- After writing, reload the asset with `AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate)`, and check that the scene has no object left with the feature's name and no prefab stage is open.
-- Before creating a screen or a folder with `ScreenAuthoring` (or any tool that creates one), check that the folder, the screen's `ScreenDefinition` and its prefab don't exist yet. Create only what's missing, and after creating check that the tool didn't add a duplicate such as `{Name} 1`.
+- After building, check that showing each prefab changes nothing: for every component on the prefab root that has its own inspector, `Editor.CreateEditor(component)` leaves `EditorUtility.IsDirty(component)` false. Check the component, not its GameObject. When one turns dirty, the build is missing what that inspector adds: save it in the build, or fix the tool that made the prefab.
+- Put every `LoadPrefabContents` in `try`/`finally` and unload or close what it opened, so an exception in the middle doesn't leave a prefab open.
+- Destroy the temporary roots made in the scene (for example one from `CreateSlotRoot`) after saving them.
+- Clear the selection (`Selection.activeObject = null`) before destroying, deleting or closing what it may show, so the Inspector doesn't rebuild on a destroyed object (`SerializedObjectNotCreatableException`).
+- Before creating a screen or a folder, check that the folder, the screen's `ScreenDefinition` and its prefab don't exist yet. Create only what's missing, and after creating check that no duplicate such as `{Name} 1` appeared.
 
 ## Prefab spec
 
