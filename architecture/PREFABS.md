@@ -81,6 +81,26 @@ With `prefabTools`, `UnityArchitecture.Prefabs.PrefabRecipes`, in the enforcemen
 
 With Screen System, create the screen or layer first with `ScreenAuthoring` (`SCR-13`) and build its content with the recipes. `PREFAB-03` (pivot) and `PREFAB-12` (nested Canvas) still depend on the content, so set them where the handoff says.
 
+### Standard structure
+
+Almost every prefab with a visible layout has this shape. The root holds the Model and the View and no layout. Everything under it is stretched to its parent unless a rule below says otherwise:
+
+```
+root                                  Model, View; no layout
+└── Content                           VerticalLayoutGroup: control child width AND height, force expand OFF; no LayoutElement
+    ├── Visuals                       a UI Atom or Image that paints the background; stretched; no LayoutElement
+    ├── UI Content                    stretched; LayoutElement with ignore layout ON; VerticalLayoutGroup: control child width AND height, force expand OFF
+    │   ├── <child>                   LayoutElement with ignore layout ON; anchors, size and position set by hand
+    │   └── <group>                   a container with a HorizontalLayoutGroup or VerticalLayoutGroup: control child size only (no force expand)
+    └── Action                        Controller (a BaseClickController); stretched; LayoutElement with ignore layout ON
+```
+
+- `UI Content` is the container everything an `Action` hits is wrapped by (`PREFAB-17`): a sibling of the `Action`, under the same `Content`.
+- A child of a layout group that's positioned by hand (`UI Content` children, `Action`) takes ignore layout, so the group doesn't size it. A child that the group stacks (a row of labels, a price line) doesn't.
+- Don't put a layout group on the scroller's Content or on a slot's root: UI Scroller sets those sizes itself.
+- The `Visuals` atom is stretched and has no `LayoutElement`: the group sizes it to its own preferred size, so check the rect after the build (a zero height means it isn't laid out as intended; fix the group, don't add ignore layout to `Visuals`).
+- Five levels from the root at most (`PREFAB-13`): the structure above uses four.
+
 ### Saving a prefab as the Editor would leave it
 
 A prefab is saved in the state the Editor leaves it in when a person opens it. When an inspector or an `OnValidate` changes a component the first time the prefab is shown, it marks that component dirty, the next asset save rewrites the file, and Unity asks to keep or discard changes in Prefab Mode. With Screen System, create a screen with `ScreenAuthoring`, which saves its `LayerDefinition` with the SCREEN separator its inspector would add (Screen System after 0.7.2); don't build a screen root by hand. The build MUST:
